@@ -112,7 +112,7 @@ if [[ "$OS" == "arch" ]]; then
 
 else
     # Ubuntu — install what's available, use binaries for the rest
-    install_ubuntu_pkgs fish bat btop ripgrep duf mc nmap macchanger wipe glances
+    install_ubuntu_pkgs fish bat btop ripgrep duf mc nmap macchanger wipe glances || true
 
     # fish PPA
     if ! command -v fish &> /dev/null; then
