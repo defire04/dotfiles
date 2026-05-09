@@ -11,8 +11,12 @@ MODE=""
 # Use sudo only when not root
 if [[ $EUID -eq 0 ]]; then
     SUDO=""
-else
+elif command -v sudo &> /dev/null; then
     SUDO="sudo"
+else
+    echo "ERROR: Not running as root and sudo is not available."
+    echo "Run as root: su - then ./install.sh, or install sudo first."
+    exit 1
 fi
 
 # Parse args

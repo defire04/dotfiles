@@ -302,7 +302,9 @@ _launch=none
 
 [services][org.kde.spectacle.desktop]
 ActiveWindowScreenShot=none
+CurrentMonitorScreenShot=
 FullScreenScreenShot=none
+OpenWithoutScreenshot=
 RecordRegion=Meta+Shift+R
 RectangularRegionScreenShot=Meta+Shift+S
 WindowUnderCursorScreenShot=none
