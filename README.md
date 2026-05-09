@@ -148,25 +148,31 @@ kopia repository connect filesystem --path /mnt/nas/backups/username/machine
 | aurorae | `~/.local/share/aurorae/themes/` | desktop |
 | plasma-systemmonitor | `~/.local/share/plasma-systemmonitor/` | desktop |
 
-### Manual stow
-```bash
-# Apply single package
-stow -d ~/dotfiles/packages -t ~ fish
+### How symlinks work
 
-# Remove package symlinks
+Stow creates symlinks from `~` into `~/dotfiles/packages/<pkg>/`. For example:
+```
+~/.config/fish  →  ~/dotfiles/packages/fish/.config/fish
+```
+Editing any file in `~/dotfiles/` takes effect immediately — no copying needed.
+
+### Manual stow (if install.sh was not used)
+
+If the target config already exists, remove it first:
+```bash
+rm -rf ~/.config/fish
+stow -d ~/dotfiles/packages -t ~ fish
+```
+
+Or to adopt existing configs into the package (moves files into dotfiles/ and symlinks them):
+```bash
+stow --adopt -d ~/dotfiles/packages -t ~ fish
+```
+
+Remove package symlinks:
+```bash
 stow -d ~/dotfiles/packages -t ~ -D fish
 ```
-
----
-
-## Security Check
-
-Before committing, run:
-```bash
-./check-secrets.sh
-```
-
-Scans staged changes for: private IPs, NAS paths, API keys, tokens, SSH private keys, known private files.
 
 ---
 
