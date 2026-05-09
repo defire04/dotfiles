@@ -193,7 +193,7 @@ else
     # fish-pure-prompt via fisher
     if command -v fish &> /dev/null; then
         if ! fish -c "fisher list 2>/dev/null" | grep -q nicowillis/pure; then
-            fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher && fisher install nicowillis/pure" || true
+            fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher && fisher install pure-fish/pure" || true
         fi
     fi
 
