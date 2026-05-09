@@ -1,0 +1,18 @@
+MenuBar=Disabled
+
+[Desktop Entry]
+DefaultProfile=Ciri1.profile
+
+[General]
+ConfigVersion=1
+
+[KFileDialog Settings]
+detailViewIconSize=64
+
+[Notification Messages]
+CloseAllEmptyTabs=true
+CloseAllTabs=true
+ShowPasteHugeTextWarning=false
+
+[UiSettings]
+ColorScheme=

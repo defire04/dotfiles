@@ -1,0 +1,22 @@
+{
+    "colorscheme": "darcula",
+    "clipboard": "terminal",
+    "autoclose": true,
+    "autosave": 1,
+    "cursorline": true,
+    "hlsearch": true,
+    "keepautoindent": true,
+    "matchbrace": true,
+    "matchbraceleft": true,
+    "rmtrailingws": true,
+    "ruler": true,
+    "savecursor": true,
+    "saveundo": true,
+    "scrollbar": true,
+    "scrollmargin": 5,
+    "tabmovement": true,
+    "tabsize": 4,
+    "tabstospaces": true,
+    "lsp.autocompleteDetails": true,
+    "lsp.server": "python=pyright,go=gopls,typescript=typescript-language-server --stdio,javascript=typescript-language-server --stdio,rust=rust-analyzer,c=clangd,cpp=clangd,java=jdtls -data /tmp/jdtls-workspace,csharp=omnisharp -lsp,sh=bash-language-server start"
+}

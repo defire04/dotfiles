@@ -1,0 +1,26 @@
+[Presets]
+lastLoadedInputPreset=Masc NPR Voice + Noise Reduction
+lastLoadedOutputPreset=Bass Enhancing + Perfect EQ
+
+[StreamInputs]
+inputDevice=alsa_input.usb-SteelSeries_Arctis_Nova_7-00.pro-input-0
+mostUsedPresets=Masc NPR Voice + Noise Reduction
+plugins=rnnoise#0,deepfilternet#0,gate#0,equalizer#0,compressor#0,deesser#0,limiter#0
+usedPresets=Masc NPR Voice + Noise Reduction:4
+visiblePage=pluginsPage
+visiblePlugin=rnnoise#0
+
+[StreamOutputs]
+mostUsedPresets=Bass Enhancing + Perfect EQ,Bass Boosted,Perfect EQ,Boosted,Advanced Auto Gain
+outputDevice=alsa_output.usb-SteelSeries_Arctis_Nova_7-00.pro-output-0
+plugins=equalizer#0,convolver#0
+usedPresets=Bass Enhancing + Perfect EQ:7,Perfect EQ:3,Bass Boosted:3,Boosted:2,Advanced Auto Gain:1
+visiblePage=pluginsPage
+visiblePlugin=equalizer#0
+
+[Window]
+autostartOnLogin=true
+height=993
+showTrayIcon=false
+visiblePage=inputPage
+width=2220

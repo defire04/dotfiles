@@ -1,0 +1,11 @@
+{
+    "Alt-/": "lua:comment.comment",
+    "CtrlUnderscore": "lua:comment.comment",
+    "F7": "lua:filemanager.toggle_tree",
+    "F2": "lua:lsp.rename",
+    "Alt-d": "lua:lsp.definition",
+    "Alt-r": "lua:lsp.references",
+    "Alt-h": "lua:lsp.hover",
+    "Alt-f": "lua:lsp.format",
+    "Ctrl-p": "lua:fzf.fzf"
+}

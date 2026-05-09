@@ -1,0 +1,28 @@
+# Private fish configs — machine-specific
+packages/fish/.config/fish/conf.d/private.fish
+packages/fish/.config/fish/functions/tsa.fish
+
+# Kitty runtime
+packages/kitty/.config/kitty/last.kitty-session
+packages/kitty/.config/kitty/*.bak
+
+# Micro runtime
+packages/micro/.config/micro/backups/
+packages/micro/.config/micro/buffers/
+
+# Kopia — backup tool with NAS paths and encryption passwords
+packages/kde/.config/kopia/
+packages/kde/.config/kopia-ui/
+
+# KDE machine-specific
+packages/kde/.config/kwinoutputconfig.json
+packages/kde/.config/autostart/mimeinfo.cache
+
+# OpenRGB logs
+packages/openrgb/.config/OpenRGB/logs/
+
+# Claude CLI binary
+packages/scripts/.local/bin/claude
+
+# Local utility scripts (not for repo)
+check-secrets.sh

@@ -1,0 +1,61 @@
+[24fe79c0-6386-44ec-a46b-c54973e92ff9]
+Description=Параметры приложения для jetbrains-idea
+clientmachine=localhost
+decocolor=KvDark
+decocolorrule=2
+wmclass=jetbrains-idea
+wmclassmatch=1
+
+[55582b02-befc-4e2f-934f-fa8e140b3711]
+Description=Параметры приложения для vesktop
+decocolor=Kvantum
+decocolorrule=2
+wmclass=electron vesktop
+wmclasscomplete=true
+wmclassmatch=1
+
+[5578f1ed-177e-4e67-b2ea-e09a99f9084d]
+Description=Параметры приложения для org.telegram.desktop
+fpplevel=4
+fpplevelrule=2
+wmclass=Telegram org.telegram.desktop
+wmclasscomplete=true
+wmclassmatch=1
+
+[9fe7dc64-0334-4b75-baf2-e85fb4e3373b]
+Description=Параметры приложения для jetbrains-idea
+clientmachine=localhost
+decocolor=Kvantum
+decocolorrule=2
+wmclass=jetbrains-idea
+wmclassmatch=1
+
+[General]
+count=6
+rules=e0192cb8-769d-49e5-8744-bb798d6493e6,a9ae92bb-b744-4bf8-ab36-25acb6df66e5,ef71f892-df92-455e-89dd-053c46c4640a,9fe7dc64-0334-4b75-baf2-e85fb4e3373b,55582b02-befc-4e2f-934f-fa8e140b3711,5578f1ed-177e-4e67-b2ea-e09a99f9084d
+
+[a9ae92bb-b744-4bf8-ab36-25acb6df66e5]
+Description=Параметры приложения для kitty
+decocolor=Otto
+decocolorrule=2
+wmclass=kitty
+wmclassmatch=1
+
+[e0192cb8-769d-49e5-8744-bb798d6493e6]
+Description=Параметры приложения для Claude
+clientmachine=localhost
+decocolor=Kvantum
+decocolorrule=2
+fpplevel=4
+fpplevelrule=2
+wmclass=claude Claude
+wmclasscomplete=true
+wmclassmatch=1
+
+[ef71f892-df92-455e-89dd-053c46c4640a]
+Description=Параметры приложения для Claude
+decocolor=BreezeDark
+decocolorrule=2
+wmclass=electron Claude
+wmclasscomplete=true
+wmclassmatch=1

@@ -1,0 +1,6 @@
+[Unit]
+Description=Save kitty session
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/kitty-save-session.sh
