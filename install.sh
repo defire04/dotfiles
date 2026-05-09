@@ -191,7 +191,7 @@ else
             | head -1 | cut -d '"' -f 4)
         if [[ -n "$FF_URL" ]]; then
             tmpdir=$(mktemp -d)
-            curl -fsSL "$FF_URL" | tar xz -C "$tmpdir" && $SUDO mv "$tmpdir/usr/bin/fastfetch" /usr/local/bin/ && rm -rf "$tmpdir" || true
+            curl -fsSL "$FF_URL" | tar xz -C "$tmpdir" && $SUDO mv "$tmpdir/fastfetch-linux-amd64/usr/bin/fastfetch" /usr/local/bin/ && rm -rf "$tmpdir" || true
         fi
     fi
 
