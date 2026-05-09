@@ -8,6 +8,13 @@ set -e
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODE=""
 
+# Use sudo only when not root
+if [[ $EUID -eq 0 ]]; then
+    SUDO=""
+else
+    SUDO="sudo"
+fi
+
 # Parse args
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -54,11 +61,11 @@ fi
 # ── Install base dependencies ────────────────────────────────────────────────
 
 install_arch_pkgs() {
-    sudo pacman -S --needed --noconfirm "$@"
+    $SUDO pacman -S --needed --noconfirm "$@"
 }
 
 install_ubuntu_pkgs() {
-    sudo apt-get install -y "$@"
+    $SUDO apt-get install -y "$@"
 }
 
 install_binary() {
@@ -67,7 +74,7 @@ install_binary() {
     local tmp=$(mktemp)
     curl -fsSL "$url" -o "$tmp"
     chmod +x "$tmp"
-    sudo mv "$tmp" "$dest/$name"
+    $SUDO mv "$tmp" "$dest/$name"
 }
 
 echo "--- Installing git and stow ---"
@@ -80,7 +87,7 @@ fi
 # ── Install paru on Arch if not present ─────────────────────────────────────
 if [[ "$OS" == "arch" ]] && ! command -v paru &> /dev/null; then
     echo "--- Installing paru (AUR helper) ---"
-    sudo pacman -S --needed --noconfirm base-devel
+    $SUDO pacman -S --needed --noconfirm base-devel
     tmpdir=$(mktemp -d)
     git clone https://aur.archlinux.org/paru.git "$tmpdir/paru"
     cd "$tmpdir/paru"
@@ -103,29 +110,29 @@ else
 
     # fish PPA
     if ! command -v fish &> /dev/null; then
-        sudo apt-add-repository -y ppa:fish-shell/release-3
-        sudo apt-get update
+        $SUDO apt-add-repository -y ppa:fish-shell/release-3
+        $SUDO apt-get update
         install_ubuntu_pkgs fish
     fi
 
     # micro — official binary installer
     if ! command -v micro &> /dev/null; then
         echo "Installing micro..."
-        cd /tmp && curl https://getmic.ro | bash && sudo mv micro /usr/local/bin/
+        cd /tmp && curl https://getmic.ro | bash && $SUDO mv micro /usr/local/bin/
         cd "$DOTFILES_DIR"
     fi
 
     # GitHub CLI
     if ! command -v gh &> /dev/null; then
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
-        sudo apt-get update && install_ubuntu_pkgs gh
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | $SUDO dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | $SUDO tee /etc/apt/sources.list.d/github-cli.list
+        $SUDO apt-get update && install_ubuntu_pkgs gh
     fi
 
     # Docker
     if ! command -v docker &> /dev/null; then
-        curl -fsSL https://get.docker.com | sudo bash
-        sudo usermod -aG docker "$USER"
+        curl -fsSL https://get.docker.com | $SUDO bash
+        [[ -n "$USER" && "$USER" != "root" ]] && $SUDO usermod -aG docker "$USER"
     fi
 
     # Binaries from GitHub releases
@@ -133,21 +140,21 @@ else
         EZA_URL=$(curl -s https://api.github.com/repos/eza-community/eza/releases/latest \
             | grep "browser_download_url.*eza_x86_64-unknown-linux-musl.tar.gz" \
             | cut -d '"' -f 4)
-        curl -fsSL "$EZA_URL" | tar xz -C /tmp && sudo mv /tmp/eza /usr/local/bin/
+        curl -fsSL "$EZA_URL" | tar xz -C /tmp && $SUDO mv /tmp/eza /usr/local/bin/
     fi
 
     if ! command -v lazygit &> /dev/null; then
         LG_URL=$(curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest \
             | grep "browser_download_url.*Linux_x86_64.tar.gz" \
             | cut -d '"' -f 4)
-        curl -fsSL "$LG_URL" | tar xz -C /tmp && sudo mv /tmp/lazygit /usr/local/bin/
+        curl -fsSL "$LG_URL" | tar xz -C /tmp && $SUDO mv /tmp/lazygit /usr/local/bin/
     fi
 
     if ! command -v lazydocker &> /dev/null; then
         LD_URL=$(curl -s https://api.github.com/repos/jesseduffield/lazydocker/releases/latest \
             | grep "browser_download_url.*Linux_x86_64.tar.gz" \
             | cut -d '"' -f 4)
-        curl -fsSL "$LD_URL" | tar xz -C /tmp && sudo mv /tmp/lazydocker /usr/local/bin/
+        curl -fsSL "$LD_URL" | tar xz -C /tmp && $SUDO mv /tmp/lazydocker /usr/local/bin/
     fi
 
     if ! command -v yazi &> /dev/null; then
@@ -155,14 +162,14 @@ else
             | grep "browser_download_url.*yazi-x86_64-unknown-linux-musl.zip" \
             | cut -d '"' -f 4)
         curl -fsSL "$YAZI_URL" -o /tmp/yazi.zip && unzip -q /tmp/yazi.zip -d /tmp/yazi_extract
-        sudo mv /tmp/yazi_extract/*/yazi /usr/local/bin/
+        $SUDO mv /tmp/yazi_extract/*/yazi /usr/local/bin/
     fi
 
     if ! command -v fastfetch &> /dev/null; then
         FF_URL=$(curl -s https://api.github.com/repos/fastfetch-cli/fastfetch/releases/latest \
             | grep "browser_download_url.*linux-amd64.tar.gz" \
             | head -1 | cut -d '"' -f 4)
-        curl -fsSL "$FF_URL" | tar xz -C /tmp && sudo mv /tmp/fastfetch /usr/local/bin/
+        curl -fsSL "$FF_URL" | tar xz -C /tmp && $SUDO mv /tmp/fastfetch /usr/local/bin/
     fi
 
     # fish-pure-prompt via fisher on Ubuntu
@@ -183,7 +190,7 @@ if [[ "$MODE" == "desktop" ]]; then
 
     # Flatpak
     if ! command -v flatpak &> /dev/null; then
-        sudo pacman -S --needed --noconfirm flatpak
+        $SUDO pacman -S --needed --noconfirm flatpak
     fi
     flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
     while IFS= read -r app; do
@@ -224,7 +231,7 @@ if [[ "$SHELL" != "$(which fish)" ]]; then
     echo "--- Setting fish as default shell ---"
     FISH_PATH=$(which fish)
     if ! grep -q "$FISH_PATH" /etc/shells; then
-        echo "$FISH_PATH" | sudo tee -a /etc/shells
+        echo "$FISH_PATH" | $SUDO tee -a /etc/shells
     fi
     chsh -s "$FISH_PATH"
     echo "  ✅ Default shell set to fish (re-login to apply)"
