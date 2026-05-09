@@ -14,9 +14,11 @@ if [[ $EUID -eq 0 ]]; then
 elif command -v sudo &> /dev/null; then
     SUDO="sudo"
 else
-    echo "ERROR: Not running as root and sudo is not available."
-    echo "Run as root: su - then ./install.sh, or install sudo first."
-    exit 1
+    echo "sudo not found — installing it (enter root password when prompted)..."
+    su -c "apt-get install -y sudo && usermod -aG sudo $(whoami)"
+    echo ""
+    echo "sudo installed. Re-run the script: ./install.sh $*"
+    exit 0
 fi
 
 # Parse args
