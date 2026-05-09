@@ -111,80 +111,96 @@ if [[ "$OS" == "arch" ]]; then
     paru -S --needed --noconfirm $PKGS
 
 else
-    # Ubuntu — install what's available, use binaries for the rest
+    INSTALLED=()
+    FAILED=()
+
+    _mark() { command -v "$1" &>/dev/null && INSTALLED+=("$1") || FAILED+=("$1"); }
+
+    # Ubuntu — install what's available via apt
     install_ubuntu_pkgs fish bat btop ripgrep duf mc nmap macchanger wipe glances || true
 
-    # fish PPA
+    # fish PPA fallback
     if ! command -v fish &> /dev/null; then
         $SUDO apt-add-repository -y ppa:fish-shell/release-3
         $SUDO apt-get update
-        install_ubuntu_pkgs fish
+        install_ubuntu_pkgs fish || true
     fi
 
     # micro — official binary installer
     if ! command -v micro &> /dev/null; then
-        echo "Installing micro..."
-        cd /tmp && curl https://getmic.ro | bash && $SUDO mv micro /usr/local/bin/
+        cd /tmp && curl -fsSL https://getmic.ro | bash && $SUDO mv micro /usr/local/bin/ || true
         cd "$DOTFILES_DIR"
     fi
 
     # GitHub CLI
     if ! command -v gh &> /dev/null; then
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | $SUDO dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | $SUDO tee /etc/apt/sources.list.d/github-cli.list
-        $SUDO apt-get update && install_ubuntu_pkgs gh
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | $SUDO dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg 2>/dev/null
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | $SUDO tee /etc/apt/sources.list.d/github-cli.list >/dev/null
+        $SUDO apt-get update -q && install_ubuntu_pkgs gh || true
     fi
 
     # Docker
     if ! command -v docker &> /dev/null; then
-        curl -fsSL https://get.docker.com | $SUDO bash
-        [[ -n "$USER" && "$USER" != "root" ]] && $SUDO usermod -aG docker "$USER"
+        curl -fsSL https://get.docker.com | $SUDO bash || true
+        [[ -n "$USER" && "$USER" != "root" ]] && $SUDO usermod -aG docker "$USER" || true
     fi
 
-    # Binaries from GitHub releases
+    # eza
     if ! command -v eza &> /dev/null; then
         EZA_URL=$(curl -s https://api.github.com/repos/eza-community/eza/releases/latest \
             | grep "browser_download_url.*eza_x86_64-unknown-linux-musl.tar.gz" \
             | cut -d '"' -f 4)
-        curl -fsSL "$EZA_URL" | tar xz -C /tmp && $SUDO mv /tmp/eza /usr/local/bin/
+        [[ -n "$EZA_URL" ]] && curl -fsSL "$EZA_URL" | tar xz -C /tmp && $SUDO mv /tmp/eza /usr/local/bin/ || true
     fi
 
+    # lazygit
     if ! command -v lazygit &> /dev/null; then
         LG_URL=$(curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest \
             | grep "browser_download_url.*Linux_x86_64.tar.gz" \
             | cut -d '"' -f 4)
-        curl -fsSL "$LG_URL" | tar xz -C /tmp && $SUDO mv /tmp/lazygit /usr/local/bin/
+        [[ -n "$LG_URL" ]] && curl -fsSL "$LG_URL" | tar xz -C /tmp && $SUDO mv /tmp/lazygit /usr/local/bin/ || true
     fi
 
+    # lazydocker
     if ! command -v lazydocker &> /dev/null; then
         LD_URL=$(curl -s https://api.github.com/repos/jesseduffield/lazydocker/releases/latest \
             | grep "browser_download_url.*Linux_x86_64.tar.gz" \
             | cut -d '"' -f 4)
-        curl -fsSL "$LD_URL" | tar xz -C /tmp && $SUDO mv /tmp/lazydocker /usr/local/bin/
+        [[ -n "$LD_URL" ]] && curl -fsSL "$LD_URL" | tar xz -C /tmp && $SUDO mv /tmp/lazydocker /usr/local/bin/ || true
     fi
 
+    # yazi
     if ! command -v yazi &> /dev/null; then
         YAZI_URL=$(curl -s https://api.github.com/repos/sxyazi/yazi/releases/latest \
             | grep "browser_download_url.*yazi-x86_64-unknown-linux-musl.zip" \
             | cut -d '"' -f 4)
-        curl -fsSL "$YAZI_URL" -o /tmp/yazi.zip && unzip -q /tmp/yazi.zip -d /tmp/yazi_extract
-        $SUDO mv /tmp/yazi_extract/*/yazi /usr/local/bin/
-    fi
-
-    if ! command -v fastfetch &> /dev/null; then
-        FF_URL=$(curl -s https://api.github.com/repos/fastfetch-cli/fastfetch/releases/latest \
-            | grep "browser_download_url.*linux-amd64.tar.gz" \
-            | head -1 | cut -d '"' -f 4)
-        curl -fsSL "$FF_URL" | tar xz -C /tmp && $SUDO mv /tmp/fastfetch /usr/local/bin/
-    fi
-
-    # fish-pure-prompt via fisher on Ubuntu
-    if command -v fish &> /dev/null; then
-        if ! fish -c "fisher list 2>/dev/null" | grep -q nicowillis/pure; then
-            echo "Installing fisher and pure prompt..."
-            fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher && fisher install nicowillis/pure"
+        if [[ -n "$YAZI_URL" ]]; then
+            curl -fsSL "$YAZI_URL" -o /tmp/yazi.zip && unzip -q /tmp/yazi.zip -d /tmp/yazi_extract
+            $SUDO mv /tmp/yazi_extract/*/yazi /usr/local/bin/ || true
         fi
     fi
+
+    # fastfetch
+    if ! command -v fastfetch &> /dev/null; then
+        FF_URL=$(curl -s https://api.github.com/repos/fastfetch-cli/fastfetch/releases/latest \
+            | grep "browser_download_url.*fastfetch-linux-amd64.tar.gz" \
+            | head -1 | cut -d '"' -f 4)
+        if [[ -n "$FF_URL" ]]; then
+            curl -fsSL "$FF_URL" | tar xz -C /tmp && $SUDO mv /tmp/fastfetch-linux-amd64/fastfetch /usr/local/bin/ || true
+        fi
+    fi
+
+    # fish-pure-prompt via fisher
+    if command -v fish &> /dev/null; then
+        if ! fish -c "fisher list 2>/dev/null" | grep -q nicowillis/pure; then
+            fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher && fisher install nicowillis/pure" || true
+        fi
+    fi
+
+    # Check what got installed
+    for tool in fish micro bat btop eza lazygit lazydocker yazi ripgrep duf fastfetch glances mc nmap gh docker; do
+        _mark "$tool"
+    done
 fi
 
 # ── Install desktop programs (Arch/CachyOS only) ────────────────────────────
@@ -243,6 +259,19 @@ if [[ "$SHELL" != "$(which fish)" ]]; then
     echo "  ✅ Default shell set to fish (re-login to apply)"
 else
     echo "  ✅ fish is already the default shell"
+fi
+
+# ── Summary (Ubuntu only) ────────────────────────────────────────────────────
+if [[ "$OS" == "ubuntu" && ${#INSTALLED[@]} -gt 0 || ${#FAILED[@]} -gt 0 ]]; then
+    echo ""
+    echo "--- Install summary ---"
+    if [[ ${#INSTALLED[@]} -gt 0 ]]; then
+        echo "  Installed: ${INSTALLED[*]}"
+    fi
+    if [[ ${#FAILED[@]} -gt 0 ]]; then
+        echo "  NOT installed: ${FAILED[*]}"
+        echo "  (install manually or re-run the script)"
+    fi
 fi
 
 # ── Private config reminder ──────────────────────────────────────────────────
