@@ -1,5 +1,7 @@
 if test -f /usr/share/cachyos-fish-config/cachyos-config.fish
     source /usr/share/cachyos-fish-config/cachyos-config.fish
+else
+    set -gx LANG en_US.UTF-8
 end
 
 # overwrite greeting

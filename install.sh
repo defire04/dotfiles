@@ -190,7 +190,8 @@ else
             | grep "browser_download_url.*fastfetch-linux-amd64.tar.gz" \
             | head -1 | cut -d '"' -f 4)
         if [[ -n "$FF_URL" ]]; then
-            curl -fsSL "$FF_URL" | tar xz -C /tmp && $SUDO mv /tmp/fastfetch-linux-amd64/fastfetch /usr/local/bin/ || true
+            tmpdir=$(mktemp -d)
+            curl -fsSL "$FF_URL" | tar xz -C "$tmpdir" && $SUDO mv "$tmpdir/usr/bin/fastfetch" /usr/local/bin/ && rm -rf "$tmpdir" || true
         fi
     fi
 
