@@ -197,10 +197,12 @@ else
         fi
     fi
 
-    # Check what got installed
-    for tool in fish micro bat btop eza lazygit lazydocker yazi ripgrep duf fastfetch glances mc nmap gh docker; do
+    # Check what got installed (Ubuntu renames: bat→batcat, ripgrep→rg)
+    for tool in fish micro btop eza lazygit lazydocker yazi duf fastfetch glances mc nmap gh docker; do
         _mark "$tool"
     done
+    command -v bat &>/dev/null || command -v batcat &>/dev/null && INSTALLED+=("bat") || FAILED+=("bat")
+    command -v rg &>/dev/null && INSTALLED+=("ripgrep") || FAILED+=("ripgrep")
 fi
 
 # ── Install desktop programs (Arch/CachyOS only) ────────────────────────────
