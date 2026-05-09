@@ -71,7 +71,7 @@ install_arch_pkgs() {
 }
 
 install_ubuntu_pkgs() {
-    $SUDO apt-get install -y "$@"
+    $SUDO apt-get install -y --fix-missing "$@"
 }
 
 install_binary() {
