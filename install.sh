@@ -116,6 +116,10 @@ else
 
     _mark() { command -v "$1" &>/dev/null && INSTALLED+=("$1") || FAILED+=("$1"); }
 
+    # Locale (needed for btop and other UTF-8 tools)
+    $SUDO locale-gen en_US.UTF-8
+    $SUDO update-locale LANG=en_US.UTF-8
+
     # Ubuntu — install what's available via apt
     install_ubuntu_pkgs fish bat btop ripgrep duf mc nmap macchanger wipe glances || true
 
@@ -155,10 +159,10 @@ else
 
     # lazygit
     if ! command -v lazygit &> /dev/null; then
-        LG_URL=$(curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest \
-            | grep "browser_download_url.*Linux_x86_64.tar.gz" \
-            | cut -d '"' -f 4)
-        [[ -n "$LG_URL" ]] && curl -fsSL "$LG_URL" | tar xz -C /tmp && $SUDO mv /tmp/lazygit /usr/local/bin/ || true
+        LG_VER=$(curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest | grep '"tag_name"' | cut -d'"' -f4 | tr -d 'v')
+        if [[ -n "$LG_VER" ]]; then
+            curl -fsSL "https://github.com/jesseduffield/lazygit/releases/download/v${LG_VER}/lazygit_${LG_VER}_Linux_x86_64.tar.gz" | tar xz -C /tmp && $SUDO mv /tmp/lazygit /usr/local/bin/ || true
+        fi
     fi
 
     # lazydocker
@@ -190,10 +194,13 @@ else
         fi
     fi
 
-    # fish-pure-prompt via fisher
+    # fisher + pure prompt
     if command -v fish &> /dev/null; then
-        if ! fish -c "fisher list 2>/dev/null" | grep -q nicowillis/pure; then
-            fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher && fisher install pure-fish/pure" || true
+        if ! fish -c "type -q fisher" 2>/dev/null; then
+            fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher" || true
+        fi
+        if ! fish -c "fisher list 2>/dev/null" | grep -q pure-fish/pure; then
+            fish -c "fisher install pure-fish/pure" || true
         fi
     fi
 
