@@ -100,6 +100,11 @@ select_packages() {
         actcheckbox=brightwhite,blue
         button=black,blue
         actbutton=brightwhite,blue
+        textbox=white,black
+        acttextbox=white,black
+        label=white,black
+        scrollbar=black,black
+        shadow=black,black
     '
     NEWT_COLORS="$colors" whiptail --title "$title" --checklist \
         "Space = toggle, Enter = install selected:" 20 55 12 \
