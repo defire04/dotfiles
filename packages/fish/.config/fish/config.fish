@@ -2,6 +2,9 @@ if test -f /usr/share/cachyos-fish-config/cachyos-config.fish
     source /usr/share/cachyos-fish-config/cachyos-config.fish
 else
     set -gx LANG en_US.UTF-8
+    if status is-interactive && command -v fastfetch > /dev/null && begin; set -q DISPLAY; or set -q WAYLAND_DISPLAY; end
+        fastfetch
+    end
 end
 
 # overwrite greeting
