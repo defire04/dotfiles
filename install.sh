@@ -247,10 +247,29 @@ for pkg in $TERMINAL_PKGS; do
 done
 
 if [[ "$MODE" == "desktop" ]]; then
+    # Remove KDE default files that conflict with stow
+    rm -f "$HOME/.config/autostart/remmina-applet.desktop" "$HOME/.config/dolphinrc"
+    rm -rf "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
+    rm -f "$HOME/.config/gtkrc" "$HOME/.config/gtkrc-2.0"
+    rm -f "$HOME/.config/kactivitymanagerdrc" "$HOME/.config/kcminputrc"
+    rm -rf "$HOME/.config/kdedefaults"
+    rm -f "$HOME/.config/kdeglobals" "$HOME/.config/kglobalshortcutsrc" "$HOME/.config/konsolerc"
+    rm -f "$HOME/.config/kscreenlockerrc" "$HOME/.config/kwinrc"
+    rm -f "$HOME/.config/plasma-localerc" "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+    rm -f "$HOME/.config/plasmanotifyrc" "$HOME/.config/plasmashellrc" "$HOME/.config/powerdevilrc"
+    rm -f "$HOME/.local/share/plasma-systemmonitor/overview.page" "$HOME/.local/share/plasma-systemmonitor/processes.page"
+
     DESKTOP_PKGS="kitty kde easyeffects openrgb color-schemes aurorae plasma-systemmonitor"
     for pkg in $DESKTOP_PKGS; do
         $STOW_CMD "$pkg" && echo "  ✅ $pkg" || echo "  ⚠️  $pkg (conflict — resolve manually)"
     done
+
+    # Set kitty as default terminal
+    if command -v kitty &> /dev/null; then
+        kwriteconfig6 --file kdeglobals --group General --key TerminalApplication kitty || true
+        kwriteconfig6 --file kdeglobals --group General --key TerminalService kitty.desktop || true
+        echo "  ✅ kitty set as default terminal"
+    fi
 fi
 
 # ── Enable systemd user units (desktop only) ─────────────────────────────────
