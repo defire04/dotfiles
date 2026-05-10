@@ -307,6 +307,11 @@ if [[ "$MODE" == "desktop" ]]; then
         kwriteconfig6 --file kdeglobals --group General --key TerminalService kitty.desktop || true
         echo "  ✅ kitty set as default terminal"
     fi
+
+    # Apply color scheme so colors are correct without manually clicking in System Settings
+    if command -v plasma-apply-colorscheme &> /dev/null; then
+        plasma-apply-colorscheme Otto && echo "  ✅ Otto color scheme applied" || true
+    fi
 fi
 
 # ── Enable systemd user units (desktop only) ─────────────────────────────────
