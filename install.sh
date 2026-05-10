@@ -289,8 +289,7 @@ if [[ "$SHELL" != "$(which fish)" ]]; then
     if ! grep -q "$FISH_PATH" /etc/shells; then
         echo "$FISH_PATH" | $SUDO tee -a /etc/shells
     fi
-    chsh -s "$FISH_PATH"
-    echo "  ✅ Default shell set to fish (re-login to apply)"
+    chsh -s "$FISH_PATH" && echo "  ✅ Default shell set to fish (re-login to apply)" || echo "  ⚠️  chsh failed — run manually: chsh -s $FISH_PATH"
 else
     echo "  ✅ fish is already the default shell"
 fi
