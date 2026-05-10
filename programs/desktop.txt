@@ -20,6 +20,4 @@ sniffnet
 kdiskmark
 meld
 winbox
-cachyos-emerald-kde-theme-git
-cachyos-nord-kde-theme-git
 nordic-theme-git
