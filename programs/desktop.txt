@@ -22,5 +22,4 @@ meld
 winbox
 cachyos-emerald-kde-theme-git
 cachyos-nord-kde-theme-git
-kvantum-theme-nordic-git
 nordic-theme-git
