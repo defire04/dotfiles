@@ -117,8 +117,8 @@ else
     _mark() { command -v "$1" &>/dev/null && INSTALLED+=("$1") || FAILED+=("$1"); }
 
     # Locale (needed for btop and other UTF-8 tools)
-    $SUDO locale-gen en_US.UTF-8
-    $SUDO update-locale LANG=en_US.UTF-8
+    $SUDO locale-gen en_US.UTF-8 || true
+    echo 'LANG=en_US.UTF-8' | $SUDO tee /etc/default/locale > /dev/null || true
 
     # Ubuntu — install what's available via apt
     install_ubuntu_pkgs fish bat btop ripgrep duf mc nmap macchanger wipe glances || true
