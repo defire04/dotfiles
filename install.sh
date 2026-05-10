@@ -101,11 +101,9 @@ select_packages() {
         button=black,cyan
         actbutton=black,brightcyan
     '
-    local result
-    result=$(NEWT_COLORS="$colors" whiptail --title "$title" --checklist \
+    NEWT_COLORS="$colors" whiptail --title "$title" --checklist \
         "Space = toggle, Enter = install selected:" 20 55 12 \
-        "${items[@]}" 3>&1 1>&2 2>&3) || { echo ""; echo "Installation cancelled."; exit 0; }
-    echo "$result" | tr -d '"'
+        "${items[@]}" 3>&1 1>&2 2>&3
 }
 
 install_arch_pkgs() {
@@ -153,7 +151,8 @@ echo ""
 echo "--- Selecting terminal programs ---"
 
 if [[ "$OS" == "arch" ]]; then
-    SELECTED=$(select_packages "$DOTFILES_DIR/programs/terminal.txt" "Terminal packages")
+    SELECTED=$(select_packages "$DOTFILES_DIR/programs/terminal.txt" "Terminal packages") || { echo "Installation cancelled."; exit 0; }
+    SELECTED=$(echo "$SELECTED" | tr -d '"')
     PKGS=$(echo "$SELECTED" | grep -v '^paru$' | tr '\n' ' ')
     [[ -n "$PKGS" ]] && paru -S --needed --noconfirm $PKGS
 
@@ -163,7 +162,8 @@ else
 
     _mark() { command -v "$1" &>/dev/null && INSTALLED+=("$1") || FAILED+=("$1"); }
 
-    UBUNTU_SELECTED=$(select_packages "$DOTFILES_DIR/programs/terminal.txt" "Terminal packages")
+    UBUNTU_SELECTED=$(select_packages "$DOTFILES_DIR/programs/terminal.txt" "Terminal packages") || { echo "Installation cancelled."; exit 0; }
+    UBUNTU_SELECTED=$(echo "$UBUNTU_SELECTED" | tr -d '"')
     _sel() { echo "$UBUNTU_SELECTED" | grep -qw "$1"; }
 
     # Locale (needed for btop and other UTF-8 tools)
@@ -278,7 +278,8 @@ fi
 if [[ "$MODE" == "desktop" ]]; then
     echo ""
     echo "--- Selecting desktop programs ---"
-    SELECTED=$(select_packages "$DOTFILES_DIR/programs/desktop.txt" "Desktop packages")
+    SELECTED=$(select_packages "$DOTFILES_DIR/programs/desktop.txt" "Desktop packages") || { echo "Installation cancelled."; exit 0; }
+    SELECTED=$(echo "$SELECTED" | tr -d '"')
     for pkg in $SELECTED; do
         paru -S --needed --noconfirm "$pkg" || echo "  ⚠️  $pkg (failed — install manually)"
     done
