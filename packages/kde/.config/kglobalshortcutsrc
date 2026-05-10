@@ -24,14 +24,14 @@ mute=Volume Mute,Volume Mute,Выключить звук
 
 [ksmserver]
 Halt Without Confirmation=none,,Выключить компьютер без подтверждения
-Lock Session=Meta+L\tScreensaver,Meta+L\tScreensaver,Заблокировать сеанс
+Lock Session=Meta+L\tScreensaver,Meta+L\tScreensaver,Lock Session
 Log Out=Ctrl+Alt+Del,Ctrl+Alt+Del,Показать экран выхода
 Log Out Without Confirmation=none,,Завершить сеанс без подтверждения
 LogOut=none,,Завершить сеанс
 Reboot=none,,Перезагрузить компьютер
 Reboot Without Confirmation=none,,Перезагрузить компьютер без подтверждения
 Shut Down=none,,Выключить компьютер
-_k_friendly_name=Управление сеансами
+_k_friendly_name=Session Management
 
 [kwin]
 Activate Window Demanding Attention=Meta+Ctrl+A,Meta+Ctrl+A,Активировать окно\\, требующее внимания

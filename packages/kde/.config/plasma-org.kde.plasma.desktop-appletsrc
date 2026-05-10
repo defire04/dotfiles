@@ -316,9 +316,9 @@ DialogHeight=630
 DialogWidth=810
 
 [Containments][44][General]
-changedPositions={}
+changedPositions={"desktop:/The Witcher 3 Wild Hunt.desktop":["2560x1440","3","8"],"desktop:/intellij-idea-ultimate.desktop":["2560x1440","3","7"]}
 lastResolution=2560x1440
-positions={"1920x1080":["1","17"],"2560x1440":["1","23"]}
+positions={"1920x1080":["1","17"],"2560x1440":["4","23","desktop:/The Witcher 3 Wild Hunt.desktop","3","8","desktop:/intellij-idea-ultimate.desktop","3","7"]}
 sortMode=-1
 
 [Containments][44][Wallpaper][org.kde.image][General]
@@ -515,4 +515,4 @@ immutability=1
 
 [ScreenMapping]
 itemsOnDisabledScreens=
-screenMapping=desktop:/intellij-idea-ultimate.desktop,0,9e486a08-16e2-42f1-b118-822c7d231924,desktop:/The Witcher 3 Wild Hunt.desktop,0,9e486a08-16e2-42f1-b118-822c7d231924
+screenMapping=desktop:/The Witcher 3 Wild Hunt.desktop,0,9e486a08-16e2-42f1-b118-822c7d231924,desktop:/intellij-idea-ultimate.desktop,0,9e486a08-16e2-42f1-b118-822c7d231924
