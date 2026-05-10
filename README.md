@@ -176,8 +176,3 @@ Remove package symlinks:
 stow -d ~/dotfiles/packages -t ~ -D fish
 ```
 
----
-
-## VS Code
-
-Settings are synced via VS Code Settings Sync (GitHub account). No separate repo needed.
