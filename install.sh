@@ -217,8 +217,10 @@ fi
 if [[ "$MODE" == "desktop" ]]; then
     echo ""
     echo "--- Installing desktop programs ---"
-    PKGS=$(grep -v '^#' "$DOTFILES_DIR/programs/desktop.txt" | grep -v '^$' | tr '\n' ' ')
-    paru -S --needed --noconfirm $PKGS
+    while IFS= read -r pkg; do
+        [[ -z "$pkg" || "$pkg" == \#* ]] && continue
+        paru -S --needed --noconfirm "$pkg" || echo "  ⚠️  $pkg (failed — install manually)"
+    done < "$DOTFILES_DIR/programs/desktop.txt"
 
     # Flatpak
     if ! command -v flatpak &> /dev/null; then
