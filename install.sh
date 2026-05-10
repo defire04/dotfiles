@@ -11,9 +11,16 @@ MODE=""
 # Auto-update dotfiles repo if it has a remote
 if git -C "$DOTFILES_DIR" remote get-url origin &>/dev/null; then
     echo "--- Updating dotfiles repo ---"
+    OLD_HASH=$(git -C "$DOTFILES_DIR" rev-parse HEAD)
     git -C "$DOTFILES_DIR" fetch origin && \
-    git -C "$DOTFILES_DIR" reset --hard "origin/$(git -C "$DOTFILES_DIR" rev-parse --abbrev-ref HEAD)" && \
-    echo "  ✅ Up to date" || echo "  ⚠️  git fetch failed — continuing with local version"
+    git -C "$DOTFILES_DIR" reset --hard "origin/$(git -C "$DOTFILES_DIR" rev-parse --abbrev-ref HEAD)" || \
+    { echo "  ⚠️  git fetch failed — continuing with local version"; }
+    NEW_HASH=$(git -C "$DOTFILES_DIR" rev-parse HEAD)
+    if [[ "$OLD_HASH" != "$NEW_HASH" ]]; then
+        echo "  ✅ Updated — restarting script..."
+        exec "$DOTFILES_DIR/install.sh" "$@"
+    fi
+    echo "  ✅ Up to date"
     echo ""
 fi
 
