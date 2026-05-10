@@ -66,6 +66,18 @@ fi
 
 # ── Install base dependencies ────────────────────────────────────────────────
 
+select_packages() {
+    local file=$1 title=$2
+    local items=()
+    while IFS= read -r pkg; do
+        [[ -z "$pkg" || "$pkg" == \#* ]] && continue
+        items+=("$pkg" "" ON)
+    done < "$file"
+    whiptail --title "$title" --checklist \
+        "Space = toggle, Enter = install selected:" 20 50 12 \
+        "${items[@]}" 3>&1 1>&2 2>&3 | tr -d '"'
+}
+
 install_arch_pkgs() {
     $SUDO pacman -S --needed --noconfirm "$@"
 }
@@ -101,14 +113,19 @@ if [[ "$OS" == "arch" ]] && ! command -v paru &> /dev/null; then
     cd "$DOTFILES_DIR"
 fi
 
+# ── Install whiptail if needed ───────────────────────────────────────────────
+if ! command -v whiptail &> /dev/null; then
+    [[ "$OS" == "arch" ]] && $SUDO pacman -S --needed --noconfirm libnewt || install_ubuntu_pkgs whiptail
+fi
+
 # ── Install terminal programs ────────────────────────────────────────────────
 echo ""
-echo "--- Installing terminal programs ---"
+echo "--- Selecting terminal programs ---"
 
 if [[ "$OS" == "arch" ]]; then
-    # Read terminal.txt, skip comments and empty lines
-    PKGS=$(grep -v '^#' "$DOTFILES_DIR/programs/terminal.txt" | grep -v '^$' | grep -v '^paru$' | tr '\n' ' ')
-    paru -S --needed --noconfirm $PKGS
+    SELECTED=$(select_packages "$DOTFILES_DIR/programs/terminal.txt" "Terminal packages")
+    PKGS=$(echo "$SELECTED" | grep -v '^paru$' | tr '\n' ' ')
+    [[ -n "$PKGS" ]] && paru -S --needed --noconfirm $PKGS
 
 else
     INSTALLED=()
@@ -216,11 +233,11 @@ fi
 # ── Install desktop programs (Arch/CachyOS only) ────────────────────────────
 if [[ "$MODE" == "desktop" ]]; then
     echo ""
-    echo "--- Installing desktop programs ---"
-    while IFS= read -r pkg; do
-        [[ -z "$pkg" || "$pkg" == \#* ]] && continue
+    echo "--- Selecting desktop programs ---"
+    SELECTED=$(select_packages "$DOTFILES_DIR/programs/desktop.txt" "Desktop packages")
+    for pkg in $SELECTED; do
         paru -S --needed --noconfirm "$pkg" || echo "  ⚠️  $pkg (failed — install manually)"
-    done < "$DOTFILES_DIR/programs/desktop.txt"
+    done
 
     # Flatpak
     if ! command -v flatpak &> /dev/null; then
