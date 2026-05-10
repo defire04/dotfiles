@@ -11,7 +11,9 @@ MODE=""
 # Auto-update dotfiles repo if it has a remote
 if git -C "$DOTFILES_DIR" remote get-url origin &>/dev/null; then
     echo "--- Updating dotfiles repo ---"
-    git -C "$DOTFILES_DIR" pull --rebase --autostash && echo "  ✅ Up to date" || echo "  ⚠️  git pull failed — continuing with local version"
+    git -C "$DOTFILES_DIR" fetch origin && \
+    git -C "$DOTFILES_DIR" reset --hard "origin/$(git -C "$DOTFILES_DIR" rev-parse --abbrev-ref HEAD)" && \
+    echo "  ✅ Up to date" || echo "  ⚠️  git fetch failed — continuing with local version"
     echo ""
 fi
 
