@@ -289,6 +289,13 @@ if [[ "$MODE" == "desktop" ]]; then
         paru -S --needed --noconfirm "$pkg" || echo "  ⚠️  $pkg (failed — install manually)"
     done
 
+    # Brave extensions via enterprise policy
+    if echo "$SELECTED" | grep -qw "brave-bin"; then
+        $SUDO mkdir -p /etc/brave/policies/managed
+        $SUDO cp "$DOTFILES_DIR/programs/brave-extensions.json" /etc/brave/policies/managed/extensions.json
+        echo "  ✅ Brave extensions policy installed (extensions will auto-install on first Brave launch)"
+    fi
+
     # Flatpak
     if ! command -v flatpak &> /dev/null; then
         $SUDO pacman -S --needed --noconfirm flatpak
