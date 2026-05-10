@@ -236,6 +236,9 @@ echo ""
 echo "--- Applying stow packages ---"
 STOW_CMD="stow -d $DOTFILES_DIR/packages -t $HOME"
 
+# Remove files that fisher/tools create before stow can symlink them
+rm -f "$HOME/.config/fish/fish_variables"
+
 TERMINAL_PKGS="fish git micro bat mc scripts systemd"
 for pkg in $TERMINAL_PKGS; do
     $STOW_CMD "$pkg" && echo "  ✅ $pkg" || echo "  ⚠️  $pkg (conflict — resolve manually)"
