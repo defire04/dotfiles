@@ -8,6 +8,13 @@ set -e
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODE=""
 
+# Auto-update dotfiles repo if it has a remote
+if git -C "$DOTFILES_DIR" remote get-url origin &>/dev/null; then
+    echo "--- Updating dotfiles repo ---"
+    git -C "$DOTFILES_DIR" pull --rebase --autostash && echo "  ✅ Up to date" || echo "  ⚠️  git pull failed — continuing with local version"
+    echo ""
+fi
+
 # Use sudo only when not root
 if [[ $EUID -eq 0 ]]; then
     SUDO=""
