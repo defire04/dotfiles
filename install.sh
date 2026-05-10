@@ -250,6 +250,19 @@ if [[ "$MODE" == "desktop" ]]; then
         paru -S --needed --noconfirm "$pkg" || echo "  ⚠️  $pkg (failed — install manually)"
     done
 
+    # Nordic KDE plasma look-and-feel (AUR package doesn't include plasma files)
+    if [[ ! -d /usr/share/plasma/look-and-feel/Nordic-darker ]]; then
+        echo "--- Installing Nordic KDE plasma theme ---"
+        tmpdir=$(mktemp -d)
+        git clone --depth=1 https://github.com/EliverLara/Nordic.git "$tmpdir/Nordic" || true
+        if [[ -d "$tmpdir/Nordic/kde/look-and-feel" ]]; then
+            $SUDO cp -r "$tmpdir/Nordic/kde/look-and-feel/Nordic-darker" /usr/share/plasma/look-and-feel/ || true
+            $SUDO cp -r "$tmpdir/Nordic/kde/look-and-feel/Nordic-bluish" /usr/share/plasma/look-and-feel/ || true
+            echo "  ✅ Nordic KDE plasma theme installed"
+        fi
+        rm -rf "$tmpdir"
+    fi
+
     # Flatpak
     if ! command -v flatpak &> /dev/null; then
         $SUDO pacman -S --needed --noconfirm flatpak
