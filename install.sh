@@ -179,8 +179,8 @@ else
             | grep "browser_download_url.*yazi-x86_64-unknown-linux-musl.zip" \
             | cut -d '"' -f 4)
         if [[ -n "$YAZI_URL" ]]; then
-            curl -fsSL "$YAZI_URL" -o /tmp/yazi.zip && unzip -q /tmp/yazi.zip -d /tmp/yazi_extract
-            $SUDO mv /tmp/yazi_extract/*/yazi /usr/local/bin/ || true
+            curl -fsSL "$YAZI_URL" -o /tmp/yazi.zip && unzip -q /tmp/yazi.zip -d /tmp/yazi_extract || true
+            $SUDO mv /tmp/yazi_extract/*/yazi /usr/local/bin/ 2>/dev/null || true
         fi
     fi
 
