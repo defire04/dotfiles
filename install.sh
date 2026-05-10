@@ -89,7 +89,7 @@ select_packages() {
         [[ -z "$pkg" || "$pkg" == \#* ]] && continue
         items+=("$pkg" "" ON)
     done < "$file"
-    NEWT_COLORS='
+    local colors='
         root=black,black
         window=white,black
         border=cyan,black
@@ -100,9 +100,12 @@ select_packages() {
         actcheckbox=brightwhite,cyan
         button=black,cyan
         actbutton=black,brightcyan
-    ' whiptail --title "$title" --checklist \
+    '
+    local result
+    result=$(NEWT_COLORS="$colors" whiptail --title "$title" --checklist \
         "Space = toggle, Enter = install selected:" 20 55 12 \
-        "${items[@]}" 3>&1 1>&2 2>&3 | tr -d '"'
+        "${items[@]}" 3>&1 1>&2 2>&3) || { echo ""; echo "Installation cancelled."; exit 0; }
+    echo "$result" | tr -d '"'
 }
 
 install_arch_pkgs() {
