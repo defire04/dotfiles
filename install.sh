@@ -255,9 +255,10 @@ if [[ "$MODE" == "desktop" ]]; then
         echo "--- Installing Nordic KDE plasma theme ---"
         tmpdir=$(mktemp -d)
         git clone --depth=1 https://github.com/EliverLara/Nordic.git "$tmpdir/Nordic" || true
-        if [[ -d "$tmpdir/Nordic/kde/look-and-feel" ]]; then
-            $SUDO cp -r "$tmpdir/Nordic/kde/look-and-feel/Nordic-darker" /usr/share/plasma/look-and-feel/ || true
-            $SUDO cp -r "$tmpdir/Nordic/kde/look-and-feel/Nordic-bluish" /usr/share/plasma/look-and-feel/ || true
+        if [[ -d "$tmpdir/Nordic/kde/plasma/look-and-feel" ]]; then
+            $SUDO cp -r "$tmpdir/Nordic/kde/plasma/look-and-feel/Nordic-darker" /usr/share/plasma/look-and-feel/ || true
+            $SUDO cp -r "$tmpdir/Nordic/kde/plasma/look-and-feel/Nordic-bluish" /usr/share/plasma/look-and-feel/ || true
+            $SUDO cp -r "$tmpdir/Nordic/kde/plasma/look-and-feel/Nordic" /usr/share/plasma/look-and-feel/ || true
             echo "  ✅ Nordic KDE plasma theme installed"
         fi
         rm -rf "$tmpdir"
