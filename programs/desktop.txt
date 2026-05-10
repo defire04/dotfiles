@@ -20,4 +20,5 @@ sniffnet
 kdiskmark
 meld
 winbox
+kora-icon-theme
 nordic-theme-git
