@@ -153,41 +153,55 @@ else
 
     _mark() { command -v "$1" &>/dev/null && INSTALLED+=("$1") || FAILED+=("$1"); }
 
+    UBUNTU_SELECTED=$(select_packages "$DOTFILES_DIR/programs/terminal.txt" "Terminal packages")
+    _sel() { echo "$UBUNTU_SELECTED" | grep -qw "$1"; }
+
     # Locale (needed for btop and other UTF-8 tools)
     $SUDO locale-gen en_US.UTF-8 || true
     echo 'LANG=en_US.UTF-8' | $SUDO tee /etc/default/locale > /dev/null || true
 
-    # Ubuntu — install what's available via apt
-    install_ubuntu_pkgs fish bat btop ripgrep duf mc nmap macchanger wipe glances || true
+    # Ubuntu — apt packages
+    APT_PKGS=()
+    _sel fish       && APT_PKGS+=(fish)
+    _sel bat        && APT_PKGS+=(bat)
+    _sel btop       && APT_PKGS+=(btop)
+    _sel ripgrep    && APT_PKGS+=(ripgrep)
+    _sel duf        && APT_PKGS+=(duf)
+    _sel mc         && APT_PKGS+=(mc)
+    _sel nmap       && APT_PKGS+=(nmap)
+    _sel macchanger && APT_PKGS+=(macchanger)
+    _sel wipe       && APT_PKGS+=(wipe)
+    _sel glances    && APT_PKGS+=(glances)
+    [[ ${#APT_PKGS[@]} -gt 0 ]] && install_ubuntu_pkgs "${APT_PKGS[@]}" || true
 
     # fish PPA fallback
-    if ! command -v fish &> /dev/null; then
+    if _sel fish && ! command -v fish &> /dev/null; then
         $SUDO apt-add-repository -y ppa:fish-shell/release-3
         $SUDO apt-get update
         install_ubuntu_pkgs fish || true
     fi
 
     # micro — official binary installer
-    if ! command -v micro &> /dev/null; then
+    if _sel micro && ! command -v micro &> /dev/null; then
         cd /tmp && curl -fsSL https://getmic.ro | bash && $SUDO mv micro /usr/local/bin/ || true
         cd "$DOTFILES_DIR"
     fi
 
     # GitHub CLI
-    if ! command -v gh &> /dev/null; then
+    if _sel github-cli && ! command -v gh &> /dev/null; then
         curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | $SUDO dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg 2>/dev/null
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | $SUDO tee /etc/apt/sources.list.d/github-cli.list >/dev/null
         $SUDO apt-get update -q && install_ubuntu_pkgs gh || true
     fi
 
     # Docker
-    if ! command -v docker &> /dev/null; then
+    if _sel docker && ! command -v docker &> /dev/null; then
         curl -fsSL https://get.docker.com | $SUDO bash || true
         [[ -n "$USER" && "$USER" != "root" ]] && $SUDO usermod -aG docker "$USER" || true
     fi
 
     # eza
-    if ! command -v eza &> /dev/null; then
+    if _sel eza && ! command -v eza &> /dev/null; then
         EZA_URL=$(curl -s https://api.github.com/repos/eza-community/eza/releases/latest \
             | grep "browser_download_url.*eza_x86_64-unknown-linux-musl.tar.gz" \
             | cut -d '"' -f 4)
@@ -195,7 +209,7 @@ else
     fi
 
     # lazygit
-    if ! command -v lazygit &> /dev/null; then
+    if _sel lazygit && ! command -v lazygit &> /dev/null; then
         LG_VER=$(curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest | grep '"tag_name"' | cut -d'"' -f4 | tr -d 'v')
         if [[ -n "$LG_VER" ]]; then
             curl -fsSL "https://github.com/jesseduffield/lazygit/releases/download/v${LG_VER}/lazygit_${LG_VER}_Linux_x86_64.tar.gz" | tar xz -C /tmp && $SUDO mv /tmp/lazygit /usr/local/bin/ || true
@@ -203,7 +217,7 @@ else
     fi
 
     # lazydocker
-    if ! command -v lazydocker &> /dev/null; then
+    if _sel lazydocker && ! command -v lazydocker &> /dev/null; then
         LD_URL=$(curl -s https://api.github.com/repos/jesseduffield/lazydocker/releases/latest \
             | grep "browser_download_url.*Linux_x86_64.tar.gz" \
             | cut -d '"' -f 4)
@@ -211,7 +225,7 @@ else
     fi
 
     # yazi
-    if ! command -v yazi &> /dev/null; then
+    if _sel yazi && ! command -v yazi &> /dev/null; then
         YAZI_URL=$(curl -s https://api.github.com/repos/sxyazi/yazi/releases/latest \
             | grep "browser_download_url.*yazi-x86_64-unknown-linux-musl.zip" \
             | cut -d '"' -f 4)
@@ -222,7 +236,7 @@ else
     fi
 
     # fastfetch
-    if ! command -v fastfetch &> /dev/null; then
+    if _sel fastfetch && ! command -v fastfetch &> /dev/null; then
         FF_URL=$(curl -s https://api.github.com/repos/fastfetch-cli/fastfetch/releases/latest \
             | grep "browser_download_url.*fastfetch-linux-amd64.tar.gz" \
             | head -1 | cut -d '"' -f 4)
