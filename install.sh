@@ -250,15 +250,33 @@ if [[ "$MODE" == "desktop" ]]; then
         paru -S --needed --noconfirm "$pkg" || echo "  ⚠️  $pkg (failed — install manually)"
     done
 
-    # Nordic KDE plasma look-and-feel (AUR package doesn't include plasma files)
-    if [[ ! -d /usr/share/plasma/look-and-feel/Nordic-darker ]]; then
+    # Nordic KDE plasma look-and-feel (Plasma 6 compatible)
+    if [[ ! -d "$HOME/.local/share/plasma/look-and-feel/Nordic-darker" ]]; then
         echo "--- Installing Nordic KDE plasma theme ---"
         tmpdir=$(mktemp -d)
         git clone --depth=1 https://github.com/EliverLara/Nordic.git "$tmpdir/Nordic" || true
         if [[ -d "$tmpdir/Nordic/kde/plasma/look-and-feel" ]]; then
-            $SUDO cp -r "$tmpdir/Nordic/kde/plasma/look-and-feel/Nordic-darker" /usr/share/plasma/look-and-feel/ || true
-            $SUDO cp -r "$tmpdir/Nordic/kde/plasma/look-and-feel/Nordic-bluish" /usr/share/plasma/look-and-feel/ || true
-            $SUDO cp -r "$tmpdir/Nordic/kde/plasma/look-and-feel/Nordic" /usr/share/plasma/look-and-feel/ || true
+            mkdir -p "$HOME/.local/share/plasma/look-and-feel"
+            for theme in Nordic-darker Nordic-bluish Nordic; do
+                cp -r "$tmpdir/Nordic/kde/plasma/look-and-feel/$theme" "$HOME/.local/share/plasma/look-and-feel/" || true
+                # Add Plasma 6 compatible metadata.json
+                cat > "$HOME/.local/share/plasma/look-and-feel/$theme/metadata.json" << EOF
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [{"Email": "eliverlara@gmail.com", "Name": "EliverLara"}],
+        "Category": "Plasma Look And Feel",
+        "EnabledByDefault": true,
+        "Id": "$theme",
+        "License": "GPL 3+",
+        "Name": "$theme",
+        "ServiceTypes": ["Plasma/LookAndFeel"],
+        "Version": "0.1",
+        "Website": "https://github.com/EliverLara/Nordic"
+    }
+}
+EOF
+            done
             echo "  ✅ Nordic KDE plasma theme installed"
         fi
         rm -rf "$tmpdir"
