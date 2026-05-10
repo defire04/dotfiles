@@ -1,7 +1,7 @@
 # dotfiles
 
 Personal dotfiles managed with [GNU Stow](https://www.gnu.org/software/stow/).  
-Supports two modes: **desktop** (CachyOS/Arch + KDE Plasma) and **server** (Ubuntu/Debian headless).
+Supports two modes: **desktop** (CachyOS/Arch/Manjaro + KDE Plasma) and **server** (Ubuntu/Debian headless).
 
 ## Quick Start
 
@@ -13,7 +13,7 @@ cd ~/dotfiles
 
 Or with explicit mode:
 ```bash
-./install.sh --mode desktop   # CachyOS/Arch + KDE
+./install.sh --mode desktop   # CachyOS/Arch/Manjaro + KDE
 ./install.sh --mode server    # Ubuntu/Debian headless
 ```
 
@@ -72,8 +72,9 @@ After install, create your private config (see [Private Setup](#private-setup)).
 | claude-desktop-bin | Claude AI desktop app |
 
 ### Themes (included in desktop install)
-- `cachyos-emerald-kde-theme-git`, `cachyos-nord-kde-theme-git`
-- `kvantum-theme-nordic-git`, `nordic-theme-git`
+- `nordic-theme-git` — Nordic plasma desktop theme (Nordic-darker-solid)
+- `kora-icon-theme` — Kora icon theme (auto-installed from AUR)
+- **Nordic-my** — custom Look & Feel theme (bundled in dotfiles, applied via stow)
 
 ### Flatpak
 - `dev.vencord.Vesktop` — Discord client
@@ -99,9 +100,9 @@ After install, create your private config (see [Private Setup](#private-setup)).
 | snapper | BTRFS snapshots | `pacman -S snapper` |
 | kdiskmark | Disk benchmark | `pacman -S kdiskmark` |
 
-### Icon Themes (too large for git — install manually)
-- **kora** (~86 MB) — [KDE Store](https://store.kde.org/p/1501595)
-- **McMojave** (~108 MB) — [KDE Store](https://store.kde.org/p/1305429)
+### Icon Themes
+- **kora** — installed automatically via `kora-icon-theme` (AUR)
+- **McMojave** (~108 MB) — too large for git, install manually: [KDE Store](https://store.kde.org/p/1305429)
 
 ---
 
@@ -147,6 +148,7 @@ kopia repository connect filesystem --path /mnt/nas/backups/username/machine
 | color-schemes | `~/.local/share/color-schemes/` | desktop |
 | aurorae | `~/.local/share/aurorae/themes/` | desktop |
 | plasma-systemmonitor | `~/.local/share/plasma-systemmonitor/` | desktop |
+| plasma-themes | `~/.local/share/plasma/look-and-feel/` | desktop |
 
 ### How symlinks work
 
