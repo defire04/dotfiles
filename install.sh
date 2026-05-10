@@ -92,14 +92,14 @@ select_packages() {
     NEWT_COLORS='
         root=black,black
         window=white,black
-        border=blue,black
-        title=brightwhite,blue
+        border=cyan,black
+        title=brightcyan,black
         listbox=white,black
-        actlistbox=brightwhite,blue
+        actlistbox=brightwhite,cyan
         checkbox=cyan,black
-        actcheckbox=brightwhite,blue
+        actcheckbox=brightwhite,cyan
         button=black,cyan
-        actbutton=brightwhite,blue
+        actbutton=black,brightcyan
     ' whiptail --title "$title" --checklist \
         "Space = toggle, Enter = install selected:" 20 55 12 \
         "${items[@]}" 3>&1 1>&2 2>&3 | tr -d '"'
