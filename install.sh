@@ -308,43 +308,73 @@ if [[ "$MODE" == "desktop" ]]; then
 fi
 
 # ── Apply stow packages ──────────────────────────────────────────────────────
-echo ""
-echo "--- Applying stow packages ---"
-STOW_CMD="stow -d $DOTFILES_DIR/packages -t $HOME"
+MARKER="$HOME/.local/share/dotfiles/.installed"
+APPLY_STOW=false
 
-# Remove files that fisher/tools create before stow can symlink them
-rm -f "$HOME/.config/fish/fish_variables"
+if [[ ! -f "$MARKER" ]]; then
+    echo ""
+    echo "--- First install detected — applying configs ---"
+    APPLY_STOW=true
+else
+    echo ""
+    if NEWT_COLORS='
+        root=black,black
+        window=white,black
+        border=blue,black
+        title=cyan,black
+        button=black,blue
+        actbutton=brightwhite,blue
+        textbox=white,black
+    ' whiptail --title "Apply configs?" \
+        --defaultno \
+        --yesno "Apply stow configs (dotfiles)?\n\nThis will overwrite your current settings\nwith the versions from the repo.\n\nSkip this on machines where you have\ncustom local changes." 14 55; then
+        APPLY_STOW=true
+    fi
+fi
 
-TERMINAL_PKGS="fish git micro bat mc scripts systemd"
-for pkg in $TERMINAL_PKGS; do
-    $STOW_CMD "$pkg" && echo "  ✅ $pkg" || echo "  ⚠️  $pkg (conflict — resolve manually)"
-done
+if $APPLY_STOW; then
+    echo "--- Applying stow packages ---"
+    STOW_CMD="stow -d $DOTFILES_DIR/packages -t $HOME"
 
-if [[ "$MODE" == "desktop" ]]; then
-    # Remove KDE default files that conflict with stow
-    rm -f "$HOME/.config/autostart/remmina-applet.desktop" "$HOME/.config/dolphinrc"
-    rm -rf "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
-    rm -f "$HOME/.config/gtkrc" "$HOME/.config/gtkrc-2.0"
-    rm -f "$HOME/.config/kactivitymanagerdrc" "$HOME/.config/kcminputrc"
-    rm -rf "$HOME/.config/kdedefaults"
-    rm -f "$HOME/.config/kdeglobals" "$HOME/.config/kglobalshortcutsrc" "$HOME/.config/konsolerc"
-    rm -f "$HOME/.config/kscreenlockerrc" "$HOME/.config/kwinrc"
-    rm -f "$HOME/.config/plasma-localerc" "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
-    rm -f "$HOME/.config/plasmanotifyrc" "$HOME/.config/plasmashellrc" "$HOME/.config/powerdevilrc"
-    rm -f "$HOME/.local/share/plasma-systemmonitor/overview.page" "$HOME/.local/share/plasma-systemmonitor/processes.page"
+    # Remove files that fisher/tools create before stow can symlink them
+    rm -f "$HOME/.config/fish/fish_variables"
 
-    DESKTOP_PKGS="kitty kde easyeffects openrgb color-schemes aurorae plasma-systemmonitor plasma-themes"
-    for pkg in $DESKTOP_PKGS; do
+    TERMINAL_PKGS="fish git micro bat mc scripts systemd"
+    for pkg in $TERMINAL_PKGS; do
         $STOW_CMD "$pkg" && echo "  ✅ $pkg" || echo "  ⚠️  $pkg (conflict — resolve manually)"
     done
 
-    # Set kitty as default terminal
-    if command -v kitty &> /dev/null; then
-        kwriteconfig6 --file kdeglobals --group General --key TerminalApplication kitty || true
-        kwriteconfig6 --file kdeglobals --group General --key TerminalService kitty.desktop || true
-        echo "  ✅ kitty set as default terminal"
+    if [[ "$MODE" == "desktop" ]]; then
+        # Remove KDE default files that conflict with stow
+        rm -f "$HOME/.config/autostart/remmina-applet.desktop" "$HOME/.config/dolphinrc"
+        rm -rf "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
+        rm -f "$HOME/.config/gtkrc" "$HOME/.config/gtkrc-2.0"
+        rm -f "$HOME/.config/kactivitymanagerdrc" "$HOME/.config/kcminputrc"
+        rm -rf "$HOME/.config/kdedefaults"
+        rm -f "$HOME/.config/kdeglobals" "$HOME/.config/kglobalshortcutsrc" "$HOME/.config/konsolerc"
+        rm -f "$HOME/.config/kscreenlockerrc" "$HOME/.config/kwinrc"
+        rm -f "$HOME/.config/plasma-localerc" "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+        rm -f "$HOME/.config/plasmanotifyrc" "$HOME/.config/plasmashellrc" "$HOME/.config/powerdevilrc"
+        rm -f "$HOME/.local/share/plasma-systemmonitor/overview.page" "$HOME/.local/share/plasma-systemmonitor/processes.page"
+
+        DESKTOP_PKGS="kitty kde easyeffects openrgb color-schemes aurorae plasma-systemmonitor plasma-themes"
+        for pkg in $DESKTOP_PKGS; do
+            $STOW_CMD "$pkg" && echo "  ✅ $pkg" || echo "  ⚠️  $pkg (conflict — resolve manually)"
+        done
+
+        # Set kitty as default terminal
+        if command -v kitty &> /dev/null; then
+            kwriteconfig6 --file kdeglobals --group General --key TerminalApplication kitty || true
+            kwriteconfig6 --file kdeglobals --group General --key TerminalService kitty.desktop || true
+            echo "  ✅ kitty set as default terminal"
+        fi
     fi
 
+    # Mark as installed
+    mkdir -p "$(dirname "$MARKER")"
+    touch "$MARKER"
+else
+    echo "  ⏭  Stow skipped — configs unchanged"
 fi
 
 # ── Enable systemd user units (desktop only) ─────────────────────────────────
