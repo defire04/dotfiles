@@ -8,16 +8,50 @@ set -e
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODE=""
 MARKER="$HOME/.local/share/dotfiles/.installed"
+APPLY_STOW=false
+
+# Ask stow question BEFORE git update so we know whether to preserve kde configs
+if [[ ! -f "$MARKER" ]]; then
+    APPLY_STOW=true
+elif [[ "$*" != *--mode* ]]; then
+    # Only ask interactively (not when mode is passed as arg)
+    if NEWT_COLORS='
+        root=black,black
+        window=white,black
+        border=blue,black
+        title=cyan,black
+        button=black,blue
+        actbutton=brightwhite,blue
+        textbox=white,black
+    ' whiptail --title "Apply configs?" \
+        --defaultno \
+        --yesno "Apply stow configs (dotfiles)?\n\nThis will overwrite your current settings\nwith the versions from the repo.\n\nSkip this on machines where you have\ncustom local changes." 14 55 2>/dev/null; then
+        APPLY_STOW=true
+    fi
+fi
 
 # Auto-update dotfiles repo if it has a remote
 if git -C "$DOTFILES_DIR" remote get-url origin &>/dev/null; then
     echo "--- Updating dotfiles repo ---"
     OLD_HASH=$(git -C "$DOTFILES_DIR" rev-parse HEAD)
-
     BRANCH=$(git -C "$DOTFILES_DIR" rev-parse --abbrev-ref HEAD)
+
+    # git reset --hard ignores skip-worktree, so manually save kde package if
+    # user did not ask to apply stow (KDE writes config changes through symlinks into it)
+    if [[ -f "$MARKER" ]] && ! $APPLY_STOW && [[ -d "$DOTFILES_DIR/packages/kde" ]]; then
+        _kde_tmp=$(mktemp -d)
+        cp -r "$DOTFILES_DIR/packages/kde/." "$_kde_tmp/"
+    fi
+
     git -C "$DOTFILES_DIR" fetch origin && \
     git -C "$DOTFILES_DIR" reset --hard "origin/$BRANCH" || \
     { echo "  ⚠️  git fetch failed — continuing with local version"; }
+
+    # Restore kde package if we saved it
+    if [[ -n "${_kde_tmp:-}" ]]; then
+        cp -r "$_kde_tmp/." "$DOTFILES_DIR/packages/kde/"
+        rm -rf "$_kde_tmp"
+    fi
 
     NEW_HASH=$(git -C "$DOTFILES_DIR" rev-parse HEAD)
     if [[ "$OLD_HASH" != "$NEW_HASH" ]]; then
@@ -312,33 +346,6 @@ if [[ "$MODE" == "desktop" ]]; then
 fi
 
 # ── Apply stow packages ──────────────────────────────────────────────────────
-MARKER="$HOME/.local/share/dotfiles/.installed"
-APPLY_STOW=false
-
-if [[ ! -f "$MARKER" ]]; then
-    echo ""
-    echo "--- First install detected — applying configs ---"
-    APPLY_STOW=true
-else
-    echo ""
-    if NEWT_COLORS='
-        root=black,black
-        window=white,black
-        border=blue,black
-        title=cyan,black
-        button=black,blue
-        actbutton=brightwhite,blue
-        textbox=white,black
-    ' whiptail --title "Apply configs?" \
-        --defaultno \
-        --yesno "Apply stow configs (dotfiles)?\n\nThis will overwrite your current settings\nwith the versions from the repo.\n\nSkip this on machines where you have\ncustom local changes." 14 55; then
-        APPLY_STOW=true
-        # Restore kde package from remote so stow applies the repo version, not local KDE edits
-        git -C "$DOTFILES_DIR" ls-files packages/kde/ | \
-            xargs git -C "$DOTFILES_DIR" update-index --no-skip-worktree 2>/dev/null || true
-        git -C "$DOTFILES_DIR" checkout HEAD -- packages/kde/ 2>/dev/null || true
-    fi
-fi
 
 if $APPLY_STOW; then
     echo "--- Applying stow packages ---"
@@ -376,14 +383,6 @@ if $APPLY_STOW; then
             kwriteconfig6 --file kdeglobals --group General --key TerminalService kitty.desktop || true
             echo "  ✅ kitty set as default terminal"
         fi
-    fi
-
-    # Protect kde package from git reset --hard: KDE writes to these files through
-    # symlinks, so mark them skip-worktree so git never overwrites local changes.
-    if [[ "$MODE" == "desktop" ]]; then
-        git -C "$DOTFILES_DIR" ls-files packages/kde/ | \
-            xargs git -C "$DOTFILES_DIR" update-index --skip-worktree 2>/dev/null || true
-        echo "  ✅ kde configs protected from git reset"
     fi
 
     # Mark as installed
