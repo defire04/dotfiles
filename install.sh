@@ -345,10 +345,6 @@ if [[ "$MODE" == "desktop" ]]; then
         echo "  ✅ kitty set as default terminal"
     fi
 
-    # Apply color scheme so colors are correct without manually clicking in System Settings
-    if command -v plasma-apply-colorscheme &> /dev/null; then
-        plasma-apply-colorscheme Nordic-my && echo "  ✅ Nordic-my color scheme applied" || true
-    fi
 fi
 
 # ── Enable systemd user units (desktop only) ─────────────────────────────────
