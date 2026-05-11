@@ -333,6 +333,10 @@ else
         --defaultno \
         --yesno "Apply stow configs (dotfiles)?\n\nThis will overwrite your current settings\nwith the versions from the repo.\n\nSkip this on machines where you have\ncustom local changes." 14 55; then
         APPLY_STOW=true
+        # Restore kde package from remote so stow applies the repo version, not local KDE edits
+        git -C "$DOTFILES_DIR" ls-files packages/kde/ | \
+            xargs git -C "$DOTFILES_DIR" update-index --no-skip-worktree 2>/dev/null || true
+        git -C "$DOTFILES_DIR" checkout HEAD -- packages/kde/ 2>/dev/null || true
     fi
 fi
 
