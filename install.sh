@@ -10,11 +10,33 @@ MODE=""
 MARKER="$HOME/.local/share/dotfiles/.installed"
 APPLY_STOW=false
 
-# Ask stow question BEFORE git update so we know whether to preserve kde configs
+# Parse args first so MODE is known before any prompts
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --mode) MODE="$2"; shift 2 ;;
+        *) echo "Unknown argument: $1"; exit 1 ;;
+    esac
+done
+
+# Interactive mode selection if not specified
+if [[ -z "$MODE" ]]; then
+    echo "Select installation mode:"
+    echo "  1) desktop — CachyOS/Arch with KDE (full setup)"
+    echo "  2) server  — Ubuntu/Debian headless (terminal tools only)"
+    read -rp "Enter 1 or 2: " choice
+    case $choice in
+        1) MODE="desktop" ;;
+        2) MODE="server" ;;
+        *) echo "Invalid choice"; exit 1 ;;
+    esac
+fi
+
+# Ask stow question BEFORE git update so we know whether to preserve kde configs.
+# On server: always apply stow (no KDE writing files through symlinks).
+# On desktop: first install applies automatically; repeat installs ask (default No).
 if [[ ! -f "$MARKER" ]]; then
     APPLY_STOW=true
-elif [[ "$*" != *--mode* ]]; then
-    # Only ask interactively (not when mode is passed as arg)
+elif [[ "$MODE" == "desktop" ]]; then
     if NEWT_COLORS='
         root=black,black
         window=white,black
@@ -28,6 +50,8 @@ elif [[ "$*" != *--mode* ]]; then
         --yesno "Apply stow configs (dotfiles)?\n\nThis will overwrite your current settings\nwith the versions from the repo.\n\nSkip this on machines where you have\ncustom local changes." 14 55 2>/dev/null; then
         APPLY_STOW=true
     fi
+else
+    APPLY_STOW=true
 fi
 
 # Auto-update dotfiles repo if it has a remote
@@ -36,9 +60,9 @@ if git -C "$DOTFILES_DIR" remote get-url origin &>/dev/null; then
     OLD_HASH=$(git -C "$DOTFILES_DIR" rev-parse HEAD)
     BRANCH=$(git -C "$DOTFILES_DIR" rev-parse --abbrev-ref HEAD)
 
-    # git reset --hard ignores skip-worktree, so manually save kde package if
-    # user did not ask to apply stow (KDE writes config changes through symlinks into it)
-    if [[ -f "$MARKER" ]] && ! $APPLY_STOW && [[ -d "$DOTFILES_DIR/packages/kde" ]]; then
+    # git reset --hard ignores skip-worktree, so manually save kde package when
+    # user chose not to apply stow (KDE writes config changes through symlinks into it)
+    if [[ "$MODE" == "desktop" ]] && [[ -f "$MARKER" ]] && ! $APPLY_STOW; then
         _kde_tmp=$(mktemp -d)
         cp -r "$DOTFILES_DIR/packages/kde/." "$_kde_tmp/"
     fi
@@ -73,27 +97,6 @@ else
     echo ""
     echo "sudo installed. Re-run the script: ./install.sh $*"
     exit 0
-fi
-
-# Parse args
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --mode) MODE="$2"; shift 2 ;;
-        *) echo "Unknown argument: $1"; exit 1 ;;
-    esac
-done
-
-# Interactive mode selection if not specified
-if [[ -z "$MODE" ]]; then
-    echo "Select installation mode:"
-    echo "  1) desktop — CachyOS/Arch with KDE (full setup)"
-    echo "  2) server  — Ubuntu/Debian headless (terminal tools only)"
-    read -rp "Enter 1 or 2: " choice
-    case $choice in
-        1) MODE="desktop" ;;
-        2) MODE="server" ;;
-        *) echo "Invalid choice"; exit 1 ;;
-    esac
 fi
 
 echo ""
