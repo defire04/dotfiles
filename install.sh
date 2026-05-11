@@ -7,14 +7,18 @@ set -e
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODE=""
+MARKER="$HOME/.local/share/dotfiles/.installed"
 
 # Auto-update dotfiles repo if it has a remote
 if git -C "$DOTFILES_DIR" remote get-url origin &>/dev/null; then
     echo "--- Updating dotfiles repo ---"
     OLD_HASH=$(git -C "$DOTFILES_DIR" rev-parse HEAD)
+
+    BRANCH=$(git -C "$DOTFILES_DIR" rev-parse --abbrev-ref HEAD)
     git -C "$DOTFILES_DIR" fetch origin && \
-    git -C "$DOTFILES_DIR" reset --hard "origin/$(git -C "$DOTFILES_DIR" rev-parse --abbrev-ref HEAD)" || \
+    git -C "$DOTFILES_DIR" reset --hard "origin/$BRANCH" || \
     { echo "  ⚠️  git fetch failed — continuing with local version"; }
+
     NEW_HASH=$(git -C "$DOTFILES_DIR" rev-parse HEAD)
     if [[ "$OLD_HASH" != "$NEW_HASH" ]]; then
         echo "  ✅ Updated — restarting script..."
@@ -368,6 +372,14 @@ if $APPLY_STOW; then
             kwriteconfig6 --file kdeglobals --group General --key TerminalService kitty.desktop || true
             echo "  ✅ kitty set as default terminal"
         fi
+    fi
+
+    # Protect kde package from git reset --hard: KDE writes to these files through
+    # symlinks, so mark them skip-worktree so git never overwrites local changes.
+    if [[ "$MODE" == "desktop" ]]; then
+        git -C "$DOTFILES_DIR" ls-files packages/kde/ | \
+            xargs git -C "$DOTFILES_DIR" update-index --skip-worktree 2>/dev/null || true
+        echo "  ✅ kde configs protected from git reset"
     fi
 
     # Mark as installed
