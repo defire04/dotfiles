@@ -402,9 +402,9 @@ if $APPLY_STOW; then
         rm -f "$HOME/.config/plasmanotifyrc" "$HOME/.config/plasmashellrc" "$HOME/.config/powerdevilrc"
         rm -f "$HOME/.local/share/plasma-systemmonitor/overview.page" "$HOME/.local/share/plasma-systemmonitor/processes.page"
         # plasma-org.kde.plasma.desktop-appletsrc is created by KDE on first login as a regular file
-        local appletsrc="$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
-        if [[ -f "$appletsrc" && ! -L "$appletsrc" ]]; then
-            mv "$appletsrc" "${appletsrc}.bak"
+        _appletsrc="$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+        if [[ -f "$_appletsrc" && ! -L "$_appletsrc" ]]; then
+            mv "$_appletsrc" "${_appletsrc}.bak"
         fi
 
         DESKTOP_PKGS="kitty kde easyeffects openrgb color-schemes aurorae plasma-systemmonitor plasma-themes"
