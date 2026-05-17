@@ -9,15 +9,37 @@
   "omnibox": {
     "prevent_url_elisions": true
   },
+  "enable_do_not_track": true,
   "brave": {
     "location_bar_is_wide": true,
+    "show_side_panel_button": false,
+    "web_view_rounded_corners": true,
+    "enable_closing_last_tab": false,
+    "speedreader": {
+      "enabled_for_all_sites": true
+    },
     "ai_chat": {
-      "autocomplete_provider_enabled": false
+      "autocomplete_provider_enabled": false,
+      "context_menu_enabled": false,
+      "show_toolbar_button": false,
+      "storage_enabled": false,
+      "tab_organization_enabled": false
     },
     "new_tab_page": {
       "show_clock": true,
       "show_stats": false,
       "show_together": false
-    }
+    },
+    "shields": {
+      "stats_badge_visible": false
+    },
+    "sidebar": {
+      "sidebar_show_option": 3
+    },
+    "tabs": {
+      "mute_indicator_not_clickable": false
+    },
+    "fb_embed_default": false,
+    "twitter_embed_default": false
   }
 }

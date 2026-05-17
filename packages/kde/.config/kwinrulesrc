@@ -6,6 +6,14 @@ decocolorrule=2
 wmclass=jetbrains-idea
 wmclassmatch=1
 
+[2b237d31-e376-426a-99c8-42fd2e941562]
+Description=Параметры приложения для claude
+clientmachine=localhost
+decocolor=KvGnomeDark
+decocolorrule=2
+wmclass=claude
+wmclassmatch=1
+
 [55582b02-befc-4e2f-934f-fa8e140b3711]
 Description=Параметры приложения для vesktop
 decocolor=Kvantum
@@ -22,6 +30,14 @@ wmclass=Telegram org.telegram.desktop
 wmclasscomplete=true
 wmclassmatch=1
 
+[8e882e98-006b-497a-b1ca-4e569ecb5300]
+Description=Параметры приложения для vesktop
+decocolor=KvantumAlt
+decocolorrule=2
+wmclass=\svesktop
+wmclasscomplete=true
+wmclassmatch=1
+
 [9fe7dc64-0334-4b75-baf2-e85fb4e3373b]
 Description=Параметры приложения для jetbrains-idea
 clientmachine=localhost
@@ -31,8 +47,8 @@ wmclass=jetbrains-idea
 wmclassmatch=1
 
 [General]
-count=6
-rules=e0192cb8-769d-49e5-8744-bb798d6493e6,a9ae92bb-b744-4bf8-ab36-25acb6df66e5,ef71f892-df92-455e-89dd-053c46c4640a,9fe7dc64-0334-4b75-baf2-e85fb4e3373b,55582b02-befc-4e2f-934f-fa8e140b3711,5578f1ed-177e-4e67-b2ea-e09a99f9084d
+count=8
+rules=8e882e98-006b-497a-b1ca-4e569ecb5300,2b237d31-e376-426a-99c8-42fd2e941562,e0192cb8-769d-49e5-8744-bb798d6493e6,a9ae92bb-b744-4bf8-ab36-25acb6df66e5,ef71f892-df92-455e-89dd-053c46c4640a,9fe7dc64-0334-4b75-baf2-e85fb4e3373b,55582b02-befc-4e2f-934f-fa8e140b3711,5578f1ed-177e-4e67-b2ea-e09a99f9084d
 
 [a9ae92bb-b744-4bf8-ab36-25acb6df66e5]
 Description=Параметры приложения для kitty
