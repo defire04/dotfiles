@@ -7,9 +7,6 @@ ShowInHistory=false
 ShowPopups=false
 ShowPopupsInDndMode=false
 
-[Applications][org.qbittorrent.qBittorrent]
-Seen=true
-
 [Applications][org.telegram.desktop]
 Seen=true
 

@@ -97,7 +97,6 @@ ForegroundVisited=127,140,141
 
 [General]
 BrowserApplication=brave-browser.desktop
-ColorScheme=Nordic-my
 ColorSchemeHash=083859a08c5458e804de2747f64ae9bdc491bd0c
 TerminalApplication=kitty
 TerminalService=kitty.desktop
@@ -113,8 +112,6 @@ AnimationDurationFactor=0.17677669529663687
 DefaultLightLookAndFeel=org.kde.breezetwilight.desktop
 LookAndFeelPackage=Nordic-darker
 ShowDeleteCommand=false
-contrast=4
-frameContrast=0.2
 widgetStyle=Breeze
 
 [KFileDialog Settings]
