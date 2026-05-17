@@ -45,7 +45,7 @@ elif [[ "$MODE" == "desktop" ]]; then
         button=black,blue
         actbutton=brightwhite,blue
         textbox=white,black
-    ' whiptail --title "Apply configs?" \
+    ' LANG=C whiptail --title "Apply configs?" \
         --defaultno \
         --yesno "Apply stow configs (dotfiles)?\n\nThis will overwrite your current settings\nwith the versions from the repo.\n\nSkip this on machines where you have\ncustom local changes." 14 55 2>/dev/null; then
         APPLY_STOW=true
@@ -158,7 +158,7 @@ select_packages() {
         shadow=black,black
     '
     local result
-    result=$(NEWT_COLORS="$colors" whiptail --title "$title" --checklist \
+    result=$(LANG=C NEWT_COLORS="$colors" whiptail --title "$title" --checklist \
         "Space = toggle, Enter = install selected:" 20 55 12 \
         "${items[@]}" 3>&1 1>&2 2>&3) || return 1
 
