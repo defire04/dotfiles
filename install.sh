@@ -123,13 +123,23 @@ fi
 
 # ── Install base dependencies ────────────────────────────────────────────────
 
+SELECTIONS_FILE="$HOME/.local/share/dotfiles/selections.conf"
+
 select_packages() {
-    local file=$1 title=$2
+    local file=$1 title=$2 key=$3
+    local prev=""
+    [[ -f "$SELECTIONS_FILE" ]] && prev=$(grep "^${key}=" "$SELECTIONS_FILE" 2>/dev/null | cut -d= -f2-)
+
     local items=()
     while IFS= read -r pkg; do
         [[ -z "$pkg" || "$pkg" == \#* ]] && continue
-        items+=("$pkg" "" ON)
+        local state="ON"
+        if [[ -n "$prev" ]]; then
+            echo "$prev" | grep -qw "$pkg" && state="ON" || state="OFF"
+        fi
+        items+=("$pkg" "" "$state")
     done < "$file"
+
     local colors='
         root=black,black
         window=white,black
@@ -147,9 +157,22 @@ select_packages() {
         scrollbar=black,black
         shadow=black,black
     '
-    NEWT_COLORS="$colors" whiptail --title "$title" --checklist \
+    local result
+    result=$(NEWT_COLORS="$colors" whiptail --title "$title" --checklist \
         "Space = toggle, Enter = install selected:" 20 55 12 \
-        "${items[@]}" 3>&1 1>&2 2>&3
+        "${items[@]}" 3>&1 1>&2 2>&3) || return 1
+
+    # Save selections for next run
+    local clean
+    clean=$(echo "$result" | tr -d '"')
+    mkdir -p "$(dirname "$SELECTIONS_FILE")"
+    if grep -q "^${key}=" "$SELECTIONS_FILE" 2>/dev/null; then
+        sed -i "s|^${key}=.*|${key}=${clean}|" "$SELECTIONS_FILE"
+    else
+        echo "${key}=${clean}" >> "$SELECTIONS_FILE"
+    fi
+
+    echo "$result"
 }
 
 install_arch_pkgs() {
@@ -197,7 +220,7 @@ echo ""
 echo "--- Selecting terminal programs ---"
 
 if [[ "$OS" == "arch" ]]; then
-    SELECTED=$(select_packages "$DOTFILES_DIR/programs/terminal.txt" "Terminal packages") || { echo "Installation cancelled."; exit 0; }
+    SELECTED=$(select_packages "$DOTFILES_DIR/programs/terminal.txt" "Terminal packages" "terminal") || { echo "Installation cancelled."; exit 0; }
     SELECTED=$(echo "$SELECTED" | tr -d '"')
     PKGS=$(echo "$SELECTED" | grep -v '^paru$' | tr '\n' ' ')
     [[ -n "$PKGS" ]] && paru -S --needed --noconfirm $PKGS
@@ -208,7 +231,7 @@ else
 
     _mark() { command -v "$1" &>/dev/null && INSTALLED+=("$1") || FAILED+=("$1"); }
 
-    UBUNTU_SELECTED=$(select_packages "$DOTFILES_DIR/programs/terminal.txt" "Terminal packages") || { echo "Installation cancelled."; exit 0; }
+    UBUNTU_SELECTED=$(select_packages "$DOTFILES_DIR/programs/terminal.txt" "Terminal packages" "terminal") || { echo "Installation cancelled."; exit 0; }
     UBUNTU_SELECTED=$(echo "$UBUNTU_SELECTED" | tr -d '"')
     _sel() { echo "$UBUNTU_SELECTED" | grep -qw "$1"; }
 
@@ -324,7 +347,7 @@ fi
 if [[ "$MODE" == "desktop" ]]; then
     echo ""
     echo "--- Selecting desktop programs ---"
-    SELECTED=$(select_packages "$DOTFILES_DIR/programs/desktop.txt" "Desktop packages") || { echo "Installation cancelled."; exit 0; }
+    SELECTED=$(select_packages "$DOTFILES_DIR/programs/desktop.txt" "Desktop packages" "desktop") || { echo "Installation cancelled."; exit 0; }
     SELECTED=$(echo "$SELECTED" | tr -d '"')
     for pkg in $SELECTED; do
         paru -S --needed --noconfirm "$pkg" || echo "  ⚠️  $pkg (failed — install manually)"
