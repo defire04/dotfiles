@@ -1,5 +1,6 @@
-
 [Formats]
-LANG=ru_UA.UTF-8
-LC_MONETARY=uk_UA.UTF-8
+LANG=ru_RU.UTF-8
+LC_MONETARY=ru_RU.UTF-8
 
+[Translations]
+LANGUAGE=ru_RU

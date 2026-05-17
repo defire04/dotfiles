@@ -396,7 +396,7 @@ if $APPLY_STOW; then
         rm -rf "$HOME/.config/kdedefaults"
         rm -f "$HOME/.config/kdeglobals" "$HOME/.config/kglobalshortcutsrc" "$HOME/.config/konsolerc"
         rm -f "$HOME/.config/kscreenlockerrc" "$HOME/.config/kwinrc"
-        rm -f "$HOME/.config/plasma-localerc" "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+        rm -f "$HOME/.config/plasma-localerc"
         rm -f "$HOME/.config/plasmanotifyrc" "$HOME/.config/plasmashellrc" "$HOME/.config/powerdevilrc"
         rm -f "$HOME/.local/share/plasma-systemmonitor/overview.page" "$HOME/.local/share/plasma-systemmonitor/processes.page"
 
@@ -410,6 +410,13 @@ if $APPLY_STOW; then
             kwriteconfig6 --file kdeglobals --group General --key TerminalApplication kitty || true
             kwriteconfig6 --file kdeglobals --group General --key TerminalService kitty.desktop || true
             echo "  ✅ kitty set as default terminal"
+        fi
+
+        # Copy panel config as regular file (not symlink) so KDE can write to it freely.
+        # Only on first install — subsequent installs preserve local customizations.
+        if [[ ! -f "$MARKER" ]] && [[ -f "$DOTFILES_DIR/configs/plasma-panel.ini" ]]; then
+            cp "$DOTFILES_DIR/configs/plasma-panel.ini" "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+            echo "  ✅ plasma panel config copied (not symlinked)"
         fi
     fi
 

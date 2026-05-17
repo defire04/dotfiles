@@ -5,6 +5,11 @@
   "BraveRewardsDisabled": true,
   "BraveVPNDisabled": true,
   "BraveAIChatEnabled": false,
+  "BraveTalkEnabled": false,
   "PasswordManagerEnabled": false,
-  "SafeBrowsingEnabled": false
+  "SafeBrowsingEnabled": false,
+  "NewTabPageShowsBackground": true,
+  "NewTabPageShowsClock": true,
+  "NewTabPageShowsShortcuts": true,
+  "NewTabPageShowsStats": false
 }
