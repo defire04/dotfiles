@@ -40,7 +40,11 @@ set -gx VISUAL micro
 alias wget='wget --hsts-file="$XDG_DATA_HOME/wget-hsts"'
 
 # Better CLI tools
-alias cat='bat --style=plain'
+if command -q bat
+    alias cat='bat --style=plain'
+else if command -q batcat
+    alias cat='batcat --style=plain'
+end
 alias ls='eza --icons'
 alias ll='eza -la --icons --git'
 alias lt='eza --tree --icons --level=2'
