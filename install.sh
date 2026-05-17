@@ -353,13 +353,15 @@ if [[ "$MODE" == "desktop" ]]; then
         paru -S --needed --noconfirm "$pkg" || echo "  ⚠️  $pkg (failed — install manually)"
     done
 
-    # Brave extensions + visual policy
+    # Brave extensions + policy + initial preferences
     if echo "$SELECTED" | grep -qw "brave-bin" || command -v brave &>/dev/null || command -v brave-browser &>/dev/null; then
         $SUDO mkdir -p /etc/brave/policies/managed
         $SUDO cp "$DOTFILES_DIR/programs/brave-extensions.json" /etc/brave/policies/managed/extensions.json
         $SUDO cp "$DOTFILES_DIR/programs/brave-policy.json" /etc/brave/policies/managed/policy.json
-        echo "  ✅ Brave policy applied (extensions + visual settings)"
-        echo "  ℹ️  NTP background and shortcuts — enable Brave Sync to transfer those"
+        # initial_preferences sets defaults for new profiles (read once on first Brave launch)
+        $SUDO cp "$DOTFILES_DIR/programs/brave-initial-preferences.json" /etc/brave/initial_preferences
+        echo "  ✅ Brave policy + initial preferences applied"
+        echo "  ℹ️  NTP background image — set manually once in Brave NTP settings"
     fi
 
     # Flatpak

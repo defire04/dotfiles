@@ -1,0 +1,23 @@
+{
+  "bookmark_bar": {
+    "show_on_all_tabs": true
+  },
+  "browser": {
+    "show_home_button": false,
+    "custom_chrome_frame": true
+  },
+  "omnibox": {
+    "prevent_url_elisions": true
+  },
+  "brave": {
+    "location_bar_is_wide": true,
+    "ai_chat": {
+      "autocomplete_provider_enabled": false
+    },
+    "new_tab_page": {
+      "show_clock": true,
+      "show_stats": false,
+      "show_together": false
+    }
+  }
+}
