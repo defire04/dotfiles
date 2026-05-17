@@ -353,11 +353,13 @@ if [[ "$MODE" == "desktop" ]]; then
         paru -S --needed --noconfirm "$pkg" || echo "  ⚠️  $pkg (failed — install manually)"
     done
 
-    # Brave extensions via enterprise policy
-    if echo "$SELECTED" | grep -qw "brave-bin"; then
+    # Brave extensions + visual policy
+    if echo "$SELECTED" | grep -qw "brave-bin" || command -v brave &>/dev/null || command -v brave-browser &>/dev/null; then
         $SUDO mkdir -p /etc/brave/policies/managed
         $SUDO cp "$DOTFILES_DIR/programs/brave-extensions.json" /etc/brave/policies/managed/extensions.json
-        echo "  ✅ Brave extensions policy installed (extensions will auto-install on first Brave launch)"
+        $SUDO cp "$DOTFILES_DIR/programs/brave-policy.json" /etc/brave/policies/managed/policy.json
+        echo "  ✅ Brave policy applied (extensions + visual settings)"
+        echo "  ℹ️  NTP background and shortcuts — enable Brave Sync to transfer those"
     fi
 
     # Flatpak
