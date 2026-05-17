@@ -1,2 +1,6 @@
 [Layout]
+DisplayNames=,
+LayoutList=us,ru
 ResetOldOptions=true
+Use=true
+VariantList=,

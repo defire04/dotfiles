@@ -14,10 +14,9 @@ packages/micro/.config/micro/buffers/
 packages/kde/.config/kopia/
 packages/kde/.config/kopia-ui/
 
-# KDE machine-specific (widgets with hardware sensor IDs, disk UUIDs, monitor layout)
+# KDE machine-specific
 packages/kde/.config/kwinoutputconfig.json
 packages/kde/.config/autostart/mimeinfo.cache
-packages/kde/.config/plasma-org.kde.plasma.desktop-appletsrc
 
 # OpenRGB logs
 packages/openrgb/.config/OpenRGB/logs/

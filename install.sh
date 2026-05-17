@@ -412,12 +412,6 @@ if $APPLY_STOW; then
             echo "  ✅ kitty set as default terminal"
         fi
 
-        # Copy panel config as regular file (not symlink) so KDE can write to it freely.
-        # Only on first install — subsequent installs preserve local customizations.
-        if [[ ! -f "$MARKER" ]] && [[ -f "$DOTFILES_DIR/configs/plasma-panel.ini" ]]; then
-            cp "$DOTFILES_DIR/configs/plasma-panel.ini" "$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
-            echo "  ✅ plasma panel config copied (not symlinked)"
-        fi
     fi
 
     # Mark as installed
