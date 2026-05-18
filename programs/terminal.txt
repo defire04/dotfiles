@@ -15,7 +15,6 @@ fastfetch
 github-cli
 glances
 mc
-netwatch
 nmap
 macchanger
 wipe

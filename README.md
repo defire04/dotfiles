@@ -38,7 +38,6 @@ After install, create your private config (see [Private Setup](#private-setup)).
 | fastfetch | `fastfetch` | System info |
 | glances | `glances` | Web system monitor |
 | mc | `mc` | Midnight Commander |
-| netwatch | `netwatch` | Network monitor (Arch only) |
 | nmap | `nmap` | Network scanner |
 | macchanger | `macchanger` | MAC address changer |
 | wipe | `wipe` | Secure file deletion |
