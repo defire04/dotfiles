@@ -22,4 +22,4 @@ meld
 winbox
 kora-icon-theme
 nordic-theme-git
-pacseek
+pacseek-bin
