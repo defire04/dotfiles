@@ -1,6 +1,6 @@
 # Private fish configs — machine-specific
 packages/fish/.config/fish/conf.d/private.fish
-packages/fish/.config/fish/functions/tsa.fish
+packages/fish/.config/fish/functions/
 
 # Kitty runtime
 packages/kitty/.config/kitty/last.kitty-session
