@@ -45,6 +45,10 @@ if command -q bat
 else if command -q batcat
     alias cat='batcat --style=plain'
 end
+if command -q trash-put
+    alias rm='trash-put'
+end
+alias rmw='wipe -f'
 alias ls='eza --icons'
 alias ll='eza -la --icons --git'
 alias lt='eza --tree --icons --level=2'

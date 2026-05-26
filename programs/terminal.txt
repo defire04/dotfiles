@@ -18,6 +18,7 @@ mc
 nmap
 macchanger
 wipe
+trash-cli
 docker
 docker-compose
 paru

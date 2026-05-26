@@ -250,6 +250,7 @@ else
     _sel nmap       && APT_PKGS+=(nmap)
     _sel macchanger && APT_PKGS+=(macchanger)
     _sel wipe       && APT_PKGS+=(wipe)
+    _sel trash-cli  && APT_PKGS+=(trash-cli)
     _sel glances    && APT_PKGS+=(glances)
     [[ ${#APT_PKGS[@]} -gt 0 ]] && install_ubuntu_pkgs "${APT_PKGS[@]}" || true
 
