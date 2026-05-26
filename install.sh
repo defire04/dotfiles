@@ -254,6 +254,11 @@ else
     _sel glances    && APT_PKGS+=(glances)
     [[ ${#APT_PKGS[@]} -gt 0 ]] && install_ubuntu_pkgs "${APT_PKGS[@]}" || true
 
+    # bat → batcat symlink (Ubuntu/Debian ships bat as batcat)
+    if _sel bat && command -v batcat &> /dev/null && ! command -v bat &> /dev/null; then
+        $SUDO ln -sf /usr/bin/batcat /usr/local/bin/bat
+    fi
+
     # fish PPA fallback
     if _sel fish && ! command -v fish &> /dev/null; then
         $SUDO apt-add-repository -y ppa:fish-shell/release-3
@@ -334,6 +339,7 @@ else
         if ! fish -c "fisher list 2>/dev/null" | grep -q pure-fish/pure; then
             fish -c "fisher install pure-fish/pure" || true
         fi
+        fish -c "set --universal pure_color_success cyan" 2>/dev/null || true
     fi
 
     # Check what got installed (Ubuntu renames: bat→batcat, ripgrep→rg)
