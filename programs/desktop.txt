@@ -1,6 +1,7 @@
 kitty
 wl-clipboard
 code
+jetbrains-toolbox
 ttf-jetbrains-mono-nerd
 ttf-meslo-nerd
 noto-fonts
