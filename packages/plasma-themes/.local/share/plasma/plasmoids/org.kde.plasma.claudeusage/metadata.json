@@ -1,0 +1,21 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "izll"
+            }
+        ],
+        "Category": "System Information",
+        "Description": "Display Claude Code usage statistics (session and weekly limits) in your taskbar. Shows real-time usage percentages with color-coded indicators.",
+        "EnabledByDefault": true,
+        "Icon": "claude-usage-widget",
+        "Id": "org.kde.plasma.claudeusage",
+        "License": "GPL-3.0-or-later",
+        "Name": "Claude Usage",
+        "Version": "2.3.5",
+        "Website": "https://github.com/izll/plasma-claude-usage"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-Provides": []
+}
