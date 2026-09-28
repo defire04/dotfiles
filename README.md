@@ -147,7 +147,8 @@ kopia repository connect filesystem --path /mnt/nas/backups/username/machine
 | color-schemes | `~/.local/share/color-schemes/` | desktop |
 | aurorae | `~/.local/share/aurorae/themes/` | desktop |
 | plasma-systemmonitor | `~/.local/share/plasma-systemmonitor/` | desktop |
-| plasma-themes | `~/.local/share/plasma/look-and-feel/` | desktop |
+| plasma-themes | `~/.local/share/plasma/` (desktoptheme + look-and-feel) | desktop |
+| wallpapers | `~/.local/share/wallpapers/` | desktop |
 
 ### How symlinks work
 

@@ -388,36 +388,40 @@ if $APPLY_STOW; then
     echo "--- Applying stow packages ---"
     STOW_CMD="stow -d $DOTFILES_DIR/packages -t $HOME"
 
-    # Remove files that fisher/tools create before stow can symlink them
-    rm -f "$HOME/.config/fish/fish_variables"
+    # --adopt забирает уже существующие файлы (дефолты KDE, fish и т.д.) в репо
+    # вместо конфликта, затем git checkout возвращает версию из репо.
+    # Без этого один конфликтный файл отменяет stow всего пакета.
+    stow_pkg() {
+        if $STOW_CMD --adopt "$1"; then
+            git -C "$DOTFILES_DIR" checkout -- "packages/$1"
+            echo "  ✅ $1"
+        else
+            echo "  ⚠️  $1 (conflict — resolve manually)"
+        fi
+    }
 
     TERMINAL_PKGS="fish git micro bat mc scripts systemd"
     for pkg in $TERMINAL_PKGS; do
-        $STOW_CMD "$pkg" && echo "  ✅ $pkg" || echo "  ⚠️  $pkg (conflict — resolve manually)"
+        stow_pkg "$pkg"
     done
 
     if [[ "$MODE" == "desktop" ]]; then
-        # Remove KDE default files that conflict with stow
-        rm -f "$HOME/.config/autostart/remmina-applet.desktop" "$HOME/.config/dolphinrc"
-        rm -rf "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
-        rm -f "$HOME/.config/gtkrc" "$HOME/.config/gtkrc-2.0"
-        rm -f "$HOME/.config/kactivitymanagerdrc" "$HOME/.config/kcminputrc"
-        rm -rf "$HOME/.config/kdedefaults"
-        rm -f "$HOME/.config/kdeglobals" "$HOME/.config/kglobalshortcutsrc" "$HOME/.config/konsolerc"
-        rm -f "$HOME/.config/kscreenlockerrc" "$HOME/.config/kwinrc"
-        rm -f "$HOME/.config/plasma-localerc"
-        rm -f "$HOME/.config/plasmanotifyrc" "$HOME/.config/plasmashellrc" "$HOME/.config/powerdevilrc"
-        rm -f "$HOME/.local/share/plasma-systemmonitor/overview.page" "$HOME/.local/share/plasma-systemmonitor/processes.page"
-        # plasma-org.kde.plasma.desktop-appletsrc is created by KDE on first login as a regular file
-        _appletsrc="$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
-        if [[ -f "$_appletsrc" && ! -L "$_appletsrc" ]]; then
-            mv "$_appletsrc" "${_appletsrc}.bak"
+        # plasmashell при выходе сохраняет свой конфиг панелей/обоев поверх
+        # только что слинкованного — останавливаем его на время stow
+        PLASMA_WAS_RUNNING=false
+        if pgrep -x plasmashell &>/dev/null; then
+            kquitapp6 plasmashell &>/dev/null || pkill -x plasmashell || true
+            PLASMA_WAS_RUNNING=true
         fi
 
-        DESKTOP_PKGS="kitty kde easyeffects openrgb color-schemes aurorae plasma-systemmonitor plasma-themes"
+        DESKTOP_PKGS="kitty kde easyeffects openrgb color-schemes aurorae plasma-systemmonitor plasma-themes wallpapers"
         for pkg in $DESKTOP_PKGS; do
-            $STOW_CMD "$pkg" && echo "  ✅ $pkg" || echo "  ⚠️  $pkg (conflict — resolve manually)"
+            stow_pkg "$pkg"
         done
+
+        if $PLASMA_WAS_RUNNING; then
+            kstart plasmashell &>/dev/null || true
+        fi
 
         # Set kitty as default terminal
         if command -v kitty &> /dev/null; then
@@ -474,6 +478,10 @@ fi
 echo ""
 echo "=== Done! ==="
 echo ""
+if [[ "$MODE" == "desktop" ]] && $APPLY_STOW; then
+    echo "🔄 Перелогинься (или перезагрузись), чтобы KDE подхватил тему и настройки."
+    echo ""
+fi
 echo "🔐 IMPORTANT: Create your private config file:"
 echo "   ~/.config/fish/conf.d/private.fish"
 echo ""

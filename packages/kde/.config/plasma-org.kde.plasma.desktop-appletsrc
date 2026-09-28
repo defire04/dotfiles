@@ -238,7 +238,7 @@ positions={"1920x1080":["2","17","desktop:/The Witcher 3 Wild Hunt.desktop","1",
 sortMode=-1
 
 [Containments][43][Wallpaper][org.kde.image][General]
-Image=file:///mnt/rivia/Data/Media/Photos/Wallpaper/1586853771_daniel-leone-v7datklzzaw-unsplash-modded.webp
+Image=file:///home/dima/.local/share/wallpapers/mountains.webp
 SlidePaths=/home/dima/.local/share/wallpapers/,/usr/share/wallpapers/
 
 [Containments][44]
@@ -345,7 +345,7 @@ positions={"1920x1080":["1","17"],"2560x1440":["1","23"]}
 sortMode=-1
 
 [Containments][44][Wallpaper][org.kde.image][General]
-Image=file:///mnt/rivia/Data/Media/Photos/Wallpaper/1586853771_daniel-leone-v7datklzzaw-unsplash-modded.webp
+Image=file:///home/dima/.local/share/wallpapers/mountains.webp
 SlidePaths=/home/dima/.local/share/wallpapers/,/usr/share/wallpapers/
 
 [Containments][94]
