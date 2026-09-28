@@ -53,6 +53,7 @@ After install, create your private config (see [Private Setup](#private-setup)).
 | Program | Description |
 |---------|-------------|
 | kitty | GPU-accelerated terminal |
+| wl-clipboard | `wl-copy` / `wl-paste` — Wayland clipboard (image paste in Claude Code) |
 | code | VS Code |
 | brave-bin | Brave browser |
 | telegram-desktop | Telegram |
