@@ -21,4 +21,5 @@ wipe
 trash-cli
 docker
 docker-compose
+claude-code
 paru

@@ -42,6 +42,7 @@ After install, create your private config (see [Private Setup](#private-setup)).
 | macchanger | `macchanger` | MAC address changer |
 | wipe | `wipe` | Secure file deletion |
 | github-cli | `gh` | GitHub CLI |
+| claude-code | `claude` | Claude Code (native installer, auto-updates) |
 | docker | `docker` | Container runtime |
 | lazydocker | `lazydocker` | Docker TUI |
 
@@ -68,7 +69,7 @@ After install, create your private config (see [Private Setup](#private-setup)).
 | winbox | MikroTik router management |
 | wireshark-qt | Network traffic analyzer |
 | linux-arctis-manager | SteelSeries headset manager |
-| claude-desktop-bin | Claude AI desktop app |
+| claude-desktop-extra | Claude Desktop (official Linux build, AUR by patrickjaja) |
 
 ### Themes (included in desktop install)
 - `nordic-theme-git` — Nordic plasma desktop theme (Nordic-darker-solid)

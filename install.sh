@@ -222,7 +222,7 @@ echo "--- Selecting terminal programs ---"
 if [[ "$OS" == "arch" ]]; then
     SELECTED=$(select_packages "$DOTFILES_DIR/programs/terminal.txt" "Terminal packages" "terminal") || { echo "Installation cancelled."; exit 0; }
     SELECTED=$(echo "$SELECTED" | tr -d '"')
-    PKGS=$(echo "$SELECTED" | grep -v '^paru$' | tr '\n' ' ')
+    PKGS=$(echo "$SELECTED" | grep -vE '^(paru|claude-code)$' | tr '\n' ' ')
     [[ -n "$PKGS" ]] && paru -S --needed --noconfirm $PKGS
 
 else
@@ -348,6 +348,18 @@ else
     done
     command -v bat &>/dev/null || command -v batcat &>/dev/null && INSTALLED+=("bat") || FAILED+=("bat")
     command -v rg &>/dev/null && INSTALLED+=("ripgrep") || FAILED+=("ripgrep")
+fi
+
+# ── Claude Code — официальный нативный установщик (~/.local/share/claude) ──
+# Не пакет из репо: нативная версия сама обновляется, как на основном ПК.
+if echo "$SELECTED $UBUNTU_SELECTED" | grep -qw claude-code; then
+    if [[ -x "$HOME/.local/bin/claude" ]]; then
+        echo "  ✅ claude-code already installed"
+    else
+        echo "--- Installing Claude Code (native) ---"
+        curl -fsSL https://claude.ai/install.sh | bash && echo "  ✅ claude-code" \
+            || echo "  ⚠️  claude-code (failed — run: curl -fsSL https://claude.ai/install.sh | bash)"
+    fi
 fi
 
 # ── Install desktop programs (Arch/CachyOS only) ────────────────────────────
