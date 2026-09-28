@@ -1,3 +1,9 @@
+[Applications][brave-browser]
+Seen=true
+
+[Applications][dev.vencord.Vesktop]
+Seen=true
+
 [Applications][kopia-ui]
 Seen=true
 
@@ -7,11 +13,17 @@ ShowInHistory=false
 ShowPopups=false
 ShowPopupsInDndMode=false
 
+[Applications][org.qbittorrent.qBittorrent]
+Seen=true
+
 [Applications][org.telegram.desktop]
 Seen=true
 
 [Applications][vesktop]
 Seen=true
+
+[DoNotDisturb]
+Until=2026,6,18,13,13,0.396
 
 [Services][donationmessage]
 ShowInHistory=false

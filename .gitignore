@@ -26,3 +26,10 @@ packages/scripts/.local/bin/claude
 
 # Local utility scripts (not for repo)
 check-secrets.sh
+
+# Backups / machine-specific symlinks
+*.orp.bak
+packages/scripts/.local/bin/codegraph
+packages/scripts/.local/bin/whisper-ctranslate2
+packages/systemd/.config/systemd/user/default.target.wants/
+packages/fish/.config/fish/completions/

@@ -5,6 +5,7 @@ LockWidgets=false
 floating=0
 panelOpacity=2
 panelVisibility=2
+shell=org.kde.plasma.desktop
 
 [PlasmaViews][Panel 190][Defaults]
 thickness=44
@@ -13,6 +14,7 @@ thickness=44
 floating=1
 panelOpacity=2
 panelVisibility=2
+shell=org.kde.plasma.desktop
 
 [PlasmaViews][Panel 94][Defaults]
 thickness=44

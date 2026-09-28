@@ -47,7 +47,7 @@ var layout = {
                     "sortMode": "-1"
                 },
                 "/Wallpaper/org.kde.image/General": {
-                    "Image": "file:///mnt/samsung_990pro/Data/Media/Photos/Wallpaper/1586853771_daniel-leone-v7datklzzaw-unsplash-modded.webp",
+                    "Image": "file:///mnt/rivia/Data/Media/Photos/Wallpaper/1586853771_daniel-leone-v7datklzzaw-unsplash-modded.webp",
                     "SlidePaths": "/home/dima/.local/share/wallpapers/,/usr/share/wallpapers/"
                 }
             },
@@ -161,7 +161,7 @@ var layout = {
                     "sortMode": "-1"
                 },
                 "/Wallpaper/org.kde.image/General": {
-                    "Image": "file:///mnt/samsung_990pro/Data/Media/Photos/Wallpaper/1586853771_daniel-leone-v7datklzzaw-unsplash-modded.webp",
+                    "Image": "file:///mnt/rivia/Data/Media/Photos/Wallpaper/1586853771_daniel-leone-v7datklzzaw-unsplash-modded.webp",
                     "SlidePaths": "/home/dima/.local/share/wallpapers/,/usr/share/wallpapers/"
                 }
             },

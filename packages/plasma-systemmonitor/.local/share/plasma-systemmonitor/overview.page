@@ -67,11 +67,14 @@ chartFace=org.kde.ksysguard.horizontalbars
 
 [Face-106123488899456][SensorColors]
 disk/0af05931f05923eb/used=233,120,61
+disk/0ee143ed2562da42/used=75,128,193
 disk/2b4f-a687/used=193,179,75
+disk/427a0dbd-7f9a-494c-94d3-032a8e434452/used=75,128,193
 disk/4b7b-22ff/used=128,193,75
 disk/4e21-0000/used=75,193,101
 disk/8de062b5-7647-4989-886c-36204659cd51/used=61,174,233
 disk/c00e09310e0921d0/used=75,128,193
+disk/c70acd53-a14c-4fe7-aaf5-1f504b8f1ecd/used=193,75,128
 disk/e039-ad96/used=75,193,179
 disk/e0b8f122b8f0f83c/used=233,120,61
 disk/e0c478d3c478ad82/used=61,174,233
@@ -87,6 +90,7 @@ showTitle=true
 [Face-108592549200736][org.kde.ksysguard.applicationstable][General]
 askWhenKilling=false
 showToolBar=true
+sortColumn=usage
 
 [Face-94380805796272][Appearance]
 chartFace=org.kde.ksysguard.colorgrid

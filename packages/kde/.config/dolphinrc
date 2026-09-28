@@ -8,7 +8,7 @@ ShowAddToPlaces=false
 ShowViewMode=false
 
 [DetailsMode]
-IconSize=22
+IconSize=48
 
 [General]
 DoubleClickViewAction=none
@@ -28,6 +28,7 @@ MenuBar=Disabled
 
 [Notification Messages]
 ConfirmRenameFileType=false
+warnAboutRisksBeforeActingAsAdmin=false
 
 [PreviewSettings]
 Plugins=appimagethumbnail,ffmpegthumbs,gsf-office,opendocumentthumbnail,kraorathumbnail,audiothumbnail,glycin-heif,glycin-image-rs,glycin-jxl,glycin-svg,imagethumbnail,exrthumbnail,jpegthumbnail,windowsimagethumbnail,svgthumbnail,windowsexethumbnail,comicbookthumbnail,ffmpegthumbnailer,directorythumbnail,textthumbnail,blenderthumbnail,djvuthumbnail,gsthumbnail,cursorthumbnail,fontthumbnail,rawthumbnail,ebookthumbnail,mobithumbnail
