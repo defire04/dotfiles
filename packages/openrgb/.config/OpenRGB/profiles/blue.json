@@ -1,0 +1,974 @@
+{
+    "controllers": [
+        {
+            "active_mode": 0,
+            "colors": [
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680,
+                16711680
+            ],
+            "description": "Kingston Fury Beast/Renegade DDR4/5 DRAM Device",
+            "display_name": "",
+            "flags": 1,
+            "leds": [
+                {
+                    "name": "Fury Slot 1, LED 1"
+                },
+                {
+                    "name": "Fury Slot 1, LED 2"
+                },
+                {
+                    "name": "Fury Slot 1, LED 3"
+                },
+                {
+                    "name": "Fury Slot 1, LED 4"
+                },
+                {
+                    "name": "Fury Slot 1, LED 5"
+                },
+                {
+                    "name": "Fury Slot 1, LED 6"
+                },
+                {
+                    "name": "Fury Slot 1, LED 7"
+                },
+                {
+                    "name": "Fury Slot 1, LED 8"
+                },
+                {
+                    "name": "Fury Slot 1, LED 9"
+                },
+                {
+                    "name": "Fury Slot 1, LED 10"
+                },
+                {
+                    "name": "Fury Slot 1, LED 11"
+                },
+                {
+                    "name": "Fury Slot 1, LED 12"
+                },
+                {
+                    "name": "Fury Slot 2, LED 1"
+                },
+                {
+                    "name": "Fury Slot 2, LED 2"
+                },
+                {
+                    "name": "Fury Slot 2, LED 3"
+                },
+                {
+                    "name": "Fury Slot 2, LED 4"
+                },
+                {
+                    "name": "Fury Slot 2, LED 5"
+                },
+                {
+                    "name": "Fury Slot 2, LED 6"
+                },
+                {
+                    "name": "Fury Slot 2, LED 7"
+                },
+                {
+                    "name": "Fury Slot 2, LED 8"
+                },
+                {
+                    "name": "Fury Slot 2, LED 9"
+                },
+                {
+                    "name": "Fury Slot 2, LED 10"
+                },
+                {
+                    "name": "Fury Slot 2, LED 11"
+                },
+                {
+                    "name": "Fury Slot 2, LED 12"
+                }
+            ],
+            "location": "I2C: /dev/i2c-9, addresses [0x61,0x63]",
+            "modes": [
+                {
+                    "brightness": 4,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 1,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 48,
+                    "name": "Direct",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 0
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        255
+                    ],
+                    "colors_max": 1,
+                    "colors_min": 1,
+                    "direction": 0,
+                    "flags": 80,
+                    "name": "Static",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 0
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 0,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 2,
+                    "flags": 21,
+                    "name": "Rainbow",
+                    "speed": 25,
+                    "speed_max": 0,
+                    "speed_min": 60
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 0,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 2,
+                    "flags": 21,
+                    "name": "Spectrum",
+                    "speed": 25,
+                    "speed_max": 0,
+                    "speed_min": 60
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        255,
+                        65280,
+                        25855,
+                        16711680,
+                        61423,
+                        8388736,
+                        7826688,
+                        51455,
+                        16733695,
+                        16743740,
+                        1052688
+                    ],
+                    "colors_max": 11,
+                    "colors_min": 2,
+                    "direction": 0,
+                    "flags": 81,
+                    "name": "Rhythm",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 10
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        255,
+                        65280,
+                        25855,
+                        16711680,
+                        61423,
+                        8388736,
+                        7826688,
+                        51455,
+                        16733695,
+                        16743740
+                    ],
+                    "colors_max": 10,
+                    "colors_min": 1,
+                    "direction": 0,
+                    "flags": 113,
+                    "name": "Breath",
+                    "speed": 5,
+                    "speed_max": 1,
+                    "speed_min": 10
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        255,
+                        65280,
+                        25855,
+                        16711680,
+                        61423,
+                        8388736,
+                        7826688,
+                        51455,
+                        16733695,
+                        16743740
+                    ],
+                    "colors_max": 10,
+                    "colors_min": 1,
+                    "direction": 0,
+                    "flags": 81,
+                    "name": "Dynamic",
+                    "speed": 300,
+                    "speed_max": 100,
+                    "speed_min": 1000
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        255,
+                        65280,
+                        25855,
+                        16711680,
+                        61423,
+                        8388736,
+                        7826688,
+                        51455,
+                        16733695,
+                        16743740,
+                        1052688
+                    ],
+                    "colors_max": 11,
+                    "colors_min": 2,
+                    "direction": 2,
+                    "flags": 85,
+                    "name": "Slide",
+                    "speed": 8,
+                    "speed_max": 0,
+                    "speed_min": 255
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        255,
+                        65280,
+                        25855,
+                        16711680,
+                        61423,
+                        8388736,
+                        7826688,
+                        51455,
+                        16733695,
+                        16743740,
+                        1052688
+                    ],
+                    "colors_max": 11,
+                    "colors_min": 2,
+                    "direction": 0,
+                    "flags": 81,
+                    "name": "Slither",
+                    "speed": 40,
+                    "speed_max": 0,
+                    "speed_min": 255
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        255,
+                        65280,
+                        25855,
+                        16711680,
+                        61423,
+                        8388736,
+                        7826688,
+                        51455,
+                        16733695,
+                        16743740,
+                        1052688
+                    ],
+                    "colors_max": 11,
+                    "colors_min": 2,
+                    "direction": 0,
+                    "flags": 81,
+                    "name": "Teleport",
+                    "speed": 8,
+                    "speed_max": 0,
+                    "speed_min": 255
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        255,
+                        65280,
+                        25855,
+                        16711680,
+                        61423,
+                        8388736,
+                        7826688,
+                        51455,
+                        16733695,
+                        16743740,
+                        1052688
+                    ],
+                    "colors_max": 11,
+                    "colors_min": 2,
+                    "direction": 2,
+                    "flags": 85,
+                    "name": "Wind",
+                    "speed": 8,
+                    "speed_max": 0,
+                    "speed_min": 255
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        255,
+                        65280,
+                        25855,
+                        16711680,
+                        61423,
+                        8388736,
+                        7826688,
+                        51455,
+                        16733695,
+                        16743740
+                    ],
+                    "colors_max": 10,
+                    "colors_min": 1,
+                    "direction": 2,
+                    "flags": 85,
+                    "name": "Comet",
+                    "speed": 25,
+                    "speed_max": 0,
+                    "speed_min": 255
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        255,
+                        65280,
+                        25855,
+                        16711680,
+                        61423,
+                        8388736,
+                        7826688,
+                        51455,
+                        16733695,
+                        16743740
+                    ],
+                    "colors_max": 10,
+                    "colors_min": 1,
+                    "direction": 3,
+                    "flags": 85,
+                    "name": "Rain",
+                    "speed": 25,
+                    "speed_max": 8,
+                    "speed_min": 28
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        255,
+                        65280,
+                        25855,
+                        16711680,
+                        61423,
+                        8388736,
+                        7826688,
+                        51455,
+                        16733695,
+                        16743740
+                    ],
+                    "colors_max": 10,
+                    "colors_min": 1,
+                    "direction": 2,
+                    "flags": 85,
+                    "name": "Firework",
+                    "speed": 33,
+                    "speed_max": 33,
+                    "speed_min": 83
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        255,
+                        65280,
+                        25855,
+                        16711680,
+                        61423,
+                        8388736,
+                        7826688,
+                        51455,
+                        16733695,
+                        16743740,
+                        1052688
+                    ],
+                    "colors_max": 11,
+                    "colors_min": 2,
+                    "direction": 2,
+                    "flags": 85,
+                    "name": "Voltage",
+                    "speed": 16,
+                    "speed_max": 5,
+                    "speed_min": 18
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 0,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 2,
+                    "flags": 21,
+                    "name": "Flame",
+                    "speed": 64,
+                    "speed_max": 40,
+                    "speed_min": 64
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 0,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 17,
+                    "name": "Twilight",
+                    "speed": 64,
+                    "speed_max": 0,
+                    "speed_min": 255
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        255,
+                        65280,
+                        25855,
+                        16711680,
+                        61423,
+                        8388736,
+                        7826688,
+                        51455,
+                        16733695,
+                        16743740,
+                        1052688
+                    ],
+                    "colors_max": 11,
+                    "colors_min": 2,
+                    "direction": 2,
+                    "flags": 85,
+                    "name": "Fury",
+                    "speed": 76,
+                    "speed_max": 0,
+                    "speed_min": 255
+                },
+                {
+                    "brightness": 80,
+                    "brightness_max": 100,
+                    "brightness_min": 0,
+                    "color_mode": 0,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 17,
+                    "name": "Prism",
+                    "speed": 40,
+                    "speed_max": 0,
+                    "speed_min": 60
+                }
+            ],
+            "name": "Kingston Fury DDR5 DRAM",
+            "serial": "",
+            "type": 1,
+            "vendor": "Kingston",
+            "version": "",
+            "zones": [
+                {
+                    "display_name": "",
+                    "flags": 4096,
+                    "leds_count": 12,
+                    "leds_max": 12,
+                    "leds_min": 12,
+                    "matrix_map": {
+                        "height": 0,
+                        "width": 0
+                    },
+                    "name": "Fury Slot 1",
+                    "type": 1
+                },
+                {
+                    "display_name": "",
+                    "flags": 4096,
+                    "leds_count": 12,
+                    "leds_max": 12,
+                    "leds_min": 12,
+                    "matrix_map": {
+                        "height": 0,
+                        "width": 0
+                    },
+                    "name": "Fury Slot 2",
+                    "type": 1
+                }
+            ]
+        },
+        {
+            "active_mode": 0,
+            "colors": [
+                16711680,
+                16711680,
+                16711680,
+                16711680
+            ],
+            "description": "ENE SMBus Device",
+            "display_name": "",
+            "flags": 1,
+            "leds": [
+                {
+                    "name": "Unknown LED 1"
+                },
+                {
+                    "name": "Unknown LED 2"
+                },
+                {
+                    "name": "Unknown LED 3"
+                },
+                {
+                    "name": "Unknown LED 4"
+                }
+            ],
+            "location": "I2C: /dev/i2c-0, address 0x67",
+            "modes": [
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 1,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 32,
+                    "name": "Direct",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 0
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 0,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 0,
+                    "name": "Off",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 0
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 1,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 32,
+                    "name": "Static",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 0
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 1,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 161,
+                    "name": "Breathing",
+                    "speed": 2,
+                    "speed_max": 0,
+                    "speed_min": 4
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 1,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 33,
+                    "name": "Flashing",
+                    "speed": 2,
+                    "speed_max": 0,
+                    "speed_min": 4
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 0,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 1,
+                    "name": "Spectrum Cycle",
+                    "speed": 2,
+                    "speed_max": 0,
+                    "speed_min": 4
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 0,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 3,
+                    "name": "Rainbow",
+                    "speed": 2,
+                    "speed_max": 0,
+                    "speed_min": 4
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 1,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 163,
+                    "name": "Chase Fade",
+                    "speed": 2,
+                    "speed_max": 0,
+                    "speed_min": 4
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 1,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 163,
+                    "name": "Chase",
+                    "speed": 2,
+                    "speed_max": 0,
+                    "speed_min": 4
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 0,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 1,
+                    "name": "Random Flicker",
+                    "speed": 2,
+                    "speed_max": 0,
+                    "speed_min": 4
+                }
+            ],
+            "name": "ASUS TUF GeForce RTX 4070 SUPER Gaming",
+            "serial": "",
+            "type": 2,
+            "vendor": "ASUS",
+            "version": "AUMA0-E6K5-1107",
+            "zones": [
+                {
+                    "display_name": "",
+                    "flags": 4096,
+                    "leds_count": 4,
+                    "leds_max": 4,
+                    "leds_min": 4,
+                    "matrix_map": {
+                        "height": 0,
+                        "width": 0
+                    },
+                    "name": "Unknown",
+                    "type": 1
+                }
+            ]
+        },
+        {
+            "active_mode": 0,
+            "colors": [
+                0
+            ],
+            "description": "ASUS Aura USB Mainboard Device",
+            "display_name": "",
+            "flags": 1,
+            "leds": [
+                {
+                    "name": "Aura Mainboard, LED 1"
+                }
+            ],
+            "location": "HID: /dev/hidraw12",
+            "modes": [
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 1,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 32,
+                    "name": "Direct",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 0
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 0,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 256,
+                    "name": "Off",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 0
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        0
+                    ],
+                    "colors_max": 1,
+                    "colors_min": 1,
+                    "direction": 0,
+                    "flags": 320,
+                    "name": "Static",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 0
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        0
+                    ],
+                    "colors_max": 1,
+                    "colors_min": 1,
+                    "direction": 0,
+                    "flags": 320,
+                    "name": "Breathing",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 0
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        0
+                    ],
+                    "colors_max": 1,
+                    "colors_min": 1,
+                    "direction": 0,
+                    "flags": 320,
+                    "name": "Flashing",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 0
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 0,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 256,
+                    "name": "Spectrum Cycle",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 0
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 0,
+                    "colors_max": 0,
+                    "colors_min": 0,
+                    "direction": 0,
+                    "flags": 256,
+                    "name": "Rainbow",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 0
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        0
+                    ],
+                    "colors_max": 1,
+                    "colors_min": 1,
+                    "direction": 0,
+                    "flags": 320,
+                    "name": "Chase Fade",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 0
+                },
+                {
+                    "brightness": 0,
+                    "brightness_max": 0,
+                    "brightness_min": 0,
+                    "color_mode": 2,
+                    "colors": [
+                        0
+                    ],
+                    "colors_max": 1,
+                    "colors_min": 1,
+                    "direction": 0,
+                    "flags": 320,
+                    "name": "Chase",
+                    "speed": 0,
+                    "speed_max": 0,
+                    "speed_min": 0
+                }
+            ],
+            "name": "ASUS TUF GAMING B650-E WIFI",
+            "serial": "9876543210",
+            "type": 0,
+            "vendor": "ASUS",
+            "version": "AULA3-AR32-0222",
+            "zones": [
+                {
+                    "display_name": "",
+                    "flags": 4096,
+                    "leds_count": 1,
+                    "leds_max": 1,
+                    "leds_min": 1,
+                    "matrix_map": {
+                        "height": 0,
+                        "width": 0
+                    },
+                    "name": "Aura Mainboard",
+                    "type": 1
+                },
+                {
+                    "display_name": "",
+                    "flags": 2,
+                    "leds_count": 0,
+                    "leds_max": 120,
+                    "leds_min": 0,
+                    "matrix_map": {
+                        "height": 0,
+                        "width": 0
+                    },
+                    "name": "Aura Addressable 1",
+                    "type": 1
+                },
+                {
+                    "display_name": "",
+                    "flags": 2,
+                    "leds_count": 0,
+                    "leds_max": 120,
+                    "leds_min": 0,
+                    "matrix_map": {
+                        "height": 0,
+                        "width": 0
+                    },
+                    "name": "Aura Addressable 2",
+                    "type": 1
+                },
+                {
+                    "display_name": "",
+                    "flags": 2,
+                    "leds_count": 0,
+                    "leds_max": 120,
+                    "leds_min": 0,
+                    "matrix_map": {
+                        "height": 0,
+                        "width": 0
+                    },
+                    "name": "Aura Addressable 3",
+                    "type": 1
+                }
+            ]
+        }
+    ],
+    "profile_name": "blue",
+    "profile_version": 6
+}
