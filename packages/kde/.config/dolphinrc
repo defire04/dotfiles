@@ -1,10 +1,19 @@
 MenuBar=Disabled
 
+[CompactMode]
+MaximumTextWidthIndex=0
+
 [ContentDisplay]
 UseShortRelativeDates=false
 
 [ContextMenu]
 ShowAddToPlaces=false
+ShowCopyToOtherSplitView=false
+ShowDuplicateHere=false
+ShowMoveToOtherSplitView=false
+ShowOpenInNewTab=false
+ShowOpenInNewWindow=false
+ShowOpenInSplitView=false
 ShowViewMode=false
 
 [DetailsMode]
@@ -12,11 +21,14 @@ IconSize=48
 
 [General]
 DoubleClickViewAction=none
+GlobalViewProps=true
 RememberOpenedTabs=false
+ShowFullPathInTitlebar=true
 Version=202
-ViewPropsTimestamp=2026,5,10,20,23,4.378
+ViewPropsTimestamp=2026,9,28,22,37,31.381
 
 [IconsMode]
+MaximumTextLines=1
 PreviewSize=176
 
 [KFileDialog Settings]
