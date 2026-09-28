@@ -39,8 +39,8 @@ wmclass=jetbrains-idea
 wmclassmatch=1
 
 [General]
-count=8
-rules=8c01a87d-2b41-4287-8886-058255d76bea,fa5538f9-31a7-419d-9208-04e5f6d28d0c,e0192cb8-769d-49e5-8744-bb798d6493e6,a9ae92bb-b744-4bf8-ab36-25acb6df66e5,ef71f892-df92-455e-89dd-053c46c4640a,9fe7dc64-0334-4b75-baf2-e85fb4e3373b,55582b02-befc-4e2f-934f-fa8e140b3711,5578f1ed-177e-4e67-b2ea-e09a99f9084d
+count=9
+rules=edad1966-e619-4e0f-90a0-f30206cdc4a1,8c01a87d-2b41-4287-8886-058255d76bea,fa5538f9-31a7-419d-9208-04e5f6d28d0c,e0192cb8-769d-49e5-8744-bb798d6493e6,a9ae92bb-b744-4bf8-ab36-25acb6df66e5,ef71f892-df92-455e-89dd-053c46c4640a,9fe7dc64-0334-4b75-baf2-e85fb4e3373b,55582b02-befc-4e2f-934f-fa8e140b3711,5578f1ed-177e-4e67-b2ea-e09a99f9084d
 
 [a9ae92bb-b744-4bf8-ab36-25acb6df66e5]
 Description=Параметры приложения для kitty
@@ -57,6 +57,14 @@ decocolorrule=2
 fpplevel=4
 fpplevelrule=2
 wmclass=claude Claude
+wmclasscomplete=true
+wmclassmatch=1
+
+[edad1966-e619-4e0f-90a0-f30206cdc4a1]
+Description=Параметры приложения для org.opengamingcollective.rog-control-center
+decocolor=nordicbluish
+decocolorrule=2
+wmclass=rog-control-center org.opengamingcollective.rog-control-center
 wmclasscomplete=true
 wmclassmatch=1
 
