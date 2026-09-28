@@ -1,11 +1,29 @@
 #!/bin/sh
-# Обёртка Dolphin: перед запуском снять ЗАВИСШИЕ kdeconnect sshfs-маунты
-# (остаются на мёртвом IP телефона после смены адреса и вешают Dolphin).
+# Обёртка Dolphin: перед запуском снять ЗАВИСШИЕ сетевые маунты
+# (kdeconnect sshfs, cifs/smb, nfs, sshfs) — если не отвечают за 2с.
 # Живые (отвечающие) маунты НЕ трогаем — только мёртвые.
 
 for m in $(mount 2>/dev/null | awk '/kdeconnect@.*fuse\.sshfs/ {print $3}'); do
     if ! timeout 2 stat "$m" >/dev/null 2>&1; then
         fusermount3 -uz "$m" 2>/dev/null
+    fi
+done
+
+for m in $(mount 2>/dev/null | awk '/fuse\.sshfs/ && !/kdeconnect@/ {print $3}'); do
+    if ! timeout 2 stat "$m" >/dev/null 2>&1; then
+        fusermount3 -uz "$m" 2>/dev/null
+    fi
+done
+
+for m in $(mount 2>/dev/null | awk '/type cifs/ {print $3}'); do
+    if ! timeout 2 stat "$m" >/dev/null 2>&1; then
+        sudo umount -l "$m" 2>/dev/null || umount -l "$m" 2>/dev/null
+    fi
+done
+
+for m in $(mount 2>/dev/null | awk '/type nfs/ {print $3}'); do
+    if ! timeout 2 stat "$m" >/dev/null 2>&1; then
+        umount -l "$m" 2>/dev/null
     fi
 done
 
