@@ -10,6 +10,7 @@ brave-bin
 telegram-desktop
 claude-desktop-extra
 remmina
+freerdp
 steam
 obs-studio
 kopia-ui-bin
