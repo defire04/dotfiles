@@ -23,61 +23,82 @@ After install, create your private config (see [Private Setup](#private-setup)).
 
 ## Terminal Programs (auto-installed on all machines)
 
+List: [`programs/terminal.txt`](programs/terminal.txt). Sorted alphabetically.
+
 | Program | Command | Description |
 |---------|---------|-------------|
-| fish | `fish` | Default shell |
-| micro | `micro` | Terminal text editor |
 | bat | `cat` | cat with syntax highlighting |
-| eza | `ls`, `ll`, `lt` | ls with icons and git status |
-| lazygit | `lazygit` | TUI for git |
-| lazydocker | `lazydocker` | TUI for docker |
 | btop | `btop` | CPU/RAM/network monitor |
-| yazi | `yazi` | Terminal file manager |
-| ripgrep | `rg` | Fast content search |
-| duf | `duf` | Disk usage |
-| fastfetch | `fastfetch` | System info |
-| glances | `glances` | Web system monitor |
-| mc | `mc` | Midnight Commander |
-| nmap | `nmap` | Network scanner |
-| macchanger | `macchanger` | MAC address changer |
-| wipe | `wipe` | Secure file deletion |
-| github-cli | `gh` | GitHub CLI |
 | claude-code | `claude` | Claude Code (native installer, auto-updates) |
 | docker | `docker` | Container runtime |
-| lazydocker | `lazydocker` | Docker TUI |
+| docker-compose | `docker compose` | Multi-container apps from compose files |
+| duf | `duf` | Disk usage |
+| eza | `ls`, `ll`, `lt` | ls with icons and git status |
+| fastfetch | `fastfetch` | System info |
+| fish | `fish` | Default shell |
+| fish-pure-prompt | — | Pure prompt for fish |
+| git | `git` | Version control |
+| github-cli | `gh` | GitHub CLI, also git auth (`gh auth setup-git`) |
+| glances | `glances` | Web system monitor |
+| lazydocker | `lazydocker` | TUI for docker |
+| lazygit | `lazygit` | TUI for git |
+| macchanger | `macchanger` | MAC address changer |
+| mc | `mc` | Midnight Commander |
+| micro | `micro`, `m` | Terminal text editor (`m` = `sudo -E micro`) |
+| nmap | `nmap` | Network scanner |
+| paru | `paru` | AUR helper (install.sh builds it first if missing) |
+| ripgrep | `rg` | Fast content search |
+| stow | `stow` | Symlinks the packages in this repo into `~` |
+| trash-cli | `rm` | `rm` moves files to trash instead of deleting |
+| wipe | `rmw` | Secure file deletion |
+| yazi | `yazi` | Terminal file manager |
 
 ---
 
 ## Desktop Programs (auto-installed, CachyOS/Arch + KDE only)
 
+List: [`programs/desktop.txt`](programs/desktop.txt). Sorted alphabetically.
+
 | Program | Description |
 |---------|-------------|
-| kitty | GPU-accelerated terminal |
-| wl-clipboard | `wl-copy` / `wl-paste` — Wayland clipboard (image paste in Claude Code) |
-| code | VS Code |
-| brave-bin | Brave browser |
-| telegram-desktop | Telegram |
-| remmina | RDP/VNC client |
-| steam | Steam gaming platform |
-| obs-studio | Screen recording / streaming |
-| easyeffects | Audio effects and equalizer |
-| openrgb | RGB lighting control |
-| sniffnet | Network traffic monitor (GUI) |
-| kdiskmark | Disk benchmark |
-| kopia-ui-bin | Backup with deduplication |
 | anydesk-bin | Remote desktop |
+| brave-bin | Brave browser (policies from `programs/brave-*.json`) |
+| claude-desktop-extra | Claude Desktop (official Linux build, AUR by patrickjaja) |
+| code | VS Code |
+| easyeffects | Audio effects and equalizer |
+| freerdp | RDP plugin for Remmina (without it Remmina can't open RDP) |
+| jetbrains-toolbox | Installs and updates JetBrains IDEs (IntelliJ IDEA) in `~/.local/share/JetBrains` |
+| kdiskmark | Disk benchmark |
+| kitty | GPU-accelerated terminal |
+| kopia-ui-bin | Backup with deduplication |
+| kora-icon-theme | Kora icon theme |
+| linux-arctis-manager | SteelSeries headset manager |
 | meld | File/folder diff tool |
+| nordic-theme-git | Nordic plasma desktop theme (Nordic-darker-solid) |
+| noto-fonts | Base fonts |
+| noto-fonts-emoji | Emoji font |
+| obs-studio | Screen recording / streaming |
+| openrgb | RGB lighting control |
+| pacseek-bin | TUI to search and install pacman/AUR packages |
+| remmina | RDP/VNC client |
+| sniffnet | Network traffic monitor (GUI) |
+| steam | Steam gaming platform |
+| telegram-desktop | Telegram |
+| ttf-jetbrains-mono-nerd | JetBrains Mono Nerd Font (terminal font) |
+| ttf-meslo-nerd | Meslo Nerd Font (prompt icons) |
 | winbox | MikroTik router management |
 | wireshark-qt | Network traffic analyzer |
-| linux-arctis-manager | SteelSeries headset manager |
-| claude-desktop-extra | Claude Desktop (official Linux build, AUR by patrickjaja) |
+| wl-clipboard | `wl-copy` / `wl-paste` — Wayland clipboard (image paste in Claude Code) |
 
-### Themes (included in desktop install)
-- `nordic-theme-git` — Nordic plasma desktop theme (Nordic-darker-solid)
-- `kora-icon-theme` — Kora icon theme (auto-installed from AUR)
-- **Nordic-my** — custom Look & Feel theme (bundled in dotfiles, applied via stow)
+### Themes
+- **Nordic-my** — custom Look & Feel theme (bundled in dotfiles, applied via stow).
+  Applying a Global Theme also replaces the panel layout unless "Use desktop layout
+  from theme" is unchecked.
 
 ### Flatpak
+
+List: [`programs/flatpak.txt`](programs/flatpak.txt).
+
 - `dev.vencord.Vesktop` — Discord client
 
 ---
@@ -86,20 +107,19 @@ After install, create your private config (see [Private Setup](#private-setup)).
 
 | Program | Description | Install |
 |---------|-------------|---------|
-| protonup-qt | Proton version manager for Steam | `paru -S protonup-qt` |
-| prismlauncher | Minecraft launcher | `paru -S prismlauncher-offline` |
-| gwenview | KDE image viewer | `pacman -S gwenview` |
-| haruna | Video player | `pacman -S haruna` |
-| libreoffice | Office suite | `pacman -S libreoffice-fresh` |
-| pavucontrol | PulseAudio mixer | `pacman -S pavucontrol` |
-| inkscape | Vector editor | `pacman -S inkscape` |
 | audacity | Audio editor | `pacman -S audacity` |
 | btrfs-assistant | BTRFS snapshots GUI | `pacman -S btrfs-assistant` |
-| headsetcontrol | Headset control | `pacman -S headsetcontrol` |
-| iperf3 | Network throughput test | `pacman -S iperf3` |
 | f3 | Flash drive fake capacity test | `pacman -S f3` |
+| gwenview | KDE image viewer | `pacman -S gwenview` |
+| haruna | Video player | `pacman -S haruna` |
+| headsetcontrol | Headset control | `pacman -S headsetcontrol` |
+| inkscape | Vector editor | `pacman -S inkscape` |
+| iperf3 | Network throughput test | `pacman -S iperf3` |
+| libreoffice | Office suite | `pacman -S libreoffice-fresh` |
+| pavucontrol | PulseAudio mixer | `pacman -S pavucontrol` |
+| prismlauncher | Minecraft launcher | `paru -S prismlauncher-offline` |
+| protonup-qt | Proton version manager for Steam | `paru -S protonup-qt` |
 | snapper | BTRFS snapshots | `pacman -S snapper` |
-| kdiskmark | Disk benchmark | `pacman -S kdiskmark` |
 
 ### Icon Themes
 - **kora** — installed automatically via `kora-icon-theme` (AUR)
