@@ -48,3 +48,8 @@ echo "mux $(cat $a/gpu_mux_mode/current_value 2>/dev/null) $edp"
 echo "eco $(cat $a/dgpu_disable/current_value 2>/dev/null)"
 # «Интегрированная» при загрузке (флаг ставит gpu-toggle mode integrated)
 [ -e /var/lib/gpu-toggle/integrated ] && echo "ecoboot 1" || echo "ecoboot 0"
+# Андервольт CPU (cpu-undervolt, только ноутбук): VALUE из /etc/cpu-undervolt.conf; нет файла — нет строки
+[ -r /etc/cpu-undervolt.conf ] && . /etc/cpu-undervolt.conf && echo "uv $VALUE"
+# Подсветка клавиатуры 0..3 и лимиты мощности (asus-armoury): CPU SPL/sPPT/fPPT, NVIDIA TGP + Dynamic Boost
+echo "kbd $(cat /sys/class/leds/asus::kbd_backlight/brightness 2>/dev/null)"
+echo "ppt $(cat $a/ppt_pl1_spl/current_value $a/ppt_pl2_sppt/current_value $a/ppt_pl3_fppt/current_value $a/nv_tgp/current_value $a/nv_dynamic_boost/current_value 2>/dev/null | tr '\n' ' ')"

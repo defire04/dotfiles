@@ -29,12 +29,15 @@ PlasmoidItem {
     property string muxSet: ""      // gpu_mux_mode: 1 гибрид, 0 Ultimate — действует после перезагрузки
     property string muxNow: ""      // фактический: экран на AMD -> "1", иначе "0"
     property bool eco: false        // dgpu_disable: NVIDIA выключена
-    property bool ecoBoot: false    // выбрана «Интегрированная»: NVIDIA выключается при загрузке
+    property string uv: ""          // андервольт CPU (-15 …), "" — не установлен cpu-undervolt
+    property bool ecoBoot: false
+    property string kbd: ""         // подсветка клавиатуры 0..3
+    property var ppt: []            // [CPU SPL, sPPT, fPPT, NVIDIA TGP, Dynamic Boost], W    // выбрана «Интегрированная»: NVIDIA выключается при загрузке
     // Режим видеокарты как в ROG Control Center; для Ultimate — то, что будет после перезагрузки
     readonly property string gpuModeSet: muxSet === "0" ? "ultimate" : (eco || ecoBoot) ? "integrated" : muxSet === "1" ? "hybrid" : ""
     property var topList: []        // [{name, cpu}] — топ процессов, всегда topRows строк
     property var topAvg: ({})       // имя -> сглаженный % CPU (чтобы список не прыгал)
-    readonly property int topRows: 5
+    readonly property int topRows: 15   // сколько показать — решает высота окошка (минимум 5)
     property string amdBusy: ""
     property string nvidiaState: ""
     property string cpuTotal: ""
@@ -189,6 +192,11 @@ PlasmoidItem {
             PlasmaComponents.Label { id: n; Layout.fillWidth: true; elide: Text.ElideRight; font.bold: strong }
             PlasmaComponents.Label { id: v; font.bold: strong; font.features: { "tnum": 1 } }
         }
+        // Группа строк под заголовком
+        component Card: ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 0
+        }
         component Caption: PlasmaComponents.Label {
             opacity: 0.6
             font.pointSize: Kirigami.Theme.smallFont.pointSize
@@ -244,6 +252,8 @@ PlasmoidItem {
             QQC2.SwipeView {
                 id: swipe
                 Layout.fillWidth: true
+                // все вкладки одной высоты — по самой длинной; на «Сейчас» свободное место
+                // занимает список процессов
                 Layout.preferredHeight: Math.max(page1.implicitHeight, page2.implicitHeight, page3.implicitHeight)
                 currentIndex: tabs.currentIndex
                 clip: true
@@ -252,14 +262,12 @@ PlasmoidItem {
                 Item {
                 ColumnLayout {
                     id: page1
-                    anchors { left: parent.left; right: parent.right; top: parent.top }
+                    anchors.fill: parent
                     spacing: Kirigami.Units.smallSpacing
 
                     Caption { text: "Батарея"; visible: root.chargeFull > 0 }
-                    ColumnLayout {
+                    Card {
                         visible: root.chargeFull > 0
-                        spacing: 0
-                        Layout.fillWidth: true
                         Row2 { visible: root.timeLeft !== ""; name: root.timeLeft.split(" ~")[0]; value: root.timeLeft.split(" ~")[1] || "" }
                         Row2 {
                             name: "Здоровье"
@@ -271,12 +279,10 @@ PlasmoidItem {
                         }
                     }
 
-                    Caption { text: "Питание"; visible: watt.visible }
-                    ColumnLayout {
-                        id: watt
-                        visible: root.socWatts >= 0 && !root.acOnline
-                        spacing: 0
-                        Layout.fillWidth: true
+                    // Чип меряется и от сети; «Экран, ОЗУ…» — только от батареи (нужен общий расход)
+                    Caption { text: "Питание"; visible: root.socWatts >= 0 }
+                    Card {
+                        visible: root.socWatts >= 0
                         Row2 { name: "Ядра процессора"; value: root.fmtW(root.coreWatts) }
                         Row2 { name: "Графика AMD"; value: root.fmtW(root.gfxWatts) }
                         Row2 {
@@ -287,6 +293,7 @@ PlasmoidItem {
                             HoverHandler { id: hh }
                         }
                         Row2 {
+                            visible: !root.acOnline
                             name: "Экран, ОЗУ, Wi-Fi, SSD"
                             value: root.fmtW(Math.abs(root.watts) - root.socWatts)
                             PlasmaComponents.ToolTip.text: "Отдельных датчиков нет: разница между батареей и чипом. Экран ~4,5–5 W (замер 30.09, яркость 45 %)"
@@ -296,27 +303,40 @@ PlasmoidItem {
                     }
 
                     Caption { text: "Процессор" + (root.cpuTotal ? " · " + root.cpuTotal + " %, процессов " + root.tasks : "") }
-                    Repeater {
-                        model: root.topList
-                        delegate: Row2 {
-                            required property var modelData
-                            required property int index
-                            name: modelData.name
-                            value: modelData.cpu
-                            strong: index === 0
+                    // Растягивается на свободное место: строк столько, сколько влезает (минимум 5)
+                    Item {
+                        id: procArea
+                        readonly property real rowH: rowMeasure.implicitHeight
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Layout.minimumHeight: rowH * 5
+                        implicitHeight: rowH * 5
+                        clip: true
+                        PlasmaComponents.Label { id: rowMeasure; visible: false; text: "X" }
+                        ColumnLayout {
+                            anchors { left: parent.left; right: parent.right; top: parent.top }
+                            spacing: 0
+                            Repeater {
+                                model: root.topList.slice(0, Math.max(1, Math.floor(procArea.height / procArea.rowH)))
+                                delegate: Row2 {
+                                    required property var modelData
+                                    required property int index
+                                    name: modelData.name
+                                    value: modelData.cpu
+                                    strong: index === 0
+                                }
+                            }
+                            PlasmaComponents.Label {
+                                visible: root.topList.length === 0
+                                text: root.nvidiaState ? "всё почти простаивает" : "собираю…"
+                                opacity: 0.7
+                            }
                         }
-                    }
-                    PlasmaComponents.Label {
-                        visible: root.topList.length === 0
-                        text: root.nvidiaState ? "всё почти простаивает" : "собираю…"
-                        opacity: 0.7
                     }
 
                     Caption { text: "Видеокарты"; visible: root.nvidiaState !== "" }
-                    ColumnLayout {
+                    Card {
                         visible: root.nvidiaState !== ""
-                        spacing: 0
-                        Layout.fillWidth: true
                         Row2 { name: "AMD (встроенная)"; value: root.amdBusy + " %" }
                         Row2 { name: "NVIDIA"; value: root.nvidiaState }
                     }
@@ -362,6 +382,7 @@ PlasmoidItem {
                         model: root.sensorDefs
                         delegate: ColumnLayout {
                             required property var modelData
+                            required property int index
                             readonly property var st: root.stats[modelData.key]
                             spacing: 0
                             Layout.fillWidth: true
@@ -369,8 +390,20 @@ PlasmoidItem {
                             visible: !modelData.nv || modelData.key === "nv_temp" || root.nvAwake || st !== undefined
 
                             Caption { visible: modelData.header !== undefined; text: modelData.header || "" }
-                            RowLayout {
+                            // строки через одну с лёгкой полосой; полоса за краями — размер не меняется
+                            Item {
                                 Layout.fillWidth: true
+                                implicitHeight: srow.implicitHeight
+                                Rectangle {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: -Kirigami.Units.smallSpacing
+                                    anchors.rightMargin: -Kirigami.Units.smallSpacing
+                                    radius: Kirigami.Units.cornerRadius
+                                    color: index % 2 ? Qt.alpha(Kirigami.Theme.textColor, 0.05) : "transparent"
+                                }
+                            RowLayout {
+                                id: srow
+                                anchors.fill: parent
                                 PlasmaComponents.Label {
                                     text: modelData.name
                                     Layout.fillWidth: true
@@ -384,6 +417,7 @@ PlasmoidItem {
                                 Num { text: st ? root.fmtSensor(modelData, st.min) : "—"; opacity: 0.7 }
                                 Num { text: st ? root.fmtSensor(modelData, st.max) : "—"; opacity: 0.7 }
                             }
+                            }
                         }
                     }
                 }
@@ -396,7 +430,8 @@ PlasmoidItem {
                     anchors { left: parent.left; right: parent.right; top: parent.top }
                     spacing: Kirigami.Units.smallSpacing
 
-                    component Choice: RowLayout {
+                    // Переключатель-сегменты в рамке; выбранный — акцентом и жирным
+                    component Choice: Item {
                         id: choice
                         property var options: []     // [{id, name, icon}]
                         property string current: ""
@@ -404,30 +439,55 @@ PlasmoidItem {
                         property bool equalWidth: true   // false — ширина по тексту (длинные названия)
                         signal picked(string id)
                         Layout.fillWidth: true
-                        spacing: Kirigami.Units.smallSpacing
-                        Repeater {
-                            model: choice.options
-                            delegate: PlasmaComponents.Button {
-                                required property var modelData
-                                Layout.fillWidth: true
-                                Layout.preferredWidth: choice.equalWidth ? 1 : implicitWidth
-                                icon.name: modelData.icon || ""
-                                text: modelData.name
-                                checkable: true
-                                checked: choice.current === modelData.id
-                                enabled: choice.enabledAll
-                                onClicked: { checked = Qt.binding(() => choice.current === modelData.id); choice.picked(modelData.id) }
+                        implicitHeight: seg.implicitHeight + 4
+
+                        Rectangle {
+                            anchors.fill: parent
+                            radius: Kirigami.Units.cornerRadius
+                            color: Qt.alpha(Kirigami.Theme.textColor, 0.04)
+                            border.color: Qt.alpha(Kirigami.Theme.textColor, 0.15)
+                        }
+                        RowLayout {
+                            id: seg
+                            anchors.fill: parent
+                            anchors.margins: 2
+                            spacing: 2
+                            Repeater {
+                                model: choice.options
+                                delegate: PlasmaComponents.Button {
+                                    required property var modelData
+                                    Layout.fillWidth: true
+                                    Layout.preferredWidth: choice.equalWidth ? 1 : implicitWidth
+                                    icon.name: modelData.icon || ""
+                                    text: modelData.name
+                                    checkable: true
+                                    checked: choice.current === modelData.id
+                                    highlighted: checked
+                                    font.bold: checked
+                                    enabled: choice.enabledAll
+                                    onClicked: { checked = Qt.binding(() => choice.current === modelData.id); choice.picked(modelData.id) }
+                                }
                             }
                         }
                     }
-                    component Hint: PlasmaComponents.Label {
-                        Layout.fillWidth: true
-                        wrapMode: Text.WordWrap
+
+                    // Заголовок блока; пояснение — во всплывающей подсказке
+                    component Section: PlasmaComponents.Label {
+                        property string tip: ""
                         opacity: 0.6
                         font.pointSize: Kirigami.Theme.smallFont.pointSize
+                        Layout.topMargin: Kirigami.Units.largeSpacing
+                        PlasmaComponents.ToolTip.text: tip
+                        PlasmaComponents.ToolTip.visible: tip !== "" && sh.hovered
+                        PlasmaComponents.ToolTip.delay: Kirigami.Units.toolTipDelay
+                        HoverHandler { id: sh }
                     }
 
-                    Caption { text: "Профиль работы" }
+                    Section {
+                        text: "Профиль работы"
+                        Layout.topMargin: 0
+                        tip: "Тот же ползунок KDE. ROG ставит сам: от сети — Производительный, от батареи — Тихий"
+                    }
                     Choice {
                         options: [
                             { id: "quiet", name: "Тихий" },
@@ -438,11 +498,10 @@ PlasmoidItem {
                         equalWidth: false
                         onPicked: id => root.setRogProfile(id)
                     }
-                    Hint { text: "Это же ползунок KDE «Экономия / Сбалансированный / Производительный». При подключении и отключении зарядки ROG ставит профиль сам: от сети — «Производительный», от батареи — «Тихий»." }
 
-                    Caption {
-                        text: "Режим видеокарты · NVIDIA " + (root.eco ? "выключена" : root.nvAwake ? "работает" : "спит")
-                        Layout.topMargin: Kirigami.Units.largeSpacing
+                    Section {
+                        text: "Видеокарта · NVIDIA " + (root.eco ? "выключена" : root.nvAwake ? "работает" : "спит")
+                        tip: "Интегрированная — NVIDIA выключена (~0 W). Гибридная — включается сразу, для игр. Ultimate — экран на NVIDIA, после перезагрузки"
                     }
                     Choice {
                         options: [
@@ -453,30 +512,56 @@ PlasmoidItem {
                         current: root.gpuModeSet
                         onPicked: id => root.setGpuMode(id)
                     }
-                    Hint {
+                    PlasmaComponents.Label {
                         readonly property bool muxPending: root.muxNow !== "" && root.muxSet !== root.muxNow
                         readonly property bool ecoPending: root.ecoBoot && !root.eco
-                        color: muxPending || ecoPending ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.textColor
-                        opacity: muxPending || ecoPending ? 1 : 0.6
-                        text: muxPending ? (root.muxSet === "0" ? "Ultimate включится после перезагрузки." : "Гибридная включится после перезагрузки.")
-                            : ecoPending ? "Интегрированная включится после перезагрузки."
-                            : root.gpuModeSet === "ultimate" ? "Экран подключён к NVIDIA: игры без лишнего копирования кадров, но батарея садится быстро."
-                            : root.gpuModeSet === "integrated" ? "NVIDIA выключена полностью, ~0 W. Для игр — «Гибридная», сразу, без перезагрузки."
-                            : "NVIDIA спит, когда не нужна, и просыпается для игр. «Интегрированная» и Ultimate — после перезагрузки."
+                        visible: muxPending || ecoPending
+                        color: Kirigami.Theme.negativeTextColor
+                        font.pointSize: Kirigami.Theme.smallFont.pointSize
+                        text: "⟳ После перезагрузки: " + (muxPending ? (root.muxSet === "0" ? "Ultimate" : "Гибридная") : "Интегрированная")
                     }
 
-                    Caption { text: "Заряжать до"; Layout.topMargin: Kirigami.Units.largeSpacing }
+                    Section {
+                        text: "Андервольт CPU"
+                        visible: root.uv !== ""
+                        tip: "Curve Optimizer, как в G-Helper. Держится после сна и смены профиля. При зависаниях — уменьшить"
+                    }
+                    Choice {
+                        visible: root.uv !== ""
+                        options: [{ id: "0", name: "Выкл" }, { id: "-10", name: "−10" }, { id: "-15", name: "−15" }, { id: "-20", name: "−20" }]
+                        current: root.uv
+                        onPicked: id => root.setUv(id)
+                    }
+
+                    Section {
+                        text: "Заряжать до"
+                        tip: "Если ноут почти всегда от сети — 80 % продлевает жизнь батареи. Перед поездкой — 100 %"
+                    }
                     Choice {
                         options: [{ id: "60", name: "60 %" }, { id: "80", name: "80 %" }, { id: "100", name: "100 %" }]
                         current: String(root.chargeLimit)
                         onPicked: id => root.setChargeLimit(parseInt(id, 10))
                     }
-                    PlasmaComponents.Label {
+
+                    Section { text: "Подсветка клавиатуры"; visible: root.kbd !== "" }
+                    Choice {
+                        visible: root.kbd !== ""
+                        options: [{ id: "0", name: "Выкл" }, { id: "1", name: "Низкая" }, { id: "2", name: "Средняя" }, { id: "3", name: "Высокая" }]
+                        current: root.kbd
+                        onPicked: id => root.setKbd(id)
+                    }
+
+                    Section {
+                        text: "Лимиты мощности"
+                        visible: root.ppt.length >= 5
+                        tip: "Задаёт прошивка ASUS для текущего профиля. CPU: длительный / долгий буст / короткий буст. NVIDIA: TGP + Dynamic Boost"
+                    }
+                    ColumnLayout {
+                        visible: root.ppt.length >= 5
+                        spacing: 0
                         Layout.fillWidth: true
-                        wrapMode: Text.WordWrap
-                        opacity: 0.6
-                        font.pointSize: Kirigami.Theme.smallFont.pointSize
-                        text: "Батарея перестаёт заряжаться на этом проценте. Если ноут почти всегда от сети, 80 % (или 60 %) заметно продлевают жизнь батареи. Перед поездкой — 100 %."
+                        Row2 { name: "CPU"; value: root.ppt.slice(0, 3).join(" / ") + " W" }
+                        Row2 { name: "NVIDIA"; value: root.ppt[3] + " W + " + root.ppt[4] + " W буст" }
                     }
                 }
                 }
@@ -567,6 +652,17 @@ PlasmoidItem {
         ds.connectSource("$HOME/.local/bin/gpu-toggle-ui mode " + m)
     }
 
+    // Андервольт CPU: sudo cpu-undervolt set N (разрешено без пароля в /etc/sudoers.d)
+    function setUv(v) {
+        uv = v
+        ds.connectSource("sudo -n /usr/local/bin/cpu-undervolt set " + v)
+    }
+
+    function setKbd(level) {
+        kbd = level
+        ds.connectSource("asusctl leds set " + ["off", "low", "med", "high"][parseInt(level, 10)])
+    }
+
     function fmtW(w) {
         return Math.max(w, 0).toLocaleString(Qt.locale(), 'f', 1) + " W"
     }
@@ -635,6 +731,12 @@ PlasmoidItem {
                 break
             case "eco":
                 root.eco = f[1] === "1"; break
+            case "uv":
+                root.uv = f[1] || ""; break
+            case "kbd":
+                root.kbd = f[1] || ""; break
+            case "ppt":
+                root.ppt = f.slice(1).filter(x => x !== ""); break
             case "ecoboot":
                 root.ecoBoot = f[1] === "1"; break
             case "nv_state":
