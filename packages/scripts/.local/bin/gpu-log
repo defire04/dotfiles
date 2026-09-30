@@ -1,0 +1,50 @@
+#!/bin/bash
+# gpu-log — температура и мощность RTX 5080 раз в секунду, по Ctrl+C итог: максимум и среднее.
+# psensor не видит NVIDIA на Wayland (NVCtrl нужен X11), а nvidia-smi работает.
+# Лог сессии: ~/.local/state/gpu-log/ГГГГ-ММ-ДД_ЧЧ-ММ-СС.csv
+# Использование: gpu-log [интервал_в_секундах]
+interval=${1:-1}
+
+if ! nvidia-smi -L >/dev/null 2>&1; then
+    echo "NVIDIA не отвечает. Видеокарта выключена (Eco)? Включите её кнопкой M4."
+    exit 1
+fi
+
+dir=~/.local/state/gpu-log
+mkdir -p "$dir"
+log="$dir/$(date +%F_%H-%M-%S).csv"
+echo "time,temp_c,power_w,util_pct,clock_mhz" > "$log"
+
+summary() {
+    echo
+    awk -F, 'NR > 1 {
+        n++
+        t += $2; p += $3; u += $4; c += $5
+        if ($2 > mt) mt = $2
+        if ($3 > mp) mp = $3
+        if ($4 > mu) mu = $4
+        if ($5 > mc) mc = $5
+    }
+    END {
+        if (n == 0) { print "Нет данных"; exit }
+        printf "Итог за %d с\n", n
+        printf "  %-12s %8s %8s\n", "", "макс", "среднее"
+        printf "  %-12s %6.0f°C %6.0f°C\n", "Температура", mt, t / n
+        printf "  %-12s %6.1f Вт %6.1f Вт\n", "Мощность", mp, p / n
+        printf "  %-12s %7.0f%% %7.0f%%\n", "Загрузка", mu, u / n
+        printf "  %-12s %5.0f МГц %4.0f МГц\n", "Частота", mc, c / n
+    }' "$log"
+    echo "Лог: $log"
+    exit 0
+}
+trap summary INT TERM
+
+echo "RTX 5080, раз в ${interval} с. Ctrl+C — остановить и показать итог."
+printf "%-8s %6s %8s %6s %9s\n" "время" "темп" "мощн" "загр" "частота"
+nvidia-smi --query-gpu=temperature.gpu,power.draw,utilization.gpu,clocks.gr \
+    --format=csv,noheader,nounits -l "$interval" 2>/dev/null |
+while IFS=', ' read -r temp power util clock; do
+    now=$(date +%T)
+    echo "$now,$temp,$power,$util,$clock" >> "$log"
+    printf "%-8s %4s°C %6s Вт %5s%% %5s МГц\n" "$now" "$temp" "$power" "$util" "$clock"
+done
