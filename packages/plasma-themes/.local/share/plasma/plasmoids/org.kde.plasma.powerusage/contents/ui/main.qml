@@ -97,6 +97,24 @@ PlasmoidItem {
         if (acOnline && Math.abs(watts) < 0.1) return ""
         return Math.abs(watts).toLocaleString(Qt.locale(), 'f', 1) + " W"
     }
+    // Сколько берём от блока питания (оценка; датчика на входе нет):
+    // в батарею + чип AMD (меряется) + «остальное» (выучено от батареи) + NVIDIA (если известна)
+    readonly property real acEstimate: {
+        if (!acOnline || socWatts < 0) return -1
+        var intoBattery = charging ? Math.abs(watts) : 0
+        return intoBattery + socWatts + plasmoid.configuration.restWatts + (nvAwake && cur.nv_w !== undefined ? cur.nv_w : 0)
+    }
+    readonly property bool acEstimateMissesNvidia: nvAwake && cur.nv_w === undefined
+
+    // Учим «остальное» от батареи, когда NVIDIA спит (иначе её ватты попали бы сюда)
+    function learnRest() {
+        if (acOnline || charging || socWatts < 0 || nvAwake || Math.abs(watts) < 1) return
+        var rest = Math.abs(watts) - socWatts
+        if (rest < 1 || rest > 30) return
+        var old = plasmoid.configuration.restWatts
+        plasmoid.configuration.restWatts = Math.round((old * 0.9 + rest * 0.1) * 10) / 10
+    }
+
     readonly property string statusText: charging ? "Заряжается" : status === "Full" ? "Заряжена"
                                        : acOnline ? "От сети" : "Разряжается"
 
@@ -223,10 +241,37 @@ PlasmoidItem {
                 ColumnLayout {
                     spacing: 0
                     Kirigami.Heading { level: 3; text: root.percent >= 0 ? root.percent + "%" : "—" }
-                    PlasmaComponents.Label { opacity: 0.7; text: root.statusText }
+                    // «Заряжается · до 100 % 22 мин» / «Разряжается · осталось 4 ч 10 мин»
+                    PlasmaComponents.Label {
+                        opacity: 0.7
+                        text: root.statusText + (root.timeLeft ? " · " + root.timeLeft.replace(" ~", " ").replace("Осталось", "осталось").replace("До", "до") : "")
+                    }
                 }
                 Item { Layout.fillWidth: true }
-                Kirigami.Heading { level: 3; text: root.wattsText }
+                // Ватты со знаком и подписью: на зарядке — сколько входит в батарею (не расход
+                // ноутбука, он от сети не виден), от батареи — весь расход ноутбука
+                ColumnLayout {
+                    spacing: 0
+                    visible: root.wattsText !== ""
+                    Kirigami.Heading {
+                        level: 3
+                        Layout.alignment: Qt.AlignRight
+                        text: (root.charging ? "+" : root.acOnline ? "" : "−") + root.wattsText
+                        color: root.charging ? Kirigami.Theme.positiveTextColor : Kirigami.Theme.textColor
+                    }
+                    PlasmaComponents.Label {
+                        Layout.alignment: Qt.AlignRight
+                        opacity: 0.6
+                        font.pointSize: Kirigami.Theme.smallFont.pointSize
+                        text: root.charging ? "в батарею" : root.acOnline ? "" : "расход"
+                              + (root.acEstimate >= 0 ? (root.charging ? " · " : "") + "от сети ≈ " + Math.round(root.acEstimate) + " W" + (root.acEstimateMissesNvidia ? " + NVIDIA" : "") : "")
+                        PlasmaComponents.ToolTip.text: root.acOnline
+                            ? "«в батарею» — меряется. «от сети» — оценка ±2–3 W: в батарею + чип AMD + экран/ОЗУ/Wi-Fi/SSD (" + plasmoid.configuration.restWatts.toLocaleString(Qt.locale(), 'f', 1) + " W, выучено от батареи)" + (root.acEstimateMissesNvidia ? ". NVIDIA работает — её ватты видны только при мониторинге" : "")
+                            : "Сколько отдаёт батарея — это весь расход ноутбука"
+                        PlasmaComponents.ToolTip.visible: wh.hovered
+                        HoverHandler { id: wh }
+                    }
+                }
                 PlasmaComponents.ToolButton {
                     icon.name: "window-pin"
                     checkable: true
@@ -238,6 +283,13 @@ PlasmoidItem {
                     PlasmaComponents.ToolTip.visible: hovered
                     PlasmaComponents.ToolTip.delay: Kirigami.Units.toolTipDelay
                 }
+            }
+
+            PlasmaComponents.ProgressBar {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 3
+                from: 0; to: 100
+                value: Math.max(root.percent, 0)
             }
 
             PlasmaComponents.TabBar {
@@ -268,7 +320,6 @@ PlasmoidItem {
                     Caption { text: "Батарея"; visible: root.chargeFull > 0 }
                     Card {
                         visible: root.chargeFull > 0
-                        Row2 { visible: root.timeLeft !== ""; name: root.timeLeft.split(" ~")[0]; value: root.timeLeft.split(" ~")[1] || "" }
                         Row2 {
                             name: "Здоровье"
                             value: Math.round(root.chargeFull / root.chargeDesign * 100) + " %"
@@ -772,6 +823,7 @@ PlasmoidItem {
                 socWatts = parseInt(w[1], 10) / 1000
                 gfxWatts = parseInt(w[2], 10) / 1000
                 coreWatts = parseInt(w[3], 10) / 1000
+                learnRest()
             } else if (l.startsWith("gpu ")) {
                 var g = l.split(" ")
                 amdBusy = g[1] || "?"

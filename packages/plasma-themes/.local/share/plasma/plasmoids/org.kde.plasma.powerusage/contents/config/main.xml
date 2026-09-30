@@ -21,5 +21,9 @@
     <entry name="updateInterval" type="Int">
       <default>5000</default>
     </entry>
+    <!-- Выученный расход «экран, ОЗУ, Wi-Fi, SSD» (батарея − чип AMD), W: для оценки от сети -->
+    <entry name="restWatts" type="Double">
+      <default>7.0</default>
+    </entry>
   </group>
 </kcfg>
