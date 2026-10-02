@@ -46,6 +46,7 @@ PlasmoidItem {
     property real gfxWatts: 0       // встроенная графика
     property real coreWatts: 0      // ядра процессора
     property bool pinned: false     // кнопка-булавка: окошко не закрывается при клике мимо
+    property var lastCharge: null   // {start, from, end, to}: секунды и проценты; end 0 — ещё на зарядке
 
     // Вкладка «Датчики»
     property var cur: ({})          // ключ -> текущее значение
@@ -84,6 +85,7 @@ PlasmoidItem {
     // Скрипты рядом, в contents/code/
     function codePath(f) { return "sh '" + Qt.resolvedUrl("../code/" + f).toString().replace("file://", "") + "'" }
     readonly property string topCmd: codePath("top.sh")
+    readonly property string chargeCmd: codePath("charge.sh")
     readonly property string sensorsCmd: codePath("sensors.sh") + (monitoring ? " nv" : "")
 
     readonly property bool charging: status === "Charging"
@@ -327,6 +329,17 @@ PlasmoidItem {
                             PlasmaComponents.ToolTip.text: "Сколько энергии батарея вмещает сейчас и сколько вмещала новой. Со временем ёмкость падает — это нормально"
                             PlasmaComponents.ToolTip.visible: hh0.hovered
                             HoverHandler { id: hh0 }
+                        }
+                        Row2 {
+                            visible: root.lastChargeText !== ""
+                            name: root.lastCharge && !root.lastCharge.end ? "На зарядке" : "Последняя зарядка"
+                            value: root.lastChargeText
+                            PlasmaComponents.ToolTip.text: !root.lastCharge ? "" : !root.lastCharge.end
+                                ? "Подключена " + root.fmtWhen(root.lastCharge.start)
+                                : "Заряжалась " + root.fmtWhen(root.lastCharge.start) + " – " + root.fmtWhen(root.lastCharge.end)
+                                  + ", от батареи уже " + root.fmtHours((Date.now() / 1000 - root.lastCharge.end) / 3600)
+                            PlasmaComponents.ToolTip.visible: hh1.hovered
+                            HoverHandler { id: hh1 }
                         }
                     }
 
@@ -635,6 +648,11 @@ PlasmoidItem {
             if (out !== null) parseTop(out)
             return
         }
+        if (source === chargeCmd) {
+            var c = (out || "").trim().split(" ")
+            lastCharge = c[0] === "charge" ? { start: +c[1], from: +c[2], end: +c[3], to: +c[4] } : null
+            return
+        }
         if (source === sensorsCmd) {
             if (out !== null) parseSensors(out)
             return
@@ -681,6 +699,22 @@ PlasmoidItem {
         if (status === "Discharging") return "Осталось ~" + fmtHours(chargeNow * voltage / 1e6 / w)
         if (charging) return "До " + chargeLimit + " % ~" + fmtHours((chargeFull * chargeLimit / 100 - chargeNow) * voltage / 1e6 / w)
         return ""
+    }
+
+    // «сегодня 00:23» / «вчера 22:21» / «28.09 14:05»
+    function fmtWhen(sec) {
+        var d = new Date(sec * 1000), today = new Date()
+        today.setHours(0, 0, 0, 0)
+        var days = Math.round((today - new Date(d).setHours(0, 0, 0, 0)) / 86400000)
+        var day = days === 0 ? "сегодня" : days === 1 ? "вчера" : Qt.formatDate(d, "dd.MM")
+        return day + " " + Qt.formatTime(d, "hh:mm")
+    }
+    // «15 → 100 % · сегодня 00:23» (когда сняли с зарядки) или «с 15 % · с 22:21» (ещё заряжается)
+    readonly property string lastChargeText: {
+        var c = lastCharge
+        if (!c) return ""
+        if (!c.end) return (c.from ? "с " + c.from + " % · " : "") + "с " + fmtWhen(c.start).replace("сегодня ", "")
+        return (c.from ? c.from + " → " : "") + c.to + " % · " + fmtWhen(c.end)
     }
 
     // мкА·ч -> Вт·ч по номинальному напряжению
@@ -857,6 +891,15 @@ PlasmoidItem {
                     .map(f => batteryPath + "/" + f)
         if (acPath) files.push(acPath + "/online")
         ds.connectSource("grep -sH . " + files.join(" "))
+    }
+
+    // Последняя зарядка (история UPower) — только пока окошко открыто: сразу и раз в 30 с
+    Timer {
+        interval: 30000
+        running: root.expanded
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: ds.connectSource(root.chargeCmd)
     }
 
     Timer {
