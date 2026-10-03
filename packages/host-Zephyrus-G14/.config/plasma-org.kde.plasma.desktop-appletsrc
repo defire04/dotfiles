@@ -72,20 +72,20 @@ immutability=1
 plugin=org.kde.plasma.powerusage
 
 [Containments][94][Applets][222][Configuration]
-popupHeight=571
+popupHeight=499
 popupWidth=414
 
 [Containments][94][Applets][222][Configuration][General]
 fontBold=false
 fontSize=11
-restWatts=6.2
+restWatts=6.1
 
 [Containments][94][Applets][223]
 immutability=1
 plugin=org.kde.plasma.claudeusage
 
 [Containments][94][Applets][223][Configuration]
-popupHeight=400
+popupHeight=355
 popupWidth=288
 
 [Containments][94][Applets][223][Configuration][ConfigDialog]
@@ -265,4 +265,4 @@ immutability=1
 
 [ScreenMapping]
 itemsOnDisabledScreens=
-screenMapping=desktop:/intellij-idea-ultimate.desktop,0,9e486a08-16e2-42f1-b118-822c7d231924,desktop:/The Witcher 3 Wild Hunt.desktop,0,9e486a08-16e2-42f1-b118-822c7d231924
+screenMapping=desktop:/The Witcher 3 Wild Hunt.desktop,0,9e486a08-16e2-42f1-b118-822c7d231924,desktop:/intellij-idea-ultimate.desktop,0,9e486a08-16e2-42f1-b118-822c7d231924
