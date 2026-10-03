@@ -177,7 +177,7 @@ immutability=1
 plugin=org.kde.plasma.claudeusage
 
 [Containments][190][Applets][217][Configuration]
-popupHeight=272
+popupHeight=318
 popupWidth=288
 
 [Containments][190][Applets][217][Configuration][ConfigDialog]
@@ -185,7 +185,9 @@ DialogHeight=630
 DialogWidth=810
 
 [Containments][190][Applets][217][Configuration][General]
-backgroundOpacity=0.4
+autoRefreshSession=true
+backgroundOpacity=0.8
+cardOrder=[{"id":"account","enabled":true},{"id":"usage","enabled":true},{"id":"models","enabled":false},{"id":"extra","enabled":false},{"id":"tokens","enabled":true},{"id":"trend","enabled":true},{"id":"installations","enabled":true},{"id":"links","enabled":true}]
 iconSize=16
 language=en_US
 panelIcon=claude
@@ -236,7 +238,7 @@ DialogHeight=928
 DialogWidth=1231
 
 [Containments][43][General]
-changedPositions={"desktop:/intellij-idea-ultimate.desktop":["640x480,1920x1080,2560x1440","0","0"]}
+changedPositions={"desktop:/intellij-idea-ultimate.desktop":["640x480,2560x1440,1920x1080","0","0"]}
 lastResolution=2560x1440
 positions={"1920x1080":["2","17","desktop:/The Witcher 3 Wild Hunt.desktop","1","0","desktop:/intellij-idea-ultimate.desktop","0","0"],"2560x1440":["2","23","desktop:/The Witcher 3 Wild Hunt.desktop","1","0","desktop:/intellij-idea-ultimate.desktop","0","0"],"640x480":["5","5","desktop:/intellij-idea-ultimate.desktop","0","0","desktop:/The Witcher 3 Wild Hunt.desktop","1","0"]}
 sortMode=-1
@@ -518,13 +520,17 @@ plugin=org.kde.plasma.bluetooth
 immutability=1
 plugin=org.kde.plasma.mediacontroller
 
+[Containments][94][Applets][99][Applets][220]
+immutability=1
+plugin=org.kde.plasma.devicenotifier
+
 [Containments][94][Applets][99][ConfigDialog]
 DialogHeight=630
-DialogWidth=810
+DialogWidth=1159
 
 [Containments][94][Applets][99][General]
 disabledStatusNotifiers=openrgb
-extraItems=org.kde.plasma.bluetooth,org.kde.kdeconnect,org.kde.plasma.cameraindicator,org.kde.plasma.manage-inputmethod,org.kde.plasma.keyboardindicator,org.kde.plasma.weather,org.kde.kscreen,org.kde.plasma.battery,org.kde.plasma.networkmanagement,org.kde.plasma.volume,org.kde.plasma.mediacontroller,org.kde.plasma.keyboardlayout,org.kde.plasma.clipboard,org.kde.plasma.notifications
+extraItems=org.kde.plasma.bluetooth,org.kde.kdeconnect,org.kde.plasma.cameraindicator,org.kde.plasma.manage-inputmethod,org.kde.plasma.keyboardindicator,org.kde.plasma.weather,org.kde.kscreen,org.kde.plasma.battery,org.kde.plasma.networkmanagement,org.kde.plasma.volume,org.kde.plasma.mediacontroller,org.kde.plasma.keyboardlayout,org.kde.plasma.clipboard,org.kde.plasma.notifications,org.kde.plasma.devicenotifier
 hiddenItems=org.kde.plasma.clipboard
 iconSpacing=1
 knownItems=org.kde.plasma.bluetooth,org.kde.kdeconnect,org.kde.plasma.cameraindicator,org.kde.plasma.clipboard,org.kde.plasma.manage-inputmethod,org.kde.plasma.keyboardlayout,org.kde.plasma.keyboardindicator,org.kde.plasma.weather,org.kde.kscreen,org.kde.plasma.battery,org.kde.plasma.brightness,org.kde.plasma.networkmanagement,org.kde.plasma.volume,org.kde.plasma.devicenotifier,org.kde.plasma.mediacontroller,org.kde.plasma.notifications
