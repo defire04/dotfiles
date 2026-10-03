@@ -1,0 +1,40 @@
+#!/bin/bash
+# Режим видеокарты RTX 5080 + уведомление. Вызывается из виджета батареи (вкладка «Режимы»):
+#   gpu-toggle-ui mode integrated|hybrid|ultimate
+# Старое: gpu-toggle-ui on|off|toggle (была кнопка M4, отвязана).
+# Документация: .Infra/guides/zephyrus-nvidia-sleep.md, .Infra/guides/zephyrus-power-saving.md
+gt() { sudo -n /usr/local/bin/gpu-toggle "$@"; }
+eco() { gt status | grep -q '^Eco'; }
+
+action=${1:-toggle}
+if [ "$action" = toggle ]; then
+    if eco; then action=on; else action=off; fi
+fi
+
+was_eco=0; eco && was_eco=1
+if [ "$action" = mode ]; then out=$(gt mode "$2" 2>&1); else out=$(gt "$action" 2>&1); fi
+rc=$?
+
+# ROG Control Center проверяет NVIDIA только при запуске: если карта включилась или
+# выключилась — перезапустить его, чтобы он это увидел
+now_eco=0; eco && now_eco=1
+if [ $was_eco != $now_eco ] && pgrep -f '^(/usr/bin/)?rog-control-center' >/dev/null; then
+    pkill -f '^(/usr/bin/)?rog-control-center'
+    for _ in 1 2 3 4 5; do pgrep -f '^(/usr/bin/)?rog-control-center' >/dev/null || break; sleep 0.5; done
+    systemd-run --user -q --collect rog-control-center --autostart --background
+fi
+
+title="Видеокарта"
+icon=nvidia
+if [ $rc = 2 ] && printf '%s' "$out" | grep -q 'D3cold'; then
+    # Карта занята, но спит (D3cold = питание снято) — это нормально, не предупреждение
+    holders=$(printf '%s\n' "$out" | awk 'NR>1 {n=split($2,a,"/"); printf "%s%s", sep, a[n]; sep=", "}')
+    title="NVIDIA спит (D3cold)"
+    out="Полностью выключить нельзя, её держат: $holders"
+elif [ $rc = 2 ]; then
+    icon=dialog-warning
+elif [ $rc != 0 ]; then
+    icon=dialog-error
+fi
+notify-send -a "Видеокарта" -i "$icon" -h string:desktop-entry:net.local.gpu-toggle "$title" "$out"
+exit $rc

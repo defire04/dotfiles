@@ -11,6 +11,10 @@ network/wlan0/download=110,75,193
 network/wlan0/ipv4address=158,193,75
 network/wlan0/ipv6address=75,193,169
 network/wlan0/upload=193,75,99
+network/wlp99s0/download=75,128,193
+network/wlp99s0/ipv4address=193,140,75
+network/wlp99s0/ipv6address=75,193,81
+network/wlp99s0/upload=193,75,187
 
 [Face-101427258480848][Sensors]
 highPrioritySensorIds=["network/(?!all).*/download","network/(?!all).*/upload","network/(?!all).*/ipv4address","network/(?!all).*/ipv6address"]
@@ -68,16 +72,20 @@ chartFace=org.kde.ksysguard.horizontalbars
 [Face-106123488899456][SensorColors]
 disk/0af05931f05923eb/used=233,120,61
 disk/0ee143ed2562da42/used=75,128,193
+disk/1d94a3e0-50b9-4580-8436-06cb850cb9a0/used=193,140,75
 disk/2b4f-a687/used=193,179,75
 disk/427a0dbd-7f9a-494c-94d3-032a8e434452/used=75,128,193
 disk/4b7b-22ff/used=128,193,75
 disk/4e21-0000/used=75,193,101
+disk/5f14efe9-4943-4b8a-a369-5bdb6921104f/used=75,128,193
 disk/8de062b5-7647-4989-886c-36204659cd51/used=61,174,233
+disk/a9e6389f-686d-4849-8a1f-2d1038639229/used=75,193,81
 disk/c00e09310e0921d0/used=75,128,193
 disk/c70acd53-a14c-4fe7-aaf5-1f504b8f1ecd/used=193,75,128
 disk/e039-ad96/used=75,193,179
 disk/e0b8f122b8f0f83c/used=233,120,61
 disk/e0c478d3c478ad82/used=61,174,233
+disk/e374395a-5f8e-483d-bf23-6c468a1a8718/used=193,75,187
 
 [Face-106123488899456][Sensors]
 highPrioritySensorIds=["disk/(?!all).*/used"]

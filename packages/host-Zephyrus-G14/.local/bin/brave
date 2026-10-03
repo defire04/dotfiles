@@ -1,0 +1,10 @@
+#!/bin/sh
+# Brave без NVIDIA (ноутбук G14). С флагами VA-API из ~/.config/brave-flags.conf процесс
+# графики Brave открывает и RTX 5080 (/dev/nvidia0) — карта не засыпает, +10–15 W.
+# Прячем от Brave драйверы NVIDIA для EGL/GLX/Vulkan: он работает и декодирует видео на AMD.
+# Лежит раньше /usr/bin в PATH, поэтому срабатывает и из меню (Exec=brave), и из терминала.
+# Откат: удалить этот файл. См. .Infra/guides/zephyrus-nvidia-sleep.md
+export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json
+export __GLX_VENDOR_LIBRARY_NAME=mesa
+export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/radeon_icd.json
+exec /usr/bin/brave "$@"

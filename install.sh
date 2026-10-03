@@ -431,6 +431,14 @@ if $APPLY_STOW; then
             stow_pkg "$pkg"
         done
 
+        # Настройки конкретной машины (экран, панель, звук, тачпад): packages/host-<hostname>
+        HOST_PKG="host-$(hostnamectl hostname 2>/dev/null || hostname)"
+        if [[ -d "$DOTFILES_DIR/packages/$HOST_PKG" ]]; then
+            stow_pkg "$HOST_PKG"
+        else
+            echo "  ℹ️  нет packages/$HOST_PKG — машинные настройки KDE останутся по умолчанию"
+        fi
+
         if $PLASMA_WAS_RUNNING; then
             kstart plasmashell &>/dev/null || true
         fi

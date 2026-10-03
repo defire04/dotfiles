@@ -2,8 +2,16 @@
 NumLock=0
 RepeatDelay=300
 
+[Libinput][1267][13077][ASCE1206:00 04F3:3315 Touchpad]
+NaturalScroll=true
+ScrollFactor=0.75
+
 [Libinput][2821][6862][ASUSTeK ROG OMNI RECEIVER]
 PointerAcceleration=0.200
+PointerAccelerationProfile=1
+
+[Libinput][2821][6864][ASUSTek ROG SPEEDNOVA 8K RECEIVER]
+PointerAcceleration=0.600
 PointerAccelerationProfile=1
 
 [Libinput][43173][8789][YJX-CHIP AJAZZ 2.4G Mouse]

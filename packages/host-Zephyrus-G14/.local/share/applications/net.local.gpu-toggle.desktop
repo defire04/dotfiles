@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Видеокарта NVIDIA
+Comment=Уведомления виджета батареи о переключении NVIDIA
+Exec=/home/dima/.local/bin/gpu-toggle-ui
+Icon=nvidia
+NoDisplay=true

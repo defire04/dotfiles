@@ -171,6 +171,32 @@ kopia repository connect filesystem --path /mnt/nas/backups/username/machine
 | plasma-systemmonitor | `~/.local/share/plasma-systemmonitor/` | desktop |
 | plasma-themes | `~/.local/share/plasma/` (desktoptheme + look-and-feel) | desktop |
 | wallpapers | `~/.local/share/wallpapers/` | desktop |
+| host-&lt;hostname&gt; | settings of one machine, see below | desktop, only on that machine |
+
+### Per-machine packages (`host-<hostname>`)
+
+`install.sh` stows `packages/host-$(hostnamectl hostname)` if it exists: `host-Zephyrus-G14` on the
+laptop, `host-home-pc` on the PC. The other machine's package is never linked.
+
+**What goes where.** A file lives either in a common package or in `host-*` packages, never both
+(stow refuses two links to one path).
+
+| Put in `host-<hostname>` | Put in common packages |
+|---|---|
+| anything tied to the screen: scale, DPI (`kwinrc` Xwayland, `gtk-*/settings.ini`, `gtkrc*`) | theme, colors, fonts, icons (`kdeglobals`, `color-schemes`, `aurorae`) |
+| panel layout and sizes (`plasma-org.kde.plasma.desktop-appletsrc`, `plasmashellrc`) | shortcuts and window rules shared by both (`kglobalshortcutsrc`, `kwinrulesrc`) |
+| input devices: touchpad, mice (`kcminputrc`) | shell, editor, terminal (`fish`, `micro`, `kitty`) |
+| sound devices (`easyeffects/db/easyeffectsrc`), power and lock (`powerdevilrc`, `kscreenlockerrc`) | EasyEffects presets |
+| disks/network by UUID (`plasma-systemmonitor/overview.page`), session (`ksmserverrc`) | generic scripts (`gpu-log`, `kitty-*`) |
+| hardware-only tools: laptop battery widget, `gpu-toggle-ui`, Brave VA-API wrapper and flags | |
+
+Before committing, check `git status`: a changed file in a common package that only makes sense on
+this machine belongs in `host-*`.
+
+**Moving files between common and host packages** on an existing machine — don't `git pull` blindly:
+the old symlinks would point to files that are gone. Use the one-shot script from the infra docs
+(`.Infra/scripts/dotfiles-split-host.sh`, `--dry-run` first, `--pull` on the second machine): it backs
+up the live settings, relinks, and keeps the content exactly as it was on that machine.
 
 ### How symlinks work
 
