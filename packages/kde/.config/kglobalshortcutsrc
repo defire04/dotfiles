@@ -3,6 +3,8 @@ _k_friendly_name=Диспетчер комнат
 switch-to-activity-9e486a08-16e2-42f1-b118-822c7d231924=none,none,Переключиться на комнату «Начальная комната»
 
 [KDE Keyboard Layout Switcher]
+Switch keyboard layout to Английская (США)=none,none,Сменить раскладку клавиатуры на Английская (США)
+Switch keyboard layout to Русская=none,none,Сменить раскладку клавиатуры на Русская
 Switch to Last-Used Keyboard Layout=none,Meta+Alt+L,Выбрать последнюю использованную раскладку клавиатуры
 Switch to Next Keyboard Layout=none,Meta+Alt+K,Выбрать следующую раскладку клавиатуры
 _k_friendly_name=Переключение раскладки клавиатуры
@@ -306,9 +308,7 @@ _launch=none
 
 [services][org.kde.spectacle.desktop]
 ActiveWindowScreenShot=none
-CurrentMonitorScreenShot=none
 FullScreenScreenShot=none
-OpenWithoutScreenshot=none
 RecordRegion=Meta+Shift+R
 RectangularRegionScreenShot=Meta+Shift+S
 WindowUnderCursorScreenShot=none
