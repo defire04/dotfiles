@@ -1,0 +1,15 @@
+[Keyboard]
+NumLock=0
+RepeatDelay=300
+
+[Libinput][2821][6862][ASUSTeK ROG OMNI RECEIVER]
+PointerAcceleration=0.200
+PointerAccelerationProfile=1
+
+[Libinput][43173][8789][YJX-CHIP AJAZZ 2.4G Mouse]
+PointerAcceleration=0.200
+PointerAccelerationProfile=1
+
+[Mouse]
+X11LibInputXAccelProfileFlat=true
+cursorTheme=breeze_cursors
