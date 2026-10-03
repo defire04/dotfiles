@@ -151,6 +151,12 @@ kopia repository connect filesystem --path /mnt/nas/backups/username/machine
 
 ---
 
+## Updating
+
+`upd` (`packages/scripts/.local/bin/upd`) updates everything without prompts: mirror ranking (`cachyos-rate-mirrors`, weekly; `upd --mirrors` to force), `paru -Syu --noconfirm`, orphans, Flatpak, firmware check, reboot hint. It removes `.pacnew` only for mirrorlists and **never overwrites** other configs (`/etc/pacman.conf` default would drop the CachyOS repos) — it lists them at the end.
+
+---
+
 ## Stow Packages
 
 | Package | Path | Mode |
@@ -187,7 +193,7 @@ laptop, `host-home-pc` on the PC. The other machine's package is never linked.
 | panel layout and sizes (`plasma-org.kde.plasma.desktop-appletsrc`, `plasmashellrc`) | shortcuts and window rules shared by both (`kglobalshortcutsrc`, `kwinrulesrc`) |
 | input devices: touchpad, mice (`kcminputrc`) | shell, editor, terminal (`fish`, `micro`, `kitty`) |
 | sound devices (`easyeffects/db/easyeffectsrc`), power and lock (`powerdevilrc`, `kscreenlockerrc`) | EasyEffects presets |
-| disks/network by UUID (`plasma-systemmonitor/overview.page`), session (`ksmserverrc`) | generic scripts (`gpu-log`, `kitty-*`) |
+| disks/network by UUID (`plasma-systemmonitor/overview.page`), session (`ksmserverrc`) | generic scripts (`gpu-log`, `kitty-*`, `upd`) |
 | hardware-only tools: laptop battery widget, `gpu-toggle-ui`, Brave VA-API wrapper and flags | |
 
 Before committing, check `git status`: a changed file in a common package that only makes sense on

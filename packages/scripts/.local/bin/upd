@@ -1,0 +1,85 @@
+#!/bin/bash
+# upd — полное обновление системы одной командой, без вопросов. Ноутбук и ПК (CachyOS).
+#   upd             зеркала (если рейтингу больше 7 дней), pacman + AUR, бесхозные пакеты,
+#                   .pacnew, Flatpak, проверка прошивок, нужна ли перезагрузка
+#   upd --mirrors   то же, но рейтинг зеркал пересчитать в любом случае
+# .pacnew сам удаляет только у списков зеркал (их всё равно пересобирает cachyos-rate-mirrors).
+# Остальные (/etc/pacman.conf, resolv.conf…) НЕ трогает — только перечисляет в конце:
+# «перезаписать новым» у pacman.conf стирает репозитории CachyOS (случай 03.10.2026).
+# Прошивки только показывает, ставить — fwupdmgr update.
+# Документация: .Infra/guides/system-update.md
+set -uo pipefail
+
+step() { printf '\n\e[1;34m==> %s\e[0m\n' "$*"; }
+notes=()
+
+sudo -v || exit 1
+
+# --- Зеркала: свежий список серверов + рейтинг по скорости
+step "Зеркала"
+if [[ ${1:-} != --mirrors ]] && [[ -n $(find /etc/pacman.d/cachyos-mirrorlist -mtime -7 2>/dev/null) ]]; then
+    echo "рейтинг моложе 7 дней — пропускаю (пересчитать: upd --mirrors)"
+else
+    sudo cachyos-rate-mirrors || notes+=("рейтинг зеркал не удался — остались прежние списки")
+fi
+
+# --- Пакеты
+step "Пакеты: репозитории + AUR"
+if ! paru -Syu --noconfirm --sudoloop; then
+    printf '\n\e[1;31mОбновление пакетов упало — дальше не иду. Прочитай ошибку выше.\e[0m\n'
+    exit 1
+fi
+
+step "Бесхозные зависимости"
+mapfile -t orphans < <(pacman -Qdtq)
+if ((${#orphans[@]})); then
+    sudo pacman -Rns --noconfirm "${orphans[@]}"
+else
+    echo "нет"
+fi
+
+# --- Новые версии системных конфигов
+step ".pacnew"
+found=false
+while read -r f; do
+    [[ -n $f ]] || continue
+    found=true
+    case $f in
+        /etc/pacman.d/mirrorlist.pacnew | /etc/pacman.d/cachyos*-mirrorlist.pacnew)
+            sudo rm -f -- "$f" && echo "удалён $f — список зеркал ведёт cachyos-rate-mirrors" ;;
+        *)
+            notes+=("$f — не трогал, разобрать вручную (см. system-update.md)") ;;
+    esac
+done < <(pacdiff -o 2>/dev/null)
+$found || echo "нет"
+
+# --- Flatpak
+if command -v flatpak >/dev/null; then
+    step "Flatpak"
+    flatpak update -y --noninteractive
+    flatpak uninstall --unused -y --noninteractive
+fi
+
+# --- Прошивки: только проверить
+if command -v fwupdmgr >/dev/null; then
+    step "Прошивки (только проверка)"
+    fwupdmgr refresh --force >/dev/null 2>&1
+    if fwupdmgr get-updates --no-unreported-check >/dev/null 2>&1; then
+        notes+=("есть обновления прошивок — посмотреть и поставить: fwupdmgr update")
+    else
+        echo "обновлений нет"
+    fi
+fi
+
+# --- Нужна ли перезагрузка: что-то из этого обновилось после загрузки
+boot=$(date -d "$(uptime -s)" +%Y-%m-%dT%H:%M:%S)
+reboot_pkgs=$(awk -v b="[$boot" '$1 >= b && $3 ~ /^(upgraded|installed)$/ {print $4}' /var/log/pacman.log |
+    grep -E '^(linux|linux-cachyos.*|nvidia.*|amd-ucode|linux-firmware.*|systemd|mesa|glibc|kwin|plasma-workspace)$' | grep -v headers | sort -u | tr '\n' ' ')
+
+step "Итог"
+[[ -n $reboot_pkgs ]] && notes+=("ПЕРЕЗАГРУЗИТЬ: обновились $reboot_pkgs")
+if ((${#notes[@]})); then
+    printf '  • %s\n' "${notes[@]}"
+else
+    echo "всё обновлено, перезагрузка не нужна"
+fi
