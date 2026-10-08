@@ -102,11 +102,18 @@ for oswin in json_data:
             real_cmd = cmd
             real_pid = fg_pid
 
-            # Deep search for claude in process tree
-            for cpid, ccmd in find_process_tree(pid):
+            # Deep search for claude in process tree, including the window process itself
+            # (after a restore kitty launches claude directly, without a shell).
+            # Match by program name, not substring: Claude Code's own tool shells are
+            # "zsh -c source ~/.claude/shell-snapshots/..." and must not be saved.
+            try:
+                own_cmd = open(f"/proc/{pid}/cmdline", "rb").read().decode().split("\x00")
+            except:
+                own_cmd = []
+            for cpid, ccmd in [(pid, own_cmd)] + find_process_tree(pid):
                 if not ccmd:
                     continue
-                if "claude" in " ".join(ccmd):
+                if detect_name(ccmd) == "claude":
                     name = "claude"
                     real_cmd = ccmd
                     real_pid = cpid
@@ -116,6 +123,10 @@ for oswin in json_data:
                 name = detect_name(cmd)
 
             cwd = (get_cwd(real_pid) if real_pid else None) or get_child_shell_cwd(pid) or get_cwd(pid) or "~"
+
+            # A multi-line command would break the session file into bogus lines
+            if any("\n" in c for c in real_cmd or []):
+                real_cmd = []
 
             if name in PROGRAMS and real_cmd:
                 cmd = clean_cmd(real_cmd)
