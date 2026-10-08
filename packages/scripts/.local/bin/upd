@@ -66,6 +66,8 @@ if command -v fwupdmgr >/dev/null; then
     fwupdmgr refresh --force >/dev/null 2>&1
     if fwupdmgr get-updates --no-unreported-check >/dev/null 2>&1; then
         notes+=("есть обновления прошивок — посмотреть и поставить: fwupdmgr update")
+        command -v sbctl >/dev/null &&
+            notes+=("перед прошивкой BIOS — сначала в Windows: manage-bde -protectors -disable C: -RebootCount 1 (BitLocker)")
     else
         echo "обновлений нет"
     fi
@@ -75,6 +77,21 @@ fi
 boot=$(date -d "$(uptime -s)" +%Y-%m-%dT%H:%M:%S)
 reboot_pkgs=$(awk -v b="[$boot" '$1 >= b && $3 ~ /^(upgraded|installed)$/ {print $4}' /var/log/pacman.log |
     grep -E '^(linux|linux-cachyos.*|nvidia.*|amd-ucode|linux-firmware.*|systemd|mesa|glibc|kwin|plasma-workspace)$' | grep -v headers | sort -u | tr '\n' ' ')
+
+# --- Secure Boot (G14): Limine подписан и хеш limine.conf в него вшит, иначе после перезагрузки panic.
+# Обычно это делают хуки limine-mkinitcpio-hook сами; тут только проверка. См. machines/zephyrus-g14.md, этап E.
+if command -v sbctl >/dev/null && grep -qs '^ENABLE_ENROLL_LIMINE_CONFIG=yes' /etc/default/limine; then
+    step "Secure Boot: Limine"
+    efi=/boot/EFI/limine/limine_x64.efi
+    conf_hash=$(sudo b2sum /boot/limine.conf | cut -d' ' -f1)
+    if ! sudo grep -qF "$conf_hash" "$efi"; then
+        notes+=("НЕ ПЕРЕЗАГРУЖАТЬСЯ: хеш limine.conf не вшит в Limine — sudo limine-enroll-config")
+    elif ! sudo sbctl verify 2>/dev/null | grep -qF "$efi is signed"; then
+        notes+=("НЕ ПЕРЕЗАГРУЖАТЬСЯ: Limine не подписан — sudo sbctl sign -s $efi")
+    else
+        echo "Limine подписан, хеш конфига вшит"
+    fi
+fi
 
 step "Итог"
 [[ -n $reboot_pkgs ]] && notes+=("ПЕРЕЗАГРУЗИТЬ: обновились $reboot_pkgs")
