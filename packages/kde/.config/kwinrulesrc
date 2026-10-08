@@ -22,6 +22,14 @@ wmclass=Telegram org.telegram.desktop
 wmclasscomplete=true
 wmclassmatch=1
 
+[6873c7ce-3d24-4d51-a2b1-bc657432ae2c]
+Description=Параметры приложения для jetbrains-idea
+decocolor=TitlebarIdeaDarcula
+decocolorrule=2
+wmclass=idea jetbrains-idea
+wmclasscomplete=true
+wmclassmatch=1
+
 [8c01a87d-2b41-4287-8886-058255d76bea]
 Description=Параметры приложения для vesktop
 decocolor=KvDark
@@ -30,23 +38,22 @@ wmclass=\svesktop
 wmclasscomplete=true
 wmclassmatch=1
 
-[9fe7dc64-0334-4b75-baf2-e85fb4e3373b]
-Description=Параметры приложения для jetbrains-idea
-clientmachine=localhost
-decocolor=Kvantum
-decocolorrule=2
-wmclass=jetbrains-idea
-wmclassmatch=1
-
 [General]
-count=9
-rules=edad1966-e619-4e0f-90a0-f30206cdc4a1,8c01a87d-2b41-4287-8886-058255d76bea,fa5538f9-31a7-419d-9208-04e5f6d28d0c,e0192cb8-769d-49e5-8744-bb798d6493e6,a9ae92bb-b744-4bf8-ab36-25acb6df66e5,ef71f892-df92-455e-89dd-053c46c4640a,9fe7dc64-0334-4b75-baf2-e85fb4e3373b,55582b02-befc-4e2f-934f-fa8e140b3711,5578f1ed-177e-4e67-b2ea-e09a99f9084d
+count=10
+rules=6873c7ce-3d24-4d51-a2b1-bc657432ae2c,edad1966-e619-4e0f-90a0-f30206cdc4a1,8c01a87d-2b41-4287-8886-058255d76bea,fa5538f9-31a7-419d-9208-04e5f6d28d0c,e0192cb8-769d-49e5-8744-bb798d6493e6,a9ae92bb-b744-4bf8-ab36-25acb6df66e5,ef71f892-df92-455e-89dd-053c46c4640a,55582b02-befc-4e2f-934f-fa8e140b3711,5578f1ed-177e-4e67-b2ea-e09a99f9084d,claude-focus-steal-fix
 
 [a9ae92bb-b744-4bf8-ab36-25acb6df66e5]
 Description=Параметры приложения для kitty
-decocolor=Otto
+decocolor=Nordic-my
 decocolorrule=2
 wmclass=kitty
+wmclassmatch=1
+
+[claude-focus-steal-fix]
+Description=Claude: не красть фокус
+fsplevel=4
+fsplevelrule=2
+wmclass=com.anthropic.Claude
 wmclassmatch=1
 
 [e0192cb8-769d-49e5-8744-bb798d6493e6]
@@ -62,7 +69,7 @@ wmclassmatch=1
 
 [edad1966-e619-4e0f-90a0-f30206cdc4a1]
 Description=Параметры приложения для org.opengamingcollective.rog-control-center
-decocolor=nordicbluish
+decocolor=167018-Darcula
 decocolorrule=2
 wmclass=rog-control-center org.opengamingcollective.rog-control-center
 wmclasscomplete=true

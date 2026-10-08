@@ -1,8 +1,8 @@
 [General]
-ColorScheme=Otto
+ColorScheme=Nordic-Darker
 
 [Icons]
-Theme=Nordic-darker
+Theme=kora
 
 [KDE]
-widgetStyle=kvantum
+widgetStyle=Breeze

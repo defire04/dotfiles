@@ -33,7 +33,6 @@ wobblywindowsEnabled=true
 
 [TabBox]
 HighlightWindows=false
-LayoutName=thumbnail_grid
 
 [Tiling][1ef20b83-71a4-5d0a-ac42-6343bbc06f66]
 tiles={"layoutDirection":"horizontal","tiles":[{"width":0.25},{"width":0.5},{"width":0.25}]}
@@ -129,9 +128,6 @@ RollOverDesktops=true
 Scale=1.6
 
 [org.kde.kdecoration2]
-BorderSize=None
 BorderSizeAuto=false
 ButtonsOnLeft=SFB
 ButtonsOnRight=IAX
-library=org.kde.breeze
-theme=Breeze

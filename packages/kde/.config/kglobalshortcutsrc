@@ -9,6 +9,10 @@ Switch to Last-Used Keyboard Layout=none,Meta+Alt+L,Выбрать послед�
 Switch to Next Keyboard Layout=none,Meta+Alt+K,Выбрать следующую раскладку клавиатуры
 _k_friendly_name=Переключение раскладки клавиатуры
 
+[com.anthropic.Claude]
+EE2010A91CC7D240AD2746AB4A5258CC-Ctrl+Alt+Space=Ctrl+Alt+Space,Ctrl+Alt+Space,Claude shortcut: Ctrl+Alt+Space
+_k_friendly_name=Claude
+
 [kaccess]
 Toggle Screen Reader On and Off=Meta+Alt+S,Meta+Alt+S,Включить/выключить зачитывание с экрана
 _k_friendly_name=Специальные возможности

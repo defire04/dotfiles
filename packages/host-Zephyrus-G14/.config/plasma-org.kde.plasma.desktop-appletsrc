@@ -78,14 +78,14 @@ popupWidth=414
 [Containments][94][Applets][222][Configuration][General]
 fontBold=false
 fontSize=11
-restWatts=6.1
+restWatts=8.5
 
 [Containments][94][Applets][223]
 immutability=1
 plugin=org.kde.plasma.claudeusage
 
 [Containments][94][Applets][223][Configuration]
-popupHeight=355
+popupHeight=318
 popupWidth=288
 
 [Containments][94][Applets][223][Configuration][ConfigDialog]
@@ -95,6 +95,7 @@ DialogWidth=810
 [Containments][94][Applets][223][Configuration][General]
 autoRefreshSession=true
 backgroundOpacity=0.4
+cardOrder=[{"id":"account","enabled":true},{"id":"usage","enabled":true},{"id":"models","enabled":false},{"id":"extra","enabled":false},{"id":"tokens","enabled":true},{"id":"trend","enabled":true},{"id":"installations","enabled":true},{"id":"links","enabled":true}]
 enableNotifications=false
 iconSize=14
 panelIcon=claude
@@ -108,8 +109,8 @@ immutability=1
 plugin=org.kde.plasma.kickoff
 
 [Containments][94][Applets][95][Configuration]
-popupHeight=519
-popupWidth=675
+popupHeight=535
+popupWidth=691
 
 [Containments][94][Applets][95][Configuration][ConfigDialog]
 DialogHeight=630
@@ -265,4 +266,4 @@ immutability=1
 
 [ScreenMapping]
 itemsOnDisabledScreens=
-screenMapping=desktop:/The Witcher 3 Wild Hunt.desktop,0,9e486a08-16e2-42f1-b118-822c7d231924,desktop:/intellij-idea-ultimate.desktop,0,9e486a08-16e2-42f1-b118-822c7d231924
+screenMapping=desktop:/intellij-idea-ultimate.desktop,0,9e486a08-16e2-42f1-b118-822c7d231924,desktop:/The Witcher 3 Wild Hunt.desktop,0,9e486a08-16e2-42f1-b118-822c7d231924

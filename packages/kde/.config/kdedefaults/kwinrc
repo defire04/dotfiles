@@ -1,7 +1,8 @@
 [TabBox]
-LayoutName=big_icons
+LayoutName=thumbnail_grid
 
 [org.kde.kdecoration2]
+BorderSize=None
 NoPlugin=false
-library=org.kde.kwin.aurorae
-theme=__aurorae__svg__Nordic
+library=org.kde.breeze
+theme=Breeze

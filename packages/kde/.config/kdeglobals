@@ -97,22 +97,21 @@ ForegroundVisited=127,140,141
 
 [General]
 BrowserApplication=brave-browser.desktop
-ColorSchemeHash=083859a08c5458e804de2747f64ae9bdc491bd0c
+ColorScheme=Nordic-my
+ColorSchemeHash=c1744900f3237fb51c8fe0ead62764838771d5cf
 TerminalApplication=kitty
 TerminalService=kitty.desktop
 XftAntialias=true
 XftHintStyle=hintslight
 XftSubPixel=none
 
-[Icons]
-Theme=kora
-
 [KDE]
 AnimationDurationFactor=0.17677669529663687
 DefaultLightLookAndFeel=org.kde.breezetwilight.desktop
-LookAndFeelPackage=Nordic-darker
+LookAndFeelPackage=Nordic-my
 ShowDeleteCommand=false
-widgetStyle=Breeze
+contrast=4
+frameContrast=0.2
 
 [KFileDialog Settings]
 Allow Expansion=false
