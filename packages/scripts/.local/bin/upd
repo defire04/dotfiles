@@ -86,7 +86,7 @@ if command -v sbctl >/dev/null && grep -qs '^ENABLE_ENROLL_LIMINE_CONFIG=yes' /e
     conf_hash=$(sudo b2sum /boot/limine.conf | cut -d' ' -f1)
     if ! sudo grep -qF "$conf_hash" "$efi"; then
         notes+=("НЕ ПЕРЕЗАГРУЖАТЬСЯ: хеш limine.conf не вшит в Limine — sudo limine-enroll-config")
-    elif ! sudo sbctl verify 2>/dev/null | grep -qF "$efi is signed"; then
+    elif ! sudo sbctl verify 2>&1 | grep -F "$efi is signed" >/dev/null; then  # не -q: с pipefail ранний выход grep ломает конвейер
         notes+=("НЕ ПЕРЕЗАГРУЖАТЬСЯ: Limine не подписан — sudo sbctl sign -s $efi")
     else
         echo "Limine подписан, хеш конфига вшит"
