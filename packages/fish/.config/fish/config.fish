@@ -49,8 +49,8 @@ if command -q trash-put
     alias rm='trash-put'
 end
 alias rmw='wipe -f'
-alias ls='eza --icons'
-alias ll='eza -la --icons --git'
-alias lt='eza --tree --icons --level=2'
+alias ls='eza --icons=auto'
+alias ll='eza -la --icons=auto --git'
+alias lt='eza --tree --icons=auto --level=2'
 
 fish_add_path $XDG_DATA_HOME/npm/bin
