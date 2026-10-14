@@ -53,4 +53,6 @@ alias ls='eza --icons=auto'
 alias ll='eza -la --icons=auto --git'
 alias lt='eza --tree --icons=auto --level=2'
 
-fish_add_path $XDG_DATA_HOME/npm/bin
+# -g: only for this session, don't write fish_user_paths into fish_variables (it's in the repo).
+# /usr/local/*: `pct enter` into LXC gives a PATH without them, eza/lazydocker live there on Ubuntu servers.
+fish_add_path -g /usr/local/sbin /usr/local/bin $XDG_DATA_HOME/npm/bin
