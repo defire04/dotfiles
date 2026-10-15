@@ -601,10 +601,27 @@ PlasmoidItem {
                         text: "Заряжать до"
                         tip: "Если ноут почти всегда от сети — 80 % продлевает жизнь батареи. Перед поездкой — 100 %"
                     }
-                    Choice {
-                        options: [{ id: "60", name: "60 %" }, { id: "80", name: "80 %" }, { id: "100", name: "100 %" }]
-                        current: String(root.chargeLimit)
-                        onPicked: id => root.setChargeLimit(parseInt(id, 10))
+                    // Ползунок 20–100 (столько принимает прошивка), применяется по отпусканию
+                    RowLayout {
+                        Layout.fillWidth: true
+                        PlasmaComponents.Slider {
+                            id: limitSlider
+                            Layout.fillWidth: true
+                            from: 20; to: 100; stepSize: 5
+                            snapMode: QQC2.Slider.SnapAlways
+                            value: root.chargeLimit
+                            onPressedChanged: if (!pressed) {
+                                root.setChargeLimit(Math.round(value))
+                                value = Qt.binding(() => root.chargeLimit)
+                            }
+                        }
+                        PlasmaComponents.Label {
+                            text: Math.round(limitSlider.value) + " %"
+                            font.bold: true
+                            horizontalAlignment: Text.AlignRight
+                            Layout.preferredWidth: limitMeasure.implicitWidth
+                            PlasmaComponents.Label { id: limitMeasure; text: "100 %"; font.bold: true; visible: false }
+                        }
                     }
 
                     Section { text: "Подсветка клавиатуры"; visible: root.kbd !== "" }
@@ -741,6 +758,13 @@ PlasmoidItem {
     function setUv(v) {
         uv = v
         ds.connectSource("sudo -n /usr/local/bin/cpu-undervolt set " + v)
+    }
+
+    // Порог заряда: asusctl через asusd, без пароля; держится после перезагрузки
+    function setChargeLimit(n) {
+        if (n === chargeLimit) return
+        chargeLimit = n
+        ds.connectSource("asusctl battery limit " + n)
     }
 
     function setKbd(level) {
