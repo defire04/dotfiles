@@ -739,10 +739,12 @@ PlasmoidItem {
         return Math.round(c / 1e6 * voltageDesign)
     }
 
-    // Режим ROG через asusd, как в ROG Control Center
+    // Режим ROG через asusd. Запоминается отдельно для сети (-a) и батареи (-b):
+    // asusd сам переключает его при подключении и отключении питания
     function setRogProfile(p) {
         rogProfile = p
-        ds.connectSource("asusctl profile set " + p.charAt(0).toUpperCase() + p.slice(1))
+        var P = p.charAt(0).toUpperCase() + p.slice(1)
+        ds.connectSource("asusctl profile set " + P + "; asusctl profile set " + (acOnline ? "-a " : "-b ") + P)
     }
 
     // Режим видеокарты — всё делает gpu-toggle (root, через gpu-toggle-ui с уведомлением):

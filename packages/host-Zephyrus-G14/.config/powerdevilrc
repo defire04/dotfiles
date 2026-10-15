@@ -5,7 +5,7 @@ TurnOffDisplayIdleTimeoutSec=1200
 TurnOffDisplayWhenIdle=true
 
 [AC][Performance]
-PowerProfile=performance
+PowerProfile=
 
 [AC][SuspendAndShutdown]
 AutoSuspendAction=1
