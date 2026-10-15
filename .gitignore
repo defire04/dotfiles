@@ -3,7 +3,8 @@ packages/fish/.config/fish/conf.d/private.fish
 packages/fish/.config/fish/functions/
 
 # Kitty runtime
-packages/kitty/.config/kitty/last.kitty-session
+packages/kitty/.config/kitty/last.kitty-session*
+packages/kitty/.config/kitty/__pycache__/
 packages/kitty/.config/kitty/*.bak
 
 # Micro runtime
