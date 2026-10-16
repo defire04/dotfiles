@@ -466,6 +466,7 @@ if [[ "$MODE" == "desktop" ]]; then
     systemctl --user daemon-reload
     systemctl --user enable --now kitty-save-session.timer && echo "  ✅ kitty-save-session.timer"
     systemctl --user enable --now arctis-manager.service && echo "  ✅ arctis-manager.service"
+    systemctl --user enable --now lock-layout-en.service && echo "  ✅ lock-layout-en.service"
 fi
 
 # ── Set fish as default shell ────────────────────────────────────────────────

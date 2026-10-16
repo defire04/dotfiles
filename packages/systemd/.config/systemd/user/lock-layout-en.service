@@ -1,0 +1,11 @@
+[Unit]
+Description=English layout on the lock screen
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=%h/.local/bin/lock-layout-en
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target
