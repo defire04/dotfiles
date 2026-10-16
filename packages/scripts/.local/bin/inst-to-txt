@@ -1,0 +1,164 @@
+#!/usr/bin/env python3
+"""inst-to-txt: speech from Instagram videos to text, no Instagram account needed.
+
+    inst-to-txt <link> [<link> ...]      links, or any text containing them
+    inst-to-txt -f links.txt             links from a file
+    inst-to-txt -o DIR ...               output folder (default ~/Videos/Instagram)
+
+Per post with video: <date>_<author>_<code>.txt with the caption and the speech of
+every video (Whisper large-v3), the video next to it as .mp4 (a carousel's videos
+go to a folder with the same name). Posts with only pictures are skipped.
+Posts that already have a .txt are skipped too, so a failed run can simply be repeated.
+"""
+import argparse
+import json
+import os
+import random
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+HOME = Path.home()
+# Whisper lives in its pipx venv; CUDA 12 libraries come as pip packages inside it
+WHISPER_VENV = HOME / ".local/share/pipx/venvs/whisper-ctranslate2"
+YT_DLP = shutil.which("yt-dlp") or str(HOME / ".local/bin/yt-dlp")
+LINK = re.compile(r"https?://(?:www\.)?instagram\.com/(?:[\w.]+/)?(?:reel|reels|p|tv)/([\w-]+)")
+PAUSE_SECONDS = (3, 7)  # between posts, so Instagram does not ask for a login
+
+
+def reexec_in_whisper_venv():
+    """Restart under the Whisper venv python with its CUDA libraries on the loader path."""
+    if os.environ.get("INST_TO_TXT_VENV") == "1":
+        return
+    python = WHISPER_VENV / "bin/python"
+    if not python.exists():
+        sys.exit(f"Whisper venv not found: {WHISPER_VENV} (pipx install whisper-ctranslate2)")
+    env = dict(os.environ, INST_TO_TXT_VENV="1")
+    nvidia = sorted((WHISPER_VENV / "lib").glob("python3*/site-packages/nvidia/*/lib"))
+    env["LD_LIBRARY_PATH"] = ":".join([str(p) for p in nvidia] + [env.get("LD_LIBRARY_PATH", "")])
+    os.execve(python, [str(python), __file__, *sys.argv[1:]], env)
+
+
+class Transcriber:
+    """Loads large-v3 once on first use: GPU if there is one, else CPU (slow)."""
+
+    def __init__(self):
+        self.model = None
+
+    def text(self, media: Path) -> str:
+        if self.model is None:
+            from faster_whisper import WhisperModel
+            try:
+                self.model = WhisperModel("large-v3", device="cuda", compute_type="float16")
+            except Exception:
+                self.model = WhisperModel("large-v3", device="cpu", compute_type="int8")
+        try:
+            # same settings as the fish `whisper` alias: language per segment (uk/ru mixed),
+            # VAD and skipping long pauses against hallucinations
+            segments, _ = self.model.transcribe(
+                str(media), beam_size=5, multilingual=True, vad_filter=True,
+                word_timestamps=True, hallucination_silence_threshold=2)
+            return "\n".join(s.text.strip() for s in segments).strip()
+        except IndexError:
+            return ""  # VAD found no speech at all (music-only reel)
+
+
+def ytdlp_info(url: str) -> dict:
+    # --ignore-errors: picture slides of a carousel fail, the videos still come through
+    run = subprocess.run([YT_DLP, "-J", "--ignore-errors", "--no-warnings", url],
+                         capture_output=True, text=True)
+    try:
+        return json.loads(run.stdout)
+    except json.JSONDecodeError:
+        raise RuntimeError((run.stderr.strip().splitlines() or ["yt-dlp gave no data"])[-1])
+
+
+def download_videos(url: str, base: Path, is_carousel: bool) -> list[Path]:
+    template = f"{base}/%(playlist_index)02d.%(ext)s" if is_carousel else f"{base}.%(ext)s"
+    with tempfile.TemporaryDirectory(prefix="inst-to-txt-") as work:
+        subprocess.run([YT_DLP, "--ignore-errors", "--no-warnings", "-q", "-f", "bv*+ba/b",
+                        "--merge-output-format", "mp4", "-o", template, url], cwd=work, capture_output=True)
+    if is_carousel:
+        return sorted(base.glob("*.mp4"))
+    video = base.parent / f"{base.name}.mp4"
+    return [video] if video.exists() else []
+
+
+def safe(name: str) -> str:
+    return re.sub(r"[^\w.-]+", "_", name).strip("_")[:40] or "unknown"
+
+
+def process(code: str, out: Path, whisper: Transcriber) -> Path | None:
+    url = f"https://www.instagram.com/p/{code}/"
+    info = ytdlp_info(url)
+    is_carousel = info.get("_type") == "playlist"
+    if is_carousel and not any(info.get("entries") or []):
+        return None
+    username = info.get("channel") or info.get("uploader_id") or ""
+    author = info.get("uploader") or username
+    raw_date = info.get("upload_date") or "00000000"
+    date = f"{raw_date[:4]}-{raw_date[4:6]}-{raw_date[6:]}"
+    base = out / f"{date}_{safe(username)}_{code}"
+    videos = download_videos(url, base, is_carousel)
+    if not videos:
+        raise RuntimeError("видео не скачалось")
+
+    lines = [url, f"Автор: {author} (@{username})" if username else f"Автор: {author}", f"Дата: {date}",
+             "", "## Подпись", "", (info.get("description") or "").strip() or "(нет)"]
+    for video in videos:
+        title = "## Речь" if len(videos) == 1 else f"## Речь, видео {video.stem}"
+        lines += ["", title, "", whisper.text(video) or "(речи нет)"]
+    text_file = base.parent / f"{base.name}.txt"
+    text_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return text_file
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Speech from Instagram videos to text")
+    parser.add_argument("links", nargs="*", help="links or any text with them")
+    parser.add_argument("-f", "--file", type=Path, help="file with links")
+    parser.add_argument("-o", "--out", type=Path, default=HOME / "Videos/Instagram")
+    args = parser.parse_args()
+
+    text = " ".join(args.links) + (" " + args.file.read_text() if args.file else "")
+    if not text.strip() and not sys.stdin.isatty():
+        text = sys.stdin.read()
+    codes = list(dict.fromkeys(LINK.findall(text)))
+    if not codes:
+        parser.error("no Instagram links found")
+    args.out.mkdir(parents=True, exist_ok=True)
+
+    whisper, failed, done, skipped = Transcriber(), [], 0, 0
+    for number, code in enumerate(codes, 1):
+        prefix = f"[{number}/{len(codes)}] {code}"
+        if any(args.out.glob(f"*_{code}.txt")):
+            print(f"{prefix}: уже есть, пропускаю")
+            continue
+        if number > 1:
+            time.sleep(random.uniform(*PAUSE_SECONDS))
+        try:
+            result = process(code, args.out, whisper)
+        except Exception as error:
+            print(f"{prefix}: ОШИБКА {error}")
+            failed.append(code)
+            continue
+        if result is None:
+            print(f"{prefix}: только картинки, пропускаю")
+            skipped += 1
+        else:
+            print(f"{prefix}: {result.name}")
+            done += 1
+    print(f"\nГотово: {done}, без видео: {skipped}, ошибок: {len(failed)}, папка {args.out}")
+    if failed:
+        print("Запустите ту же команду ещё раз, готовые посты пропустятся.")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    sys.stdout.reconfigure(line_buffering=True)  # progress shows up live when piped to a file
+    reexec_in_whisper_venv()
+    main()
