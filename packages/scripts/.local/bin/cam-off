@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# cam-off: webcam off at driver level. The uvcvideo module is unloaded and blocked from
+# loading again (also after reboot), so no program can open the camera until cam-on.
+set -u
+CONF=/etc/modprobe.d/cam-off.conf
+
+users=$(for fd in /proc/[0-9]*/fd/*; do
+    [[ $(readlink "$fd" 2>/dev/null) == /dev/video* ]] && echo "${fd#/proc/}" | cut -d/ -f1
+done | sort -u)
+if [[ -n $users ]]; then
+    echo "Камера сейчас открыта, сначала закрой эти программы:"
+    ps -o pid=,comm= -p $(echo $users | tr ' ' ',')
+    exit 1
+fi
+
+# "install ... /bin/false" stops every load, blacklist alone does not stop an explicit modprobe
+echo "install uvcvideo /bin/false" | sudo tee "$CONF" >/dev/null || exit 1
+if lsmod | grep -q '^uvcvideo '; then
+    sudo modprobe -r uvcvideo || exit 1
+fi
+if ls /dev/video* >/dev/null 2>&1; then
+    echo "Не получилось: /dev/video* ещё есть"
+    exit 1
+fi
+echo "📷 Камера выключена (драйвер выгружен и заблокирован). Включить: cam-on"
