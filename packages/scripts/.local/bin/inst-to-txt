@@ -26,7 +26,7 @@ HOME = Path.home()
 # Whisper lives in its pipx venv; CUDA 12 libraries come as pip packages inside it
 WHISPER_VENV = HOME / ".local/share/pipx/venvs/whisper-ctranslate2"
 YT_DLP = shutil.which("yt-dlp") or str(HOME / ".local/bin/yt-dlp")
-LINK = re.compile(r"https?://(?:www\.)?instagram\.com/(?:[\w.]+/)?(?:reel|reels|p|tv)/([\w-]+)")
+LINK = re.compile(r"https?://(?:www\.)?instagram\.com/(?:[\w.]+/)?(reel|reels|p|tv)/([\w-]+)")
 PAUSE_SECONDS = (3, 7)  # between posts, so Instagram does not ask for a login
 
 
@@ -67,12 +67,12 @@ class Transcriber:
             return ""  # VAD found no speech at all (music-only reel)
 
 
-def ytdlp_info(url: str) -> dict:
+def ytdlp_info(url: str) -> dict | None:
     # --ignore-errors: picture slides of a carousel fail, the videos still come through
     run = subprocess.run([YT_DLP, "-J", "--ignore-errors", "--no-warnings", url],
                          capture_output=True, text=True)
     try:
-        return json.loads(run.stdout)
+        return json.loads(run.stdout)  # "null" when nothing could be extracted
     except json.JSONDecodeError:
         raise RuntimeError((run.stderr.strip().splitlines() or ["yt-dlp gave no data"])[-1])
 
@@ -92,9 +92,16 @@ def safe(name: str) -> str:
     return re.sub(r"[^\w.-]+", "_", name).strip("_")[:40] or "unknown"
 
 
-def process(code: str, out: Path, whisper: Transcriber) -> Path | None:
-    url = f"https://www.instagram.com/p/{code}/"
-    info = ytdlp_info(url)
+def process(kind: str, code: str, out: Path, whisper: Transcriber) -> Path | None:
+    # Some reels give nothing as /p/<code>/ but work as /reel/<code>/, and the other way round
+    kinds = ["reel", "p"] if kind in ("reel", "reels", "tv") else ["p", "reel"]
+    for kind in kinds:
+        url = f"https://www.instagram.com/{kind}/{code}/"
+        info = ytdlp_info(url)
+        if info:
+            break
+    else:
+        raise RuntimeError("Instagram ничего не отдал (пост удалён, закрыт или нужен вход)")
     is_carousel = info.get("_type") == "playlist"
     if is_carousel and not any(info.get("entries") or []):
         return None
@@ -127,7 +134,10 @@ def main():
     text = " ".join(args.links) + (" " + args.file.read_text() if args.file else "")
     if not text.strip() and not sys.stdin.isatty():
         text = sys.stdin.read()
-    codes = list(dict.fromkeys(LINK.findall(text)))
+    kinds = {}
+    for kind, code in LINK.findall(text):
+        kinds.setdefault(code, kind)
+    codes = list(kinds)
     if not codes:
         parser.error("no Instagram links found")
     args.out.mkdir(parents=True, exist_ok=True)
@@ -141,7 +151,7 @@ def main():
         if number > 1:
             time.sleep(random.uniform(*PAUSE_SECONDS))
         try:
-            result = process(code, args.out, whisper)
+            result = process(kinds[code], code, args.out, whisper)
         except Exception as error:
             print(f"{prefix}: ОШИБКА {error}")
             failed.append(code)
