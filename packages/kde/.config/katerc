@@ -9,6 +9,7 @@ Show Tab Bar=true
 Show Url Nav Bar=true
 
 [MainWindow]
+1800x1125 screen: Window-Maximized=true
 2 screens: Height=1043
 2 screens: Width=1812
 

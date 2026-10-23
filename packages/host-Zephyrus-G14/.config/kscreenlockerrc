@@ -1,3 +1,9 @@
 [Daemon]
 LockGrace=30
 Timeout=30
+
+[Greeter][Wallpaper][org.kde.image][General]
+DynamicMode=2
+Image=file:///mnt/rivia/Data/Media/Photos/Wallpaper/1586853771_daniel-leone-v7datklzzaw-unsplash-modded.webp
+PreviewImage=file:///mnt/rivia/Data/Media/Photos/Wallpaper/1586853771_daniel-leone-v7datklzzaw-unsplash-modded.webp
+SlidePaths=/home/dima/.local/share/wallpapers/,/usr/share/wallpapers/

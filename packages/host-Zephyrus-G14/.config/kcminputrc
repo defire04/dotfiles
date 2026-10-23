@@ -4,6 +4,7 @@ RepeatDelay=300
 
 [Libinput][1267][13077][ASCE1206:00 04F3:3315 Touchpad]
 NaturalScroll=true
+PointerAcceleration=0.200
 ScrollFactor=0.75
 
 [Libinput][2821][6862][ASUSTeK ROG OMNI RECEIVER]

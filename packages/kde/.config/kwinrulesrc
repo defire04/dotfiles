@@ -31,7 +31,7 @@ wmclasscomplete=true
 wmclassmatch=1
 
 [General]
-Order=6873c7ce-3d24-4d51-a2b1-bc657432ae2c,edad1966-e619-4e0f-90a0-f30206cdc4a1,8c01a87d-2b41-4287-8886-058255d76bea,fa5538f9-31a7-419d-9208-04e5f6d28d0c,e0192cb8-769d-49e5-8744-bb798d6493e6,a9ae92bb-b744-4bf8-ab36-25acb6df66e5,ef71f892-df92-455e-89dd-053c46c4640a,55582b02-befc-4e2f-934f-fa8e140b3711,5578f1ed-177e-4e67-b2ea-e09a99f9084d,claude-focus-steal-fix
+Order=steam,6873c7ce-3d24-4d51-a2b1-bc657432ae2c,edad1966-e619-4e0f-90a0-f30206cdc4a1,8c01a87d-2b41-4287-8886-058255d76bea,fa5538f9-31a7-419d-9208-04e5f6d28d0c,e0192cb8-769d-49e5-8744-bb798d6493e6,a9ae92bb-b744-4bf8-ab36-25acb6df66e5,ef71f892-df92-455e-89dd-053c46c4640a,55582b02-befc-4e2f-934f-fa8e140b3711,5578f1ed-177e-4e67-b2ea-e09a99f9084d,claude-focus-steal-fix
 
 [a9ae92bb-b744-4bf8-ab36-25acb6df66e5]
 Description=Параметры приложения для kitty

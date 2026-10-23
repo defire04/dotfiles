@@ -1,6 +1,24 @@
 [PlasmaViews]
 LockWidgets=false
 
+[PlasmaViews][Panel 225]
+floating=1
+panelOpacity=2
+panelVisibility=2
+shell=org.kde.plasma.desktop
+
+[PlasmaViews][Panel 225][Defaults]
+thickness=44
+
+[PlasmaViews][Panel 249]
+floating=1
+panelOpacity=2
+panelVisibility=2
+shell=org.kde.plasma.desktop
+
+[PlasmaViews][Panel 249][Defaults]
+thickness=44
+
 [PlasmaViews][Panel 94]
 floating=1
 panelOpacity=2
