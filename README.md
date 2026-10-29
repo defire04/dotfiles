@@ -151,6 +151,50 @@ kopia repository connect filesystem --path /mnt/nas/backups/username/machine
 
 ---
 
+## Shared / Untrusted Server (keep the setup, remove personal traces)
+
+For a work or shared server where nothing should point back to you (GitHub, email,
+home paths). Install as usual in `server` mode, but uncheck `docker`, `docker-compose`,
+`lazydocker`, `glances`, `github-cli`, `macchanger`. Then:
+
+**1. Domain user: shell and PATH.** `chsh` fails for domain (AD/SSSD) users, they are
+not in `/etc/passwd`. Switch to fish from `.bashrc` instead:
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+echo 'if [[ $- == *i* ]] && command -v fish >/dev/null; then exec fish; fi' >> ~/.bashrc
+```
+
+**2. Keep fish, micro, bat, mc configs, remove everything else.** Commands run in fish.
+```fish
+cd ~/dotfiles
+stow -d packages -t ~ -D git scripts systemd      # git = name/email, scripts and units are personal
+rm -rf .git README.md configs programs install.sh check-secrets.sh .gitignore .stow-local-ignore
+cd packages
+rm -rf aurorae color-schemes easyeffects git host-home-pc host-Zephyrus-G14 kde kitty openrgb plasma-systemmonitor plasma-themes scripts systemd wallpapers
+sed -i '/fish_user_paths/d' fish/.config/fish/fish_variables   # drops /home/<you> paths
+systemctl --user daemon-reload
+rm -f ~/.bash_history
+history clear                                     # fish keeps history in memory, rm alone is not enough
+```
+`.git` must go: every commit carries your name and email, and the remote points to
+your GitHub. Without it `~/dotfiles` is a plain folder, the stow symlinks keep working,
+but `git pull` updates are gone.
+
+Result:
+```
+~/dotfiles/packages/{bat,fish,mc,micro}
+```
+
+**3. Check.** Both must print nothing:
+```bash
+git config --global --list
+rg -i -l 'defire|gmail|/home/dima' ~ 2>/dev/null
+```
+
+The login itself (domain account name) still identifies you, that can't be hidden.
+
+---
+
 ## Updating
 
 `upd` (`packages/scripts/.local/bin/upd`) updates everything without prompts: mirror ranking (`cachyos-rate-mirrors`, weekly; `upd --mirrors` to force), `paru -Syu --noconfirm`, orphans, Flatpak, firmware check, reboot hint. It removes `.pacnew` only for mirrorlists and **never overwrites** other configs (`/etc/pacman.conf` default would drop the CachyOS repos) — it lists them at the end.
