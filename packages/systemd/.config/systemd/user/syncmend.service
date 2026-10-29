@@ -1,0 +1,12 @@
+[Unit]
+Description=syncmend: конфликты Syncthing
+After=graphical-session.target syncthing.service
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=%h/.local/bin/syncmend watch --team home-pc --team ZephyrusG14
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=graphical-session.target
