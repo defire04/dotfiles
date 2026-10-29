@@ -2,7 +2,7 @@
 KITTY="/usr/bin/kitty"
 SESSION="$HOME/.config/kitty/last.kitty-session"
 
-if pgrep -x kitty > /dev/null; then
+if ss -lx | grep -q '@kitty-main\.sock'; then
     "$KITTY" --single-instance
 else
     "$KITTY" --single-instance --session "$SESSION"
