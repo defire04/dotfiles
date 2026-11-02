@@ -1,0 +1,22 @@
+#!/bin/bash
+# Claude Code на локальном Qwen3.8 27B: окно 64K, MTP 1 (~47 т/с на зарядке ASUS).
+# Свои чаты и настройки в ~/.claude-local, обычный claude и ~/.claude не трогает.
+# Инструменты урезаны до работы с кодом: инструкции Claude Code занимают ~5K токенов вместо ~11K.
+CTX=65536
+MODEL=qwen3.8-27b
+"$HOME/.local/share/llm/qwen-server.sh" "$CTX" 1 || exit 1
+
+export CLAUDE_CONFIG_DIR="$HOME/.claude-local"
+export ANTHROPIC_BASE_URL=http://127.0.0.1:8080
+export ANTHROPIC_AUTH_TOKEN=local
+export ANTHROPIC_MODEL="$MODEL"
+export ANTHROPIC_DEFAULT_OPUS_MODEL="$MODEL"
+export ANTHROPIC_DEFAULT_SONNET_MODEL="$MODEL"
+export ANTHROPIC_DEFAULT_HAIKU_MODEL="$MODEL"
+export CLAUDE_CODE_SUBAGENT_MODEL="$MODEL"
+export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+# Окно сервера, иначе Claude Code считает 200K и не сжимает чат вовремя
+export CLAUDE_CODE_MAX_CONTEXT_TOKENS="$CTX"
+# Резерв под ответ: по умолчанию 32K съедает половину окна, модели хватает 16K
+export CLAUDE_CODE_MAX_OUTPUT_TOKENS=16000
+exec "$HOME/.local/bin/claude" --tools Bash,Read,Edit,Write,Glob,Grep "$@"
