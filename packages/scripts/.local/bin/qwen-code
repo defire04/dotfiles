@@ -1,13 +1,24 @@
 #!/bin/bash
-# Claude Code на локальном Qwen3.8 27B: окно 64K, MTP 1 (~47 т/с на зарядке ASUS), effort medium.
+# Claude Code на локальном Qwen. По умолчанию Qwen3.6-35B-A3B (MoE): окно 256K, MTP 2, ~75–94 т/с
+# на зарядке ASUS. На задаче в syncmend сделала фичу за 21 мин против 97 мин у 27B (замеры 03.11.2026,
+# ~/Programming/AI/llm-bench/prompts/agent/syncmend-backup-clean/README.md). Код небрежнее, ревьюить.
+# Старая Qwen3.8-27B (умнее, окно 64K): QWEN_MODEL=27b qwen-code, или qwen-code-long (27B, 100K).
 # Свои чаты и настройки в ~/.claude-local, обычный claude и ~/.claude не трогает.
-# Инструменты урезаны до работы с кодом и подагентов: инструкции Claude Code ~6K токенов вместо ~11K.
-# Подагенты работают по очереди (один слот сервера) со своим чистым окном, главное окно забивается медленнее.
-# Для трудной задачи: QWEN_EFFORT=xhigh qwen-code. Окно побольше: qwen-code-long.
-CTX=${QWEN_CTX:-65536}
-MTP=${QWEN_MTP:-1}
-MODEL=qwen3.8-27b
-"$HOME/.local/share/llm/qwen-server.sh" "$CTX" "$MTP" || exit 1
+# Подагенты работают по очереди (один слот сервера) со своим чистым окном.
+LLM=${QWEN_MODEL:-moe}
+if [ "$LLM" = moe ]; then
+    CTX=${QWEN_CTX:-262144}
+    MTP=${QWEN_MTP:-2}
+    MODEL=qwen3.6-35b-a3b
+    OUT=32000
+else
+    CTX=${QWEN_CTX:-65536}
+    MTP=${QWEN_MTP:-1}
+    MODEL=qwen3.8-27b
+    # Резерв под ответ: по умолчанию 32K съедает половину окна 64K, модели хватает 16K
+    OUT=16000
+fi
+"$HOME/.local/share/llm/qwen-server.sh" "$CTX" "$MTP" "" "$LLM" || exit 1
 
 export CLAUDE_CONFIG_DIR="$HOME/.claude-local"
 export ANTHROPIC_BASE_URL=http://127.0.0.1:8080
@@ -20,6 +31,5 @@ export CLAUDE_CODE_SUBAGENT_MODEL="$MODEL"
 export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 # Окно сервера, иначе Claude Code считает 200K и не сжимает чат вовремя
 export CLAUDE_CODE_MAX_CONTEXT_TOKENS="$CTX"
-# Резерв под ответ: по умолчанию 32K съедает половину окна, модели хватает 16K
-export CLAUDE_CODE_MAX_OUTPUT_TOKENS=16000
-exec "$HOME/.local/bin/claude" --tools Bash,Read,Edit,Write,Glob,Grep,Agent "$@"
+export CLAUDE_CODE_MAX_OUTPUT_TOKENS="$OUT"
+exec "$HOME/.local/bin/claude" --tools Bash,Read,Edit,Write,Glob,Grep,Agent,Skill "$@"

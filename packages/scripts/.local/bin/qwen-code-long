@@ -1,4 +1,5 @@
 #!/bin/bash
-# qwen-code с окном 100K без MTP: влезает больше кода, но медленнее
+# qwen-code на старой Qwen3.8-27B с окном 100K без MTP: умнее MoE, но медленнее
 # (~31 т/с на пустом окне, ~19 т/с при заполненных 90K; замеры 03.11.2026).
-QWEN_CTX=102400 QWEN_MTP=0 exec "$HOME/.local/bin/qwen-code" "$@"
+# Обычный qwen-code теперь на Qwen3.6-35B-A3B с окном 256K.
+QWEN_MODEL=27b QWEN_CTX=102400 QWEN_MTP=0 exec "$HOME/.local/bin/qwen-code" "$@"
