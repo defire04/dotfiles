@@ -11,9 +11,12 @@
       "~/.ssh",
       "~/.gnupg",
       "~/.config/Bitwarden",
-      "~/.kaer"
+      "~/.kaer",
+      "~/.claude"
     ],
-    "allowRead": [],
+    "allowRead": [
+      "~/.claude/skills"
+    ],
     "allowWrite": [
       ".",
       "/tmp",
