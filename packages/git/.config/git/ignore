@@ -9,3 +9,6 @@
 /.zprofile
 /.zshrc
 /.mcp.json
+
+# Личные настройки Pi в проектах
+.pi-lsp.json

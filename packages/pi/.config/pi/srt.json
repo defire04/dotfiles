@@ -22,7 +22,8 @@
       "~/.cargo",
       "~/.m2",
       "~/.codegraph",
-      "~/.cache"
+      "~/.cache",
+      "~/.eclipse"
     ],
     "denyWrite": []
   }
