@@ -1,5 +1,0 @@
-#!/bin/bash
-# Чат с локальным Qwen3.8 27B в браузере: окно 32K, MTP 3 (~55–60 т/с на зарядке ASUS), effort medium.
-# Для трудного вопроса: QWEN_EFFORT=xhigh qwen-web. Остановить сервер: pkill llama-server
-"$HOME/.local/share/llm/qwen-server.sh" 32768 3 || exit 1
-xdg-open http://127.0.0.1:8080 >/dev/null 2>&1 &

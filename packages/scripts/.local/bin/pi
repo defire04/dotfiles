@@ -1,5 +1,5 @@
 #!/bin/bash
-# Обёртка над Pi (~/.local/share/npm/bin/pi): локальная Qwen и песочница srt.
+# Обёртка над Pi (~/.local/share/npm/bin/pi или /usr/bin/pi из AUR): локальная Qwen и песочница srt.
 #   pi [аргументы]     Pi в текущей папке; llama-server поднимается сам, если не запущен
 #   pi server-stop     остановить сервер и освободить видеопамять
 #   pi server-status   запущен ли сервер
@@ -7,7 +7,9 @@
 # Сервер под машину: ~/.local/share/llm/start-pi-server.sh. Песочница: ~/.config/pi/srt.json
 # (писать можно только в текущую папку и кэши сборки, сеть только до 127.0.0.1:8080).
 set -u
-REAL=$HOME/.local/share/npm/bin/pi
+REAL=${PI_REAL:-}
+for c in "$HOME/.local/share/npm/bin/pi" /usr/bin/pi; do [ -z "$REAL" ] && [ -x "$c" ] && REAL=$c; done
+[ -n "$REAL" ] || { echo "настоящий pi не найден (npm или AUR pi-coding-agent-bin)"; exit 1; }
 LLM=$HOME/.local/share/llm
 LOG=$LLM/pi-server.log
 health() { curl -sf 127.0.0.1:8080/health >/dev/null; }
