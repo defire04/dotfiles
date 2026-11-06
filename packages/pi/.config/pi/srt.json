@@ -1,12 +1,29 @@
 {
   "network": {
-    "allowedDomains": ["127.0.0.1:8080"],
+    "allowedDomains": [
+      "127.0.0.1:8080",
+      "mcp.context7.com"
+    ],
     "deniedDomains": []
   },
   "filesystem": {
-    "denyRead": ["~/.ssh", "~/.gnupg", "~/.config/Bitwarden", "~/.kaer"],
+    "denyRead": [
+      "~/.ssh",
+      "~/.gnupg",
+      "~/.config/Bitwarden",
+      "~/.kaer"
+    ],
     "allowRead": [],
-    "allowWrite": [".", "/tmp", "~/.pi", "~/.local/share/cargo", "~/.cargo", "~/.m2", "~/.codegraph", "~/.cache"],
+    "allowWrite": [
+      ".",
+      "/tmp",
+      "~/.pi",
+      "~/.local/share/cargo",
+      "~/.cargo",
+      "~/.m2",
+      "~/.codegraph",
+      "~/.cache"
+    ],
     "denyWrite": []
   }
 }

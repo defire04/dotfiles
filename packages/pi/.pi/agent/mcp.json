@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "context7": {
+      "url": "https://mcp.context7.com/mcp",
+      "exposure": "direct",
+      "description": "Свежая документация библиотек и фреймворков (Spring, крейты Rust и т. п.): сначала resolve-library-id, потом get-library-docs"
+    },
+    "codegraph": {
+      "command": "codegraph",
+      "args": ["serve", "--mcp"],
+      "exposure": "direct",
+      "description": "Карта кода проекта: символы, кто кого вызывает, что сломается. Работает в проектах с папкой .codegraph (codegraph init)"
+    }
+  }
+}
