@@ -1,1 +1,11 @@
 **/.claude/settings.local.json
+
+# Заглушки песочницы srt (Pi, Claude Code): видны только внутри неё, в корне репозитория
+/.bash_profile
+/.bashrc
+/.gitconfig
+/.profile
+/.ripgreprc
+/.zprofile
+/.zshrc
+/.mcp.json

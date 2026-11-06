@@ -1,0 +1,12 @@
+{
+  "network": {
+    "allowedDomains": ["127.0.0.1:8080"],
+    "deniedDomains": []
+  },
+  "filesystem": {
+    "denyRead": ["~/.ssh", "~/.gnupg", "~/.config/Bitwarden", "~/.kaer"],
+    "allowRead": [],
+    "allowWrite": [".", "/tmp", "~/.pi", "~/.local/share/cargo", "~/.cargo", "~/.m2", "~/.codegraph", "~/.cache"],
+    "denyWrite": []
+  }
+}
