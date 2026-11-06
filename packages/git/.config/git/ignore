@@ -12,3 +12,5 @@
 
 # Личные настройки Pi в проектах
 .pi-lsp.json
+
+**/.claude/.cc-writes/

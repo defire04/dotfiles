@@ -1,6 +1,6 @@
 #!/bin/bash
 # Qwen3.8 27B (IQ4_XS) на RTX 5080 Laptop: API и чат на http://127.0.0.1:8080.
-# Обычно запускается через qwen-web, qwen-code, qwen-code-long (они вызывают qwen-server.sh).
+# Обычно запускается через qwen-web, qwen-code (они вызывают qwen-server.sh).
 # Здесь настройки по умолчанию (32K, MTP 3, effort medium), флаги после имени скрипта их перекрывают.
 # MTP задаётся переменной QWEN_MTP (0 = выключен): флаг --spec-type складывается в список, а не перекрывается.
 # Настройки выбраны замерами 02–03.11.2026: ~/Programming/AI/llm-bench/results.md
