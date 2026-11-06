@@ -16,11 +16,68 @@
       "models": [
         {
           "id": "qwen3.6-35b-a3b",
-          "name": "Qwen3.6 35B-A3B Q4_K_XL",
+          "name": "Qwen3.6 35B-A3B Q4_K_XL (по умолчанию)",
           "reasoning": true,
           "contextWindow": 262144,
           "maxTokens": 32000,
-          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "qwen3.6-35b-iq4xs",
+          "name": "Qwen3.6 35B-A3B IQ4_XS (легче)",
+          "reasoning": true,
+          "contextWindow": 262144,
+          "maxTokens": 32000,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "qwen3.6-35b-q5kxl",
+          "name": "Qwen3.6 35B-A3B Q5_K_XL (точнее, медленнее)",
+          "reasoning": true,
+          "contextWindow": 262144,
+          "maxTokens": 32000,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "qwen3.8-27b",
+          "name": "Qwen3.8 27B (плотная, окно 64K)",
+          "reasoning": true,
+          "contextWindow": 65536,
+          "maxTokens": 32000,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "gemma-4-26b",
+          "name": "Gemma 4 26B-A4B",
+          "reasoning": false,
+          "contextWindow": 262144,
+          "maxTokens": 32000,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
         }
       ]
     }

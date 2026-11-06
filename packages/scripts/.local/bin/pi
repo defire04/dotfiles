@@ -15,7 +15,7 @@ LOG=$LLM/pi-server.log
 health() { curl -sf 127.0.0.1:8080/health >/dev/null; }
 
 case "${1:-}" in
-  server-stop)   pkill -f 'llama-server.*--port 8080' && echo "сервер остановлен" || echo "сервер не запущен"; exit 0 ;;
+  server-stop)   pkill -f '^(/usr/bin/|[^ ]*/)?llama-server .*--port 8080' && echo "сервер остановлен" || echo "сервер не запущен"; exit 0 ;;
   server-status) health && echo "сервер работает" || echo "сервер не запущен"; exit 0 ;;
   install|remove|uninstall|update|list|config|auth|mcp|--help|-h|--version|-v|--list-models) exec "$REAL" "$@" ;;
 esac
