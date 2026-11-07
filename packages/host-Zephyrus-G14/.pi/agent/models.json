@@ -25,7 +25,11 @@
             "output": 0,
             "cacheRead": 0,
             "cacheWrite": 0
-          }
+          },
+          "input": [
+            "text",
+            "image"
+          ]
         },
         {
           "id": "qwen3.6-35b-iq4xs",
@@ -38,7 +42,11 @@
             "output": 0,
             "cacheRead": 0,
             "cacheWrite": 0
-          }
+          },
+          "input": [
+            "text",
+            "image"
+          ]
         },
         {
           "id": "qwen3.6-35b-q5kxl",
@@ -51,7 +59,11 @@
             "output": 0,
             "cacheRead": 0,
             "cacheWrite": 0
-          }
+          },
+          "input": [
+            "text",
+            "image"
+          ]
         },
         {
           "id": "qwen3.8-27b",
