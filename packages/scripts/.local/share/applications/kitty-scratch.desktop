@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=kitty (вне сессии)
+Comment=Kitty, который не сохраняется в сессию
+Exec=/home/dima/.local/bin/kitty-scratch.sh
+StartupNotify=true
+Icon=kitty
+Categories=System;TerminalEmulator;

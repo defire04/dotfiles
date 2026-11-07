@@ -1,143 +1,67 @@
-# Kitty Session Setup
+# Kitty: сессии
 
-## Файлы и их пути
+Kitty запоминает вкладки, папки и запущенные программы (claude, btop, lazygit и т. д.) и после перезагрузки открывает их снова. Отдельно есть kitty вне сессии, его вкладки никуда не сохраняются.
 
----
+Код здесь не копируется, только пути и что делает каждый файл. Копии в этой доке устаревали, теперь смотреть сами файлы. Все они лежат в `~/dotfiles/packages/` и ставятся через stow.
 
-### `~/bin/kitty-start.sh`
+## Клавиши
+
+| Клавиша | Что делает |
+|---|---|
+| Ctrl+Alt+T | Основной kitty. Если он не запущен, открывает сохранённую сессию. Если уже запущен, открывает новое окно в нём |
+| Ctrl+Alt+H | Kitty вне сессии. Не сохраняется и не трогает основную сессию |
+| Ctrl+S | Сохранить сессию сейчас, не дожидаясь таймера |
+
+Клавиши KDE назначены в `kde/.config/kglobalshortcutsrc` (разделы `[services][kitty.desktop]` и `[services][kitty-scratch.desktop]`). Новую клавишу назначать через Параметры системы → Комбинации клавиш → «Добавить» → «Приложение». Руками этот файл не править: KDE держит его в памяти и при выходе из системы перезапишет.
+
+## Как это работает
+
+```
+Ctrl+Alt+T ──► kitty-start.sh ──► есть @kitty-main.sock?
+                                     ├─ нет ──► kitty --session last.kitty-session
+                                     └─ да  ──► новое окно в запущенном kitty
+
+таймер 5 мин / Ctrl+S ──► kitty-save-session.sh
+      ──► kitty @ ls (через @kitty-main.sock) ──► session-convert.py ──► last.kitty-session
+
+Ctrl+Alt+H ──► kitty-scratch.sh ──► отдельный kitty, сокет @kitty-scratch.sock
+```
+
+Сохранение и запуск находят основной kitty по сокету `@kitty-main.sock`. Kitty вне сессии слушает другой сокет, поэтому его никто не видит.
+
+## Файлы
+
+### Основная сессия
+
+- `kitty/.config/kitty/kitty.conf`. Нужное для сессий в начале файла: `allow_remote_control yes` (без этого сохранение не может спросить kitty о вкладках), `listen_on unix:@kitty-main.sock` (kitty сам добавляет к имени `-<pid>`), `single_instance yes`, `startup_session none`.
+- `scripts/.local/bin/kitty-start.sh`. Запуск по Ctrl+Alt+T. Сокета `@kitty-main.sock` нет, значит kitty не запущен: открывает `last.kitty-session`. Есть, значит открывает новое окно в уже запущенном.
+- `systemd/.config/systemd/user/app-kitty@.service.d/exec.conf`. KDE запускает приложения по `.desktop` через systemd, этот файл подменяет команду на `kitty-start.sh`.
+- `scripts/.local/bin/kitty-save-session.sh`. Снимает через `kitty @ ls` два снимка, JSON и готовый файл сессии, отдаёт их в `session-convert.py` и пишет результат в `last.kitty-session`. Если новая версия отличается от прошлой, прошлая уходит в `last.kitty-session.prev`. По ней можно вернуть вкладки, если сохранение записало не то.
+- `kitty/.config/kitty/session-convert.py`. Берёт файл сессии от kitty (там есть раскладка панелей) и подставляет в каждую панель её папку и программу из списка `PROGRAMS`. Claude ищется по всему дереву процессов панели и запускается с `--continue`, kiro-cli с `--resume`. Команды из нескольких строк не сохраняются, иначе ломают файл сессии.
+- `systemd/.config/systemd/user/kitty-save-session.service` и `.timer`. Запускают сохранение каждые 5 минут.
+
+### Kitty вне сессии
+
+- `scripts/.local/bin/kitty-scratch.sh`. Запускает `kitty --single-instance --instance-group scratch -o listen_on=unix:@kitty-scratch.sock -o startup_session=none`.
+  - `--instance-group scratch` запускает отдельный процесс kitty, поэтому окно не откроется вкладкой в основном.
+  - `listen_on=unix:@kitty-scratch.sock` нужен, чтобы этот kitty не занял имя `@kitty-main.sock-<pid>` из `kitty.conf`. Иначе сохранение могло бы выбрать его сокет и записать в сессию его вкладки вместо основных.
+  - Повторный Ctrl+Alt+H открывает новое окно в том же отдельном kitty.
+- `scripts/.local/share/applications/kitty-scratch.desktop`. Пункт меню «kitty (вне сессии)», на него назначен Ctrl+Alt+H.
+
+## Поставить на новой машине
 
 ```bash
-#!/bin/bash
-KITTY="/usr/bin/kitty"
-SESSION="$HOME/.config/kitty/last.kitty-session"
-
-if pgrep -x kitty > /dev/null; then
-    "$KITTY" --single-instance
-else
-    "$KITTY" --single-instance --session "$SESSION"
-fi
-```
-
----
-
-### `~/bin/kitty-save-session.sh`
-
-```bash
-#!/bin/bash
-SESSION_FILE="$HOME/.config/kitty/last.kitty-session"
-KITTY="/usr/bin/kitty"
-
-SOCK=$(ss -lx | grep '@kitty-main\.sock' | awk '{print $5}' | head -1)
-[ -z "$SOCK" ] && exit 0
-
-DUMP=$("$KITTY" @ --to "unix:$SOCK" ls)
-[ -z "$DUMP" ] && exit 0
-
-TMP=$(mktemp)
-echo "$DUMP" | python3 "$HOME/.config/kitty/session-convert.py" > "$TMP"
-
-if [ -s "$TMP" ]; then
-    mv "$TMP" "$SESSION_FILE"
-else
-    rm "$TMP"
-fi
-```
-
----
-
-### `~/.config/kitty/session-convert.py`
-
-```python
-import json, sys, os, subprocess
-
-data = json.load(sys.stdin)
-
-def get_cwd(pid):
-    try:
-        return os.readlink(f"/proc/{pid}/cwd")
-    except:
-        return None
-
-def get_child_fish_cwd(pid):
-    try:
-        result = subprocess.check_output(
-            ["pgrep", "-P", str(pid), "fish"], text=True
-        ).strip().split("\n")
-        for cpid in result:
-            cwd = get_cwd(int(cpid))
-            if cwd:
-                return cwd
-    except:
-        pass
-    return None
-
-PROGRAMS = {"btop", "lazygit", "yazi", "kiro-cli", "claude", "ssh"}
-
-for oswin in data:
-    for tab in oswin.get("tabs", []):
-        print(f"new_tab {tab.get('title','')}")
-        print(f"layout {tab.get('layout', 'splits')}")
-        for win in tab.get("windows", []):
-            pid = win.get("pid")
-            fg = win.get("foreground_processes", [])
-            cwd = get_child_fish_cwd(pid) or get_cwd(pid) or "~"
-
-            if fg:
-                proc = fg[-1]
-                cmd = proc.get("cmdline", [])
-                name = os.path.basename(cmd[0]) if cmd else ""
-
-                if name in PROGRAMS:
-                    if name == "kiro-cli":
-                        print(f"launch --cwd={cwd} {' '.join(cmd)} --resume")
-                    elif name == "claude":
-                        print(f"launch --cwd={cwd} {' '.join(cmd)} --continue")
-                    else:
-                        print(f"launch --cwd={cwd} {' '.join(cmd)}")
-                else:
-                    print(f"launch --cwd={cwd}")
-            else:
-                print(f"launch --cwd={cwd}")
-
-            if win.get("is_focused"):
-                print("focus")
-```
-
----
-
-### `~/.config/systemd/user/kitty-save-session.service`
-
-```ini
-[Unit]
-Description=Save kitty session
-
-[Service]
-Type=oneshot
-ExecStart=%h/.local/bin/kitty-save-session.sh
-```
-
----
-
-### `~/.config/systemd/user/kitty-save-session.timer`
-
-```ini
-[Unit]
-Description=Auto-save kitty session every 5 minutes
-
-[Timer]
-OnCalendar=*:0/5
-Persistent=true
-
-[Install]
-WantedBy=timers.target
-```
-
----
-
-## После создания всех файлов
-
-```bash
-chmod +x ~/.local/bin/kitty-start.sh ~/.local/bin/kitty-save-session.sh
+cd ~/dotfiles && stow -d packages -t ~ kitty scripts systemd kde
+kbuildsycoca6                       # KDE увидит kitty-scratch.desktop
 systemctl --user daemon-reload
 systemctl --user enable --now kitty-save-session.timer
+```
+
+Если Ctrl+Alt+H не сработал сразу, выйти из системы и войти снова: KDE читает `kglobalshortcutsrc` при входе. Не помогло, назначить клавишу через Параметры системы.
+
+## Проверить, что kitty вне сессии не сохраняется
+
+```bash
+ss -lx | grep kitty     # должны быть @kitty-main.sock-<pid> и @kitty-scratch.sock-<pid>
+ss -lx | grep '@kitty-main\.sock' | awk '{print $5}' | head -1   # должен быть main
 ```
