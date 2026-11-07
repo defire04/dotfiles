@@ -1,5 +1,7 @@
 **/.claude/settings.local.json
 
+**/.claude/.cc-writes/
+
 # Заглушки песочницы srt (Pi, Claude Code): видны только внутри неё, в корне репозитория
 /.bash_profile
 /.bashrc
