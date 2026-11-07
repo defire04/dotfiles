@@ -4,6 +4,17 @@
   "quietStartup": true,
   "packages": [
     "npm:pi-subagents",
-    "npm:pi-lsp-extension"
-  ]
+    "npm:pi-lsp-extension",
+    "npm:@gotgenes/pi-permission-system@42.0.0"
+  ],
+  "defaultTools": [
+    "read",
+    "bash",
+    "edit",
+    "write",
+    "grep",
+    "find",
+    "ls"
+  ],
+  "enableInstallTelemetry": false
 }

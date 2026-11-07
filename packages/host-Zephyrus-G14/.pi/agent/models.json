@@ -32,6 +32,22 @@
           ]
         },
         {
+          "id": "tielcoder-35b-a3b",
+          "name": "TielCoder 35B-A3B Q4_K_XL (под код, думает дольше)",
+          "reasoning": true,
+          "contextWindow": 262144,
+          "maxTokens": 32000,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "input": [
+            "text"
+          ]
+        },
+        {
           "id": "qwen3.6-35b-iq4xs",
           "name": "Qwen3.6 35B-A3B IQ4_XS (легче)",
           "reasoning": true,

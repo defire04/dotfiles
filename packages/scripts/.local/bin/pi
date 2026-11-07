@@ -27,6 +27,23 @@ if ! health; then
   health || { echo "сервер не поднялся, см. $LOG"; exit 1; }
 fi
 
+# Настройки Pi это ссылки в dotfiles. Папку ~/.pi/agent песочница держит открытой (Pi пишет туда замки и trust.json),
+# поэтому модель может удалить или подменить ссылку. Перед запуском и после выхода ссылки проверяются и чинятся.
+DOT=$HOME/dotfiles/packages
+links() {
+  local host=$DOT/host-$(hostname)/.pi/agent f t
+  for f in AGENTS.md settings.json mcp.json extensions models.json; do
+    t=$DOT/pi/.pi/agent/$f; [ -e "$host/$f" ] && t=$host/$f
+    [ -e "$t" ] || continue
+    if [ "$(readlink -f "$HOME/.pi/agent/$f")" != "$(readlink -f "$t")" ]; then
+      echo "pi: ~/.pi/agent/$f подменён или удалён, восстанавливаю ссылку на dotfiles" >&2
+      [ -e "$HOME/.pi/agent/$f" ] || [ -L "$HOME/.pi/agent/$f" ] && mv "$HOME/.pi/agent/$f" "$HOME/.pi/agent/$f.suspect-$(date +%s)"
+      ln -s "$t" "$HOME/.pi/agent/$f"
+    fi
+  done
+}
+links
+
 # Внутри srt 127.0.0.1 это сеть самой песочницы, поэтому до сервера идём через её прокси (NO_PROXY без 127.0.0.1).
 export PI_OFFLINE=1 PI_SKIP_VERSION_CHECK=1 PI_TELEMETRY=0 CARGO_NET_OFFLINE=true
 # Буфер: в песочнице нет доступа к Wayland. Снаружи wl-paste --watch сохраняет только картинки в ~/.cache/pi-clip,
@@ -45,4 +62,5 @@ srt -s "$HOME/.config/pi/srt.json" -c \
   "export PATH=$CLIP:\$PATH PI_CLIPBOARD_OSC52=1 NO_PROXY=169.254.0.0/16 no_proxy=169.254.0.0/16 NODE_USE_ENV_PROXY=1; exec $REAL$ARGS"
 rc=$?
 [ -n "$WP" ] && kill $WP 2>/dev/null
+links
 exit $rc

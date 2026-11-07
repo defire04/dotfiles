@@ -2,7 +2,8 @@
   "network": {
     "allowedDomains": [
       "127.0.0.1:8080",
-      "mcp.context7.com"
+      "mcp.context7.com",
+      "mcp.exa.ai"
     ],
     "deniedDomains": []
   },
@@ -20,14 +21,21 @@
     "allowWrite": [
       ".",
       "/tmp",
-      "~/.pi",
-      "~/.local/share/cargo",
-      "~/.cargo",
-      "~/.m2",
+      "~/.local/share/cargo/registry",
+      "~/.local/share/cargo/git",
+      "~/.cargo/registry",
+      "~/.cargo/git",
+      "~/.m2/repository",
+      "~/.m2/wrapper",
       "~/.codegraph",
       "~/.cache",
-      "~/.eclipse"
+      "~/.eclipse",
+      "~/.pi/agent"
     ],
-    "denyWrite": []
+    "denyWrite": [
+      "~/.pi/agent/extensions",
+      "~/.pi/agent/npm",
+      "~/.pi/agent/git"
+    ]
   }
 }

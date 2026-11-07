@@ -10,6 +10,11 @@
       "args": ["serve", "--mcp"],
       "exposure": "direct",
       "description": "Карта кода проекта: символы, кто кого вызывает, что сломается. Работает в проектах с папкой .codegraph (codegraph init)"
+    },
+    "exa": {
+      "url": "https://mcp.exa.ai/mcp",
+      "exposure": "direct",
+      "description": "Поиск в интернете (web_search_exa) и чтение страницы по ссылке (web_fetch_exa), ключ не нужен. Для свежих новостей, версий, ошибок, которых нет в документации Context7"
     }
   }
 }
