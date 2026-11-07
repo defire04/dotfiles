@@ -244,9 +244,9 @@ DialogHeight=928
 DialogWidth=1231
 
 [Containments][43][General]
-changedPositions={"desktop:/intellij-idea-ultimate.desktop":["640x480,1920x1080,2560x1440","0","0"],"desktop:/Текстовый файл.txt":["2560x1440","10","22"]}
+changedPositions={"desktop:/intellij-idea-ultimate.desktop":["2560x1440,640x480,1920x1080","0","0"],"desktop:/Текстовый файл.txt":["2560x1440","10","22"]}
 lastResolution=2560x1440
-positions={"1920x1080":["2","17","desktop:/The Witcher 3 Wild Hunt.desktop","1","0","desktop:/intellij-idea-ultimate.desktop","0","0"],"2560x1440":["1","23","desktop:/The Witcher 3 Wild Hunt.desktop","1","0","desktop:/intellij-idea-ultimate.desktop","0","0","desktop:/Текстовый файл.txt","10","22","desktop:/DsoUx1keYQM13qE+AFZ@22SXEE=%23CWQ","0","0","desktop:/gWSq@yra7v9c2Mu%25rK4a1I9.%25TxiOtHfP4yy1q@WFI_wnglwmIG4FUDXTbX5We2whpc2u.ykizgirq5a@qUiBgasTB8JK7Xm_NkueYZXCbNf9hsZNCgAKTdx_ioVg@cNywa+ZAFWxV+yN0%23ZP%23jMUEDt%25jWrOs%23EleE3ZRkhu=u3t5.5=.Nl8_OtUiHYfhvttM%25DgoT1lRauZK+hHwnmVZi0anOWIiX9@RU1Sx@MZZfltUYVUzoNCPOXTe%23jX%23+","0","1"],"640x480":["5","5","desktop:/intellij-idea-ultimate.desktop","0","0","desktop:/The Witcher 3 Wild Hunt.desktop","1","0"]}
+positions={"1920x1080":["2","17","desktop:/The Witcher 3 Wild Hunt.desktop","1","0","desktop:/intellij-idea-ultimate.desktop","0","0"],"2560x1440":["1","23","desktop:/The Witcher 3 Wild Hunt.desktop","1","0","desktop:/intellij-idea-ultimate.desktop","0","0","desktop:/DsoUx1keYQM13qE+AFZ@22SXEE=%23CWQ","0","0","desktop:/gWSq@yra7v9c2Mu%25rK4a1I9.%25TxiOtHfP4yy1q@WFI_wnglwmIG4FUDXTbX5We2whpc2u.ykizgirq5a@qUiBgasTB8JK7Xm_NkueYZXCbNf9hsZNCgAKTdx_ioVg@cNywa+ZAFWxV+yN0%23ZP%23jMUEDt%25jWrOs%23EleE3ZRkhu=u3t5.5=.Nl8_OtUiHYfhvttM%25DgoT1lRauZK+hHwnmVZi0anOWIiX9@RU1Sx@MZZfltUYVUzoNCPOXTe%23jX%23+","0","1","desktop:/Текстовый файл.txt","10","22"],"640x480":["5","5","desktop:/intellij-idea-ultimate.desktop","0","0","desktop:/The Witcher 3 Wild Hunt.desktop","1","0"]}
 sortMode=-1
 
 [Containments][43][Wallpaper][org.kde.image][General]
@@ -260,7 +260,7 @@ ItemGeometries-2133x1200=Applet-165:1472,0,144,464,0;Applet-93:1616,0,304,464,0;
 ItemGeometries-2259x1271=Applet-165:1472,0,144,464,0;Applet-93:1616,0,304,464,0;
 ItemGeometries-2560x1440=Applet-165:2112,0,160,464,0;Applet-93:2272,0,288,464,0;
 ItemGeometries-640x480=Applet-93:208,0,288,464,0;Applet-165:496,0,144,432,0;
-ItemGeometriesHorizontal=Applet-165:2112,0,160,464,0;Applet-93:2272,0,288,464,0;
+ItemGeometriesHorizontal=Applet-165:1472,0,144,464,0;Applet-93:1616,0,304,464,0;
 activityId=9e486a08-16e2-42f1-b118-822c7d231924
 formfactor=0
 immutability=1
@@ -352,7 +352,7 @@ DialogWidth=810
 
 [Containments][44][General]
 changedPositions={}
-lastResolution=2560x1440
+lastResolution=1920x1080
 positions={"1920x1080":["1","17"],"2560x1440":["1","23","desktop:/Текстовый файл.txt","0","0"]}
 sortMode=-1
 
