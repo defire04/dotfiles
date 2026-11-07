@@ -29,6 +29,20 @@ fi
 
 # Внутри srt 127.0.0.1 это сеть самой песочницы, поэтому до сервера идём через её прокси (NO_PROXY без 127.0.0.1).
 export PI_OFFLINE=1 PI_SKIP_VERSION_CHECK=1 PI_TELEMETRY=0 CARGO_NET_OFFLINE=true
+# Буфер: в песочнице нет доступа к Wayland. Снаружи wl-paste --watch сохраняет только картинки в ~/.cache/pi-clip,
+# внутри Pi видит подменный wl-paste (~/.config/pi/clip), который отдаёт их по Ctrl+V. Текст вставлять Ctrl+Shift+V.
+# Копирование: подменный wl-copy молчит, а Pi кладёт текст в буфер через терминал (OSC 52, kitty это разрешает).
+CLIP=$HOME/.config/pi/clip
+WP=""
+if [ -n "${WAYLAND_DISPLAY:-}" ] && command -v wl-paste >/dev/null; then
+  mkdir -p -m 700 "$HOME/.cache/pi-clip"
+  "$CLIP/save" < /dev/null
+  wl-paste --watch "$CLIP/save" >/dev/null 2>&1 &
+  WP=$!
+fi
 ARGS=$(printf ' %q' "$@")
-exec srt -s "$HOME/.config/pi/srt.json" -c \
-  "export NO_PROXY=169.254.0.0/16 no_proxy=169.254.0.0/16 NODE_USE_ENV_PROXY=1; exec $REAL$ARGS"
+srt -s "$HOME/.config/pi/srt.json" -c \
+  "export PATH=$CLIP:\$PATH PI_CLIPBOARD_OSC52=1 NO_PROXY=169.254.0.0/16 no_proxy=169.254.0.0/16 NODE_USE_ENV_PROXY=1; exec $REAL$ARGS"
+rc=$?
+[ -n "$WP" ] && kill $WP 2>/dev/null
+exit $rc

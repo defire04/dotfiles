@@ -1,0 +1,13 @@
+#!/bin/bash
+# Внутри песочницы вместо настоящего wl-paste: отдаёт Pi картинку, которую сохранил save. Текст не отдаёт.
+d=$HOME/.cache/pi-clip
+t=""
+while [ $# -gt 0 ]; do
+  case $1 in
+    -l|--list-types) [ -f "$d/type" ] && cat "$d/type"; exit 0 ;;
+    -t|--type) t=${2:-}; shift ;;
+  esac
+  shift
+done
+[ -f "$d/type" ] && [ -n "$t" ] && [ "$t" = "$(cat "$d/type")" ] && exec cat "$d/img"
+exit 1

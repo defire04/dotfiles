@@ -1,0 +1,10 @@
+#!/bin/bash
+# Вне песочницы: wl-paste --watch зовёт это при каждой смене буфера. Сохраняет только картинку, текст не пишет никуда.
+d=$HOME/.cache/pi-clip
+cat > /dev/null
+t=$(wl-paste --list-types 2>/dev/null | grep -m1 -E '^image/(png|jpeg|webp|gif)$')
+if [ -n "$t" ] && wl-paste --type "$t" > "$d/img.tmp" 2>/dev/null; then
+  mv "$d/img.tmp" "$d/img"; echo "$t" > "$d/type"
+else
+  rm -f "$d/type" "$d/img" "$d/img.tmp"
+fi

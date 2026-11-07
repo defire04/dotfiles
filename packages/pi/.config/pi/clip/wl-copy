@@ -1,0 +1,3 @@
+#!/bin/bash
+# Внутри песочницы вместо настоящего wl-copy: Wayland закрыт, текст в буфер кладёт сам Pi через терминал (OSC 52, PI_CLIPBOARD_OSC52=1).
+cat > /dev/null
