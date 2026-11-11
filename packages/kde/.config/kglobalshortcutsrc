@@ -336,7 +336,7 @@ toggle do not disturb=none,none,Включение и отключение ре�
 kitty.desktop=
 
 [services][kitty-scratch.desktop]
-_launch=Ctrl+Shift+H
+_launch=Ctrl+Alt+H
 
 [services][kitty.desktop]
 _launch=Ctrl+Alt+T
