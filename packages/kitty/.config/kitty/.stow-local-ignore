@@ -1,2 +1,5 @@
 .*\.bak
 last\.kitty-session
+session-history
+\.last\.kitty-session\..*
+rescue-.*\.kitty-session

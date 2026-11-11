@@ -4,6 +4,9 @@ packages/fish/.config/fish/functions/
 
 # Kitty runtime
 packages/kitty/.config/kitty/last.kitty-session*
+packages/kitty/.config/kitty/.last.kitty-session.*
+packages/kitty/.config/kitty/session-history/
+packages/kitty/.config/kitty/rescue-*.kitty-session
 packages/kitty/.config/kitty/__pycache__/
 packages/kitty/.config/kitty/*.bak
 
