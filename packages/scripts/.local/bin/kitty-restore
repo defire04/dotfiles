@@ -1,0 +1,296 @@
+#!/usr/bin/env python3
+"""Восстановить вкладки kitty из сохранённой сессии в работающий kitty.
+
+Источники: last.kitty-session, .prev, session-history/*, rescue-*.
+Восстановление: kitty @ action goto_session <файл>, существующие вкладки остаются.
+Переопределения для проверки: KITTY_CONFIG_DIR, KITTY_SOCK.
+"""
+import hashlib
+import os
+import re
+import shlex
+import shutil
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+KITTY = "/usr/bin/kitty"
+CONF = Path(os.environ.get("KITTY_CONFIG_DIR", Path.home() / ".config/kitty"))
+HOME = str(Path.home())
+SSH_PROGS = {"ssh", "ssh-run", "mosh", "autossh"}
+
+HELP = """\
+kitty-restore — восстановить вкладки kitty из сохранённой сессии
+
+  kitty-restore              список сохранений, выбрать номер, восстановить
+  kitty-restore N            восстановить сохранение номер N из списка
+  kitty-restore ФАЙЛ         восстановить из указанного файла
+  kitty-restore --list       только показать список
+
+Опции:
+  -n, --dry-run   ничего не делать, показать команду
+      --no-ssh    вкладки с ssh открыть обычной оболочкой в том же каталоге
+  -h, --help      эта справка
+
+Вкладки открываются в уже запущенном kitty, текущие остаются.
+Перед восстановлением выбранный файл копируется в
+~/.config/kitty/rescue-ДАТА-ВРЕМЯ.kitty-session, автосохранение его не тронет.
+Пустые сохранения и сохранения без вкладок в список не попадают."""
+
+
+def die(msg, code=1):
+    print(f"kitty-restore: {msg}", file=sys.stderr)
+    sys.exit(code)
+
+
+def has_tabs(p):
+    try:
+        if p.stat().st_size == 0:
+            return False
+        return any(re.match(r"^(new_tab|launch)( |$)", l) for l in p.read_text(errors="replace").splitlines())
+    except OSError:
+        return False
+
+
+def short(path):
+    path = path.rstrip("/") or "/"
+    if path == HOME or path == "~":
+        return "~"
+    if path.startswith(HOME + "/"):
+        path = "~" + path[len(HOME):]
+    parts = path.split("/")
+    return "…/" + "/".join(parts[-2:]) if len(parts) > 3 else path
+
+
+def split_launch(line):
+    """launch-строка -> (опции, команда)."""
+    try:
+        toks = shlex.split(line)[1:]
+    except ValueError:
+        return [], []
+    i = 0
+    while i < len(toks) and (toks[i].startswith("--") or toks[i].startswith("kitty-unserialize-data=")):
+        i += 1
+    return toks[:i], toks[i:]
+
+
+def is_ssh(cmd):
+    if not cmd:
+        return False
+    prog = os.path.basename(cmd[0])
+    if prog in SSH_PROGS:
+        return True
+    return prog in ("kitten", "kitty") and "ssh" in cmd[1:3]
+
+
+def summarize(p):
+    """Список вкладок: (подпись, есть ли ssh)."""
+    tabs = []
+    for line in p.read_text(errors="replace").splitlines():
+        if re.match(r"^new_tab( |$)", line):
+            tabs.append({"title": line[7:].strip(), "cwd": None, "cmd": None, "ssh": False})
+        elif re.match(r"^launch( |$)", line):
+            if not tabs:
+                tabs.append({"title": "", "cwd": None, "cmd": None, "ssh": False})
+            t = tabs[-1]
+            opts, cmd = split_launch(line)
+            if is_ssh(cmd):
+                t["ssh"] = True
+            if t["cwd"] is None:
+                for o in opts:
+                    if o.startswith("--cwd="):
+                        t["cwd"] = o[6:]
+                t["cmd"] = os.path.basename(cmd[0]) if cmd else ""
+    out = []
+    for t in tabs:
+        label = t["title"] or short(t["cwd"] or "?")
+        if t["cmd"] and not t["title"]:
+            label += f" ({t['cmd']})"
+        if t["ssh"]:
+            label += " [ssh]"
+        out.append(label)
+    return out
+
+
+def collect():
+    cands = [CONF / "last.kitty-session", CONF / "last.kitty-session.prev"]
+    cands += sorted((CONF / "session-history").glob("*.kitty-session"))
+    cands += sorted(CONF.glob("rescue-*.kitty-session"))
+    items, seen = [], {}
+    for p in sorted((c for c in cands if has_tabs(c)), key=lambda c: c.stat().st_mtime, reverse=True):
+        h = hashlib.sha1(p.read_bytes()).hexdigest()
+        if h in seen:  # одинаковое содержимое показываем один раз
+            seen[h]["dups"] += 1
+            continue
+        it = {"path": p, "mtime": p.stat().st_mtime, "tabs": summarize(p), "dups": 0}
+        seen[h] = it
+        items.append(it)
+    return items
+
+
+def tabs_word(n):
+    if n % 10 == 1 and n % 100 != 11:
+        return "вкладка"
+    if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14:
+        return "вкладки"
+    return "вкладок"
+
+
+def fmt(i, it, width):
+    p = it["path"]
+    name = str(p.relative_to(CONF)) if p.is_relative_to(CONF) else str(p)
+    when = time.strftime("%d.%m %H:%M", time.localtime(it["mtime"]))
+    n = len(it["tabs"])
+    head = f"{i:>2}) {when}  {n} {tabs_word(n)}  {name}"
+    if it["dups"]:
+        head += f"  (+{it['dups']} такая же)"
+    tabs = ", ".join(it["tabs"])
+    maxw = max(width - 5, 40)
+    if len(tabs) > maxw:
+        tabs = tabs[: maxw - 1] + "…"
+    return head, "     " + tabs
+
+
+def print_list(items):
+    width = shutil.get_terminal_size((100, 20)).columns
+    for i, it in enumerate(items, 1):
+        print(*fmt(i, it, width), sep="\n")
+
+
+def find_sock():
+    if "KITTY_SOCK" in os.environ:  # задан, даже пустой: не искать основной kitty
+        return os.environ["KITTY_SOCK"] or None
+    try:
+        out = subprocess.run(["ss", "-xl"], capture_output=True, text=True).stdout
+        m = re.search(r"@kitty-main\.sock-\d+", out)
+        if m:
+            return m.group(0)
+    except OSError:
+        pass
+    return None
+
+
+def choose(items):
+    if not sys.stdin.isatty():
+        die("не выбрано сохранение: укажи номер или файл (kitty-restore --list)")
+    if shutil.which("fzf"):
+        width = shutil.get_terminal_size((100, 20)).columns
+        entries = ["\n".join(fmt(i, it, width - 2)) for i, it in enumerate(items, 1)]
+        r = subprocess.run(
+            ["fzf", "--read0", "--no-sort", "--reverse", "--height=~60%",
+             "--prompt=Сессия> ", "--header=Enter восстановить, Esc отмена"],
+            input="\0".join(entries), stdout=subprocess.PIPE, text=True,
+        )
+        if r.returncode != 0 or not r.stdout.strip():
+            die("отменено", 0)
+        return int(r.stdout.strip().split(")")[0])
+    print_list(items)
+    try:
+        ans = input("Номер для восстановления (Enter отмена): ").strip()
+    except EOFError:
+        ans = ""
+    if not ans:
+        die("отменено", 0)
+    if not ans.isdigit():
+        die(f"нужен номер, а не «{ans}»")
+    return int(ans)
+
+
+def strip_ssh(text):
+    out, n = [], 0
+    for line in text.splitlines():
+        if re.match(r"^launch( |$)", line):
+            opts, cmd = split_launch(line)
+            if is_ssh(cmd):
+                line = shlex.join(["launch", *opts])
+                n += 1
+        out.append(line)
+    return "\n".join(out) + "\n", n
+
+
+def main():
+    args = sys.argv[1:]
+    dry = no_ssh = list_only = False
+    target = None
+    for a in args:
+        if a in ("-h", "--help"):
+            print(HELP)
+            return
+        elif a in ("-n", "--dry-run"):
+            dry = True
+        elif a == "--no-ssh":
+            no_ssh = True
+        elif a in ("-l", "--list"):
+            list_only = True
+        elif a.startswith("-"):
+            die(f"неизвестная опция {a}, см. kitty-restore --help")
+        elif target is None:
+            target = a
+        else:
+            die("лишний аргумент, см. kitty-restore --help")
+
+    items = collect()
+
+    if list_only:
+        if not items:
+            die(f"сохранений с вкладками нет в {CONF}")
+        print_list(items)
+        return
+
+    if target and not target.isdigit():
+        src = Path(os.path.abspath(os.path.expanduser(target)))
+        if not src.is_file():
+            die(f"файла нет: {target}")
+        if not has_tabs(src):
+            die(f"в файле нет вкладок (пустой или не сессия kitty): {target}")
+    else:
+        if not items:
+            die(f"сохранений с вкладками нет в {CONF}")
+        n = int(target) if target else choose(items)
+        if not 1 <= n <= len(items):
+            die(f"нет сохранения номер {n}, есть 1–{len(items)}")
+        src = items[n - 1]["path"]
+
+    sock = find_sock()
+    if not sock and not dry:
+        die("основной kitty не запущен (нет сокета @kitty-main.sock-*). Запусти kitty и повтори")
+
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    rescue = CONF / f"rescue-{stamp}.kitty-session"
+    text = src.read_text(errors="replace")
+    restore_file = rescue
+    if no_ssh:
+        text, n_ssh = strip_ssh(text)
+        rt = Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp"))
+        restore_file = rt / f"kitty-restore-{stamp}.kitty-session"
+        print(f"Без ssh: {n_ssh} окон откроются обычной оболочкой")
+
+    cmd = [KITTY, "@", "--to", f"unix:{sock or '@kitty-main.sock-PID'}", "action", "goto_session", str(restore_file)]
+    tabs = summarize(src)
+    print(f"Восстанавливаю {src} ({len(tabs)} {tabs_word(len(tabs))})")
+
+    if dry:
+        print(f"[dry-run] скопировал бы в {rescue}")
+        if no_ssh:
+            print(f"[dry-run] сессия без ssh записалась бы в {restore_file}")
+        print("[dry-run] " + shlex.join(cmd))
+        return
+
+    # Копия с уникальным именем: автосохранение её не затрёт,
+    # а goto_session не спутает её с уже открытой сессией того же имени.
+    shutil.copy2(src, rescue)
+    os.chmod(rescue, 0o600)
+    if no_ssh:
+        restore_file.write_text(text)
+        os.chmod(restore_file, 0o600)
+    print(f"Копия: {rescue}")
+
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        die(f"kitty не принял команду: {(r.stderr or r.stdout).strip()}")
+    print("Готово, вкладки открыты")
+
+
+if __name__ == "__main__":
+    main()
