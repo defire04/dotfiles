@@ -1,0 +1,32 @@
+[Keyboard]
+NumLock=0
+RepeatDelay=300
+
+[Libinput][10248][548][ASUF1415:00 2808:0224 Mouse]
+NaturalScroll=false
+
+[Libinput][1267][12548][ELAN1300:00 04F3:3104 Touchpad]
+NaturalScroll=true
+PointerAcceleration=0.200
+
+[Libinput][1267][13077][ASCE1206:00 04F3:3315 Touchpad]
+NaturalScroll=true
+PointerAcceleration=0.200
+ScrollFactor=0.75
+
+[Libinput][2362][12301][ASUP1206:00 093A:300D Touchpad]
+NaturalScroll=true
+
+[Libinput][2821][6582][ITE Tech. Inc. ITE Device(8910)]
+NaturalScroll=false
+
+[Libinput][2821][6862][ASUSTeK ROG OMNI RECEIVER]
+PointerAcceleration=0.200
+PointerAccelerationProfile=1
+
+[Libinput][43173][8789][YJX-CHIP AJAZZ 2.4G Mouse]
+PointerAcceleration=0.200
+PointerAccelerationProfile=1
+
+[Mouse]
+X11LibInputXAccelProfileFlat=true

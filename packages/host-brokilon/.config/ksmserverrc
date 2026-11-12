@@ -1,0 +1,13 @@
+[General]
+loginMode=emptySession
+
+[LegacySession: saved at previous logout]
+count=0
+
+[Session: saved at previous logout]
+clientId1=1095dfd065000176486731100000011710003
+count=1
+program1=firefox
+restartCommand1=/usr/lib/firefox/firefox,--sm-client-id,1095dfd065000176486731100000011710003
+restartStyleHint1=0
+userId1=dima
