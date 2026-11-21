@@ -1,0 +1,223 @@
+#!/usr/bin/env python3
+"""yt-to-txt: English transcript of YouTube videos into .txt files.
+
+    yt-to-txt <link> [<link> ...]      links, or any text containing them
+    yt-to-txt -f links.txt             links from a file
+    yt-to-txt -o DIR ...               output folder (default ~/Downloads/transcript)
+
+Takes the subtitles YouTube already has: English subtitles by the author, else YouTube's
+own English speech recognition. A video in another language (YouTube's auto-translation
+is blocked) or with no subtitles: the audio is downloaded and Whisper large-v3 turns it
+into English text (GPU, a few minutes per hour of video).
+
+The text never goes to the terminal: the script prints one line per video
+(file, words, source), so an AI agent that runs it does not load the transcript.
+Videos that already have a file are skipped.
+"""
+import argparse
+import json
+import os
+import random
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+HOME = Path.home()
+WHISPER_VENV = HOME / ".local/share/pipx/venvs/whisper-ctranslate2"
+YT_DLP = shutil.which("yt-dlp") or str(HOME / ".local/bin/yt-dlp")
+LINK = re.compile(r"(?:youtube\.com/(?:watch\?(?:[^\s#]*&)?v=|shorts/|live/|embed/)|youtu\.be/)([\w-]{11})")
+PAUSE_SECONDS = (2, 4)  # between videos, so YouTube does not start to refuse
+RETRY_SECONDS = (10, 30, 60, 0)  # waits after a 429 answer; the last try has no wait after it
+PARAGRAPH_WORDS = 120  # a new paragraph after about this many words, at a pause
+
+
+def reexec_in_whisper_venv():
+    """Restart under the Whisper venv python (for the fallback), if this machine has it."""
+    python = WHISPER_VENV / "bin/python"
+    if os.environ.get("YT_TO_TXT_VENV") == "1" or not python.exists():
+        return
+    env = dict(os.environ, YT_TO_TXT_VENV="1")
+    nvidia = sorted((WHISPER_VENV / "lib").glob("python3*/site-packages/nvidia/*/lib"))
+    env["LD_LIBRARY_PATH"] = ":".join([str(p) for p in nvidia] + [env.get("LD_LIBRARY_PATH", "")])
+    os.execve(python, [str(python), __file__, *sys.argv[1:]], env)
+
+
+def ytdlp(*args: str) -> subprocess.CompletedProcess:
+    return subprocess.run([YT_DLP, "--no-warnings", *args], capture_output=True, text=True)
+
+
+def last_error(run: subprocess.CompletedProcess) -> str:
+    return (run.stderr.strip().splitlines() or ["yt-dlp gave no data"])[-1]
+
+
+def pick_subtitles(info: dict) -> tuple[str, str, str] | None:
+    """(language key, yt-dlp flag, human source name) of the best English text."""
+    manual = [k for k in info.get("subtitles") or {} if re.match(r"en(\b|[-_])", k) and k != "live_chat"]
+    if manual:
+        return min(manual, key=len), "--write-subs", "субтитры автора"
+    auto = info.get("automatic_captions") or {}
+    if "en-orig" in auto:
+        return "en-orig", "--write-auto-subs", "автосубтитры YouTube"
+    # Auto-translated tracks (tlang=en) always answer 429 now (checked 2026-11-21),
+    # so "en" is used only when it is the video's own language.
+    if "en" in auto and (info.get("language") or "").startswith("en"):
+        return "en", "--write-auto-subs", "автосубтитры YouTube"
+    return None
+
+
+def paragraphs(pieces: list[tuple[int, int, str]]) -> str:
+    """Join (start ms, end ms, text) pieces into paragraphs that break at pauses."""
+    out, current, words, last_end = [], [], 0, 0
+    for start, end, text in pieces:
+        if current and words >= PARAGRAPH_WORDS and start - last_end > 600:
+            out.append(" ".join(current))
+            current, words = [], 0
+        current.append(text)
+        words += len(text.split())
+        last_end = max(last_end, end)
+    if current:
+        out.append(" ".join(current))
+    return "\n\n".join(re.sub(r"\s+", " ", p).strip() for p in out)
+
+
+def subtitles_text(url: str, key: str, flag: str) -> str:
+    with tempfile.TemporaryDirectory(prefix="yt-to-txt-") as work:
+        # YouTube often answers 429 (too many requests) to a subtitle download; it passes after a pause
+        for wait in RETRY_SECONDS:
+            run = ytdlp("--skip-download", flag, "--sub-langs", key, "--sub-format", "json3",
+                        "-o", f"{work}/s", url)
+            files = list(Path(work).glob("s.*.json3"))
+            if files or "429" not in run.stderr:
+                break
+            time.sleep(wait)
+        if not files:
+            raise RuntimeError(f"субтитры не скачались: {last_error(run)}")
+        data = json.loads(files[0].read_text(encoding="utf-8"))
+    pieces = []
+    for event in data.get("events", []):
+        text = "".join(seg.get("utf8", "") for seg in event.get("segs") or []).replace("\n", " ").strip()
+        if text:
+            start = event.get("tStartMs", 0)
+            pieces.append((start, start + event.get("dDurationMs", 0), text))
+    return paragraphs(pieces)
+
+
+class Whisper:
+    """large-v3, loaded once on first use: GPU if there is one, else CPU (slow)."""
+
+    def __init__(self):
+        self.model = None
+
+    def text(self, url: str, english: bool) -> str:
+        try:
+            from faster_whisper import WhisperModel
+        except ImportError:
+            raise RuntimeError("субтитров нет, а Whisper на этой машине не стоит (pipx install whisper-ctranslate2)")
+        with tempfile.TemporaryDirectory(prefix="yt-to-txt-") as work:
+            run = ytdlp("-q", "-f", "ba/b", "-o", f"{work}/audio.%(ext)s", url)
+            audio = next(Path(work).glob("audio.*"), None)
+            if audio is None:
+                raise RuntimeError(f"звук не скачался: {last_error(run)}")
+            if self.model is None:
+                try:
+                    self.model = WhisperModel("large-v3", device="cuda", compute_type="float16")
+                except Exception:
+                    self.model = WhisperModel("large-v3", device="cpu", compute_type="int8")
+            # translate gives English text from speech in any language
+            segments, _ = self.model.transcribe(
+                str(audio), task="transcribe" if english else "translate",
+                language="en" if english else None, beam_size=5, vad_filter=True,
+                word_timestamps=True, hallucination_silence_threshold=2)
+            return paragraphs([(int(s.start * 1000), int(s.end * 1000), s.text.strip()) for s in segments])
+
+
+def file_name(title: str) -> str:
+    name = re.sub(r'[\x00-\x1f/\\:*?"<>|]+', " ", title)
+    return re.sub(r"\s+", " ", name).strip(" .")[:120] or "video"
+
+
+def existing(out: Path) -> dict[str, Path]:
+    """Video id -> file, read from the link line at the top of every .txt."""
+    found = {}
+    for path in out.glob("*.txt"):
+        with path.open(encoding="utf-8", errors="replace") as f:
+            match = LINK.search(f.readline())
+        if match:
+            found[match.group(1)] = path
+    return found
+
+
+def process(video_id: str, out: Path, whisper: Whisper) -> tuple[Path, int, str]:
+    url = f"https://www.youtube.com/watch?v={video_id}"
+    run = ytdlp("-J", "--skip-download", url)
+    try:
+        info = json.loads(run.stdout)
+    except json.JSONDecodeError:
+        raise RuntimeError(last_error(run))
+    choice = pick_subtitles(info)
+    if choice:
+        key, flag, source = choice
+        text = subtitles_text(url, key, flag)
+    else:
+        english = (info.get("language") or "").startswith("en")
+        source = "Whisper" if english else "Whisper, перевод на английский"
+        text = whisper.text(url, english)
+    if not text:
+        raise RuntimeError("текста нет (в видео нет речи?)")
+
+    raw_date = info.get("upload_date") or "00000000"
+    header = [url, f"Title: {info.get('title', '')}", f"Channel: {info.get('channel') or info.get('uploader') or ''}",
+              f"Date: {raw_date[:4]}-{raw_date[4:6]}-{raw_date[6:]}", f"Source: {source}", ""]
+    path = out / f"{file_name(info.get('title', video_id))}.txt"
+    if path.exists():
+        path = out / f"{path.stem} [{video_id}].txt"
+    path.write_text("\n".join(header) + "\n" + text + "\n", encoding="utf-8")
+    return path, len(text.split()), source
+
+
+def main():
+    parser = argparse.ArgumentParser(description="English transcript of YouTube videos into .txt")
+    parser.add_argument("links", nargs="*", help="links or any text with them")
+    parser.add_argument("-f", "--file", type=Path, help="file with links")
+    parser.add_argument("-o", "--out", type=Path, default=HOME / "Downloads/transcript")
+    args = parser.parse_args()
+
+    text = " ".join(args.links) + (" " + args.file.read_text() if args.file else "")
+    if not text.strip() and not sys.stdin.isatty():
+        text = sys.stdin.read()
+    ids = list(dict.fromkeys(LINK.findall(text)))
+    if not ids:
+        parser.error("no YouTube links found")
+    args.out.mkdir(parents=True, exist_ok=True)
+
+    have, whisper, failed, done = existing(args.out), Whisper(), [], 0
+    for number, video_id in enumerate(ids, 1):
+        prefix = f"[{number}/{len(ids)}] {video_id}"
+        if video_id in have:
+            print(f"{prefix}: уже есть, {have[video_id]}")
+            continue
+        if done or failed:
+            time.sleep(random.uniform(*PAUSE_SECONDS))
+        try:
+            path, words, source = process(video_id, args.out, whisper)
+        except Exception as error:
+            print(f"{prefix}: ОШИБКА {error}")
+            failed.append(video_id)
+            continue
+        print(f"{prefix}: {path} ({words} слов, {source})")
+        done += 1
+    if len(ids) > 1:
+        print(f"\nГотово: {done}, ошибок: {len(failed)}, папка {args.out}")
+    if failed:
+        print("Если YouTube отказал, подождать и запустить ту же команду ещё раз: готовые пропустятся.")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    sys.stdout.reconfigure(line_buffering=True)
+    reexec_in_whisper_venv()
+    main()
