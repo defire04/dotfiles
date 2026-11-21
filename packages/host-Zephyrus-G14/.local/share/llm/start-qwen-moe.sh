@@ -1,5 +1,5 @@
 #!/bin/bash
-# Qwen3.6-35B-A3B (MoE, UD-Q4_K_XL 22,9 ГБ) на RTX 5080 Laptop: API на http://127.0.0.1:8080.
+# Qwen3.6-35B-A3B (MoE, UD-Q4_K_XL 22,9 ГБ) на RTX 5080 Laptop: API на http://127.0.0.1:5080.
 # Часть экспертов в оперативке (--n-cpu-moe), окно до 256K, ~78–88 т/с пусто (как IQ4_XS, квант точнее).
 # --n-cpu-moe 24 подобран под 256K с ~1,2 ГиБ запаса видеопамяти (замер 04.11.2026, 23 впритык, 22 не влезает,
 # ~/Programming/AI/llm-bench/runs/agent/qwen3.6-35b-a3b/fit). Прежний IQ4_XS: модель ...-UD-IQ4_XS.gguf и ncm 18. Своих уровней effort у модели нет.
@@ -12,7 +12,7 @@ spec=()
 exec llama-server \
     -m "$LLM_DIR/models/MoE/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf" \
     --alias qwen3.6-35b-a3b \
-    --host 127.0.0.1 --port 8080 \
+    --host 127.0.0.1 --port 5080 \
     -ngl 99 --n-cpu-moe 24 --load-mode none -fa on -t 12 -np 1 \
     --ctx-size 262144 -ctk q8_0 -ctv q8_0 \
     "${spec[@]}" \

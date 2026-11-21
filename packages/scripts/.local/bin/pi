@@ -5,22 +5,23 @@
 #   pi server-status   запущен ли сервер
 # Служебные команды Pi (install, list, update, config…) идут напрямую, без сервера и песочницы.
 # Сервер под машину: ~/.local/share/llm/start-pi-server.sh. Песочница: ~/.config/pi/srt.json
-# (писать можно только в текущую папку и кэши сборки, сеть только до 127.0.0.1:8080).
+# (писать можно только в текущую папку и кэши сборки, сеть только до 127.0.0.1:5080).
 set -u
 REAL=${PI_REAL:-}
 for c in "$HOME/.local/share/npm/bin/pi" /usr/bin/pi; do [ -z "$REAL" ] && [ -x "$c" ] && REAL=$c; done
 [ -n "$REAL" ] || { echo "настоящий pi не найден (npm или AUR pi-coding-agent-bin)"; exit 1; }
 LLM=$HOME/.local/share/llm
 LOG=$LLM/pi-server.log
-health() { curl -sf 127.0.0.1:8080/health >/dev/null; }
+health() { curl -sf 127.0.0.1:5080/health >/dev/null; }
+strata_up() { curl -sf 127.0.0.1:5090/health >/dev/null; }   # Strata (порт 5090) держит видеопамять, llama-server рядом не поднимаем
 
 case "${1:-}" in
-  server-stop)   pkill -f '^(/usr/bin/|[^ ]*/)?llama-server .*--port 8080' && echo "сервер остановлен" || echo "сервер не запущен"; exit 0 ;;
-  server-status) health && echo "сервер работает" || echo "сервер не запущен"; exit 0 ;;
+  server-stop)   pkill -f '^(/usr/bin/|[^ ]*/)?llama-server .*--port 5080' && echo "сервер остановлен" || echo "сервер не запущен"; exit 0 ;;
+  server-status) health && echo "llama-server работает (5080)"; strata_up && echo "Strata работает (5090)"; health || strata_up || echo "сервер не запущен"; exit 0 ;;
   install|remove|uninstall|update|list|config|auth|mcp|--help|-h|--version|-v|--list-models) exec "$REAL" "$@" ;;
 esac
 
-if ! health; then
+if ! health && ! strata_up; then
   echo "запускаю llama-server, лог $LOG"
   setsid "$LLM/start-pi-server.sh" > "$LOG" 2>&1 < /dev/null &
   for i in $(seq 180); do health && break; sleep 1; done

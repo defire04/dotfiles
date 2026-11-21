@@ -1,7 +1,8 @@
 {
   "network": {
     "allowedDomains": [
-      "127.0.0.1:8080",
+      "127.0.0.1:5080",
+      "127.0.0.1:5090",
       "mcp.context7.com",
       "mcp.exa.ai"
     ],

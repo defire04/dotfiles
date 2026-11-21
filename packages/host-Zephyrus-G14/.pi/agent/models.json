@@ -3,7 +3,7 @@
   "providers": {
     "local": {
       "name": "llama-server",
-      "baseUrl": "http://127.0.0.1:8080/v1",
+      "baseUrl": "http://127.0.0.1:5080/v1",
       "api": "openai-completions",
       "apiKey": "local",
       "compat": {
@@ -83,6 +83,34 @@
           "reasoning": false,
           "contextWindow": 262144,
           "maxTokens": 32000,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        }
+      ]
+    },
+    "strata": {
+      "name": "strata",
+      "baseUrl": "http://127.0.0.1:5090/v1",
+      "api": "openai-completions",
+      "apiKey": "strata-local",
+      "compat": {
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false
+      },
+      "models": [
+        {
+          "id": "qwen3.8-flash-next-coder-iq1_m",
+          "name": "Qwen3.8-Flash-Next Coder IQ1_M (Strata)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 204800,
+          "maxTokens": 25600,
           "cost": {
             "input": 0,
             "output": 0,

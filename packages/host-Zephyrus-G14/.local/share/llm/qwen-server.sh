@@ -1,5 +1,5 @@
 #!/bin/bash
-# Поднимает llama-server с Qwen на 127.0.0.1:8080 с нужными настройками и ждёт готовности.
+# Поднимает llama-server с Qwen на 127.0.0.1:5080 с нужными настройками и ждёт готовности.
 # Использование: qwen-server.sh <окно> <mtp> [effort] [модель]
 #   окно  — токенов контекста, например 32768
 #   mtp   — сколько слов угадывает помощник MTP, 0 = без MTP
@@ -10,7 +10,7 @@ CTX=$1
 MTP=$2
 EFFORT=${3:-${QWEN_EFFORT:-medium}}
 MODEL=${4:-27b}
-URL=http://127.0.0.1:8080
+URL=http://127.0.0.1:5080
 LLM_DIR="$HOME/.local/share/llm"
 STATE="$LLM_DIR/server.conf"
 WANT="model=$MODEL ctx=$CTX mtp=$MTP effort=$EFFORT"
