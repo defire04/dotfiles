@@ -1,6 +1,7 @@
 #!/bin/bash
 # Обёртка над Pi (~/.local/share/npm/bin/pi или /usr/bin/pi из AUR): локальная Qwen и песочница srt.
-#   pi [аргументы]     Pi в текущей папке; llama-server поднимается сам, если не запущен
+#   pi [аргументы]     Pi в текущей папке; сервер поднимается сам, если не запущен: Strata, если в
+#                      ~/.local/share/llm/pi-engine «strata <профиль>» (G14: Gyro-S), иначе llama-server
 #   pi server-stop     остановить сервер и освободить видеопамять
 #   pi server-status   запущен ли сервер
 # Служебные команды Pi (install, list, update, config…) идут напрямую, без сервера и песочницы.
@@ -21,11 +22,18 @@ case "${1:-}" in
   install|remove|uninstall|update|list|config|auth|mcp|--help|-h|--version|-v|--list-models) exec "$REAL" "$@" ;;
 esac
 
+ENGINE=$(grep -v '^#' "$LLM/pi-engine" 2>/dev/null | head -1)
 if ! health && ! strata_up; then
-  echo "запускаю llama-server, лог $LOG"
-  setsid "$LLM/start-pi-server.sh" > "$LOG" 2>&1 < /dev/null &
-  for i in $(seq 180); do health && break; sleep 1; done
-  health || { echo "сервер не поднялся, см. $LOG"; exit 1; }
+  if [ "${ENGINE%% *}" = strata ]; then
+    echo "запускаю Strata (${ENGINE#strata }), ~40 с"
+    strata runtime start --profile "${ENGINE#strata }" --wait 600 > "$LOG" 2>&1
+    strata_up || { echo "Strata не поднялась, см. $LOG"; exit 1; }
+  else
+    echo "запускаю llama-server, лог $LOG"
+    setsid "$LLM/start-pi-server.sh" > "$LOG" 2>&1 < /dev/null &
+    for i in $(seq 180); do health && break; sleep 1; done
+    health || { echo "сервер не поднялся, см. $LOG"; exit 1; }
+  fi
 fi
 
 # Настройки Pi это ссылки в dotfiles. Папку ~/.pi/agent песочница держит открытой (Pi пишет туда замки и trust.json),

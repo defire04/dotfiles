@@ -1,0 +1,2 @@
+# Движок Pi по умолчанию на этой машине (читает scripts/.local/bin/pi): strata <профиль>. Нет файла — llama.cpp (start-pi-server.sh).
+strata launch-gyro-s-200k
