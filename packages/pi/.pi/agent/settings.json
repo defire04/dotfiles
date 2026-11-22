@@ -16,5 +16,11 @@
     "find",
     "ls"
   ],
-  "enableInstallTelemetry": false
+  "enableInstallTelemetry": false,
+  "lastChangelogVersion": "1.5.2",
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.86.0",
+    "{\"source\":\"npm:pi-lsp-extension\",\"scope\":\"user\"}": "1.4.0",
+    "{\"source\":\"npm:@gotgenes/pi-permission-system@42.0.0\",\"scope\":\"user\"}": "42.0.0"
+  }
 }

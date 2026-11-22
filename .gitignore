@@ -37,3 +37,17 @@ packages/scripts/.local/bin/codegraph
 packages/scripts/.local/bin/whisper-ctranslate2
 packages/systemd/.config/systemd/user/default.target.wants/
 packages/fish/.config/fish/completions/
+
+# Secrets safety net: never commit these, wherever they appear
+auth.json
+mcp-auth.json
+models-store.json
+.credentials.json
+*.key
+*.pem
+*.p12
+.env
+.env.*
+id_rsa*
+id_ed25519*
+*.kdbx
