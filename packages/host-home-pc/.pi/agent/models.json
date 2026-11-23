@@ -28,6 +28,34 @@
           }
         }
       ]
+    },
+    "strata": {
+      "name": "strata",
+      "baseUrl": "http://127.0.0.1:5090/v1",
+      "api": "openai-completions",
+      "apiKey": "strata-local",
+      "compat": {
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false
+      },
+      "models": [
+        {
+          "id": "qwen3.8-flash-next-gyro-gyro-s",
+          "name": "Qwen3.8-Flash-Next Gyro-S (Strata)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 131072,
+          "maxTokens": 25600,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        }
+      ]
     }
   }
 }
