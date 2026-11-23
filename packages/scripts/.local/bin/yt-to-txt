@@ -117,6 +117,13 @@ class Whisper:
             from faster_whisper import WhisperModel
         except ImportError:
             raise RuntimeError("субтитров нет, а Whisper на этой машине не стоит (pipx install whisper-ctranslate2)")
+        # A local LLM server holds most of RAM and VRAM; Whisper on top of it
+        # ran the laptop out of memory and systemd-oomd killed the terminal (23.11.2026).
+        listen = subprocess.run(["ss", "-ltnH"], capture_output=True, text=True).stdout
+        busy = [name for port, name in (("5090", "Strata"), ("5080", "llama-server"))
+                if re.search(rf":{port}\s", listen)]
+        if busy:
+            raise RuntimeError(f"субтитров нет, а Whisper не запускаю: работает {', '.join(busy)}, памяти не хватит. Останови его и запусти снова")
         with tempfile.TemporaryDirectory(prefix="yt-to-txt-") as work:
             run = ytdlp("-q", "-f", "ba/b", "-o", f"{work}/audio.%(ext)s", url)
             audio = next(Path(work).glob("audio.*"), None)
