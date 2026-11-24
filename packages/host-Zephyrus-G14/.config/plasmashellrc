@@ -1,3 +1,7 @@
+[PlasmaTransientsConfig]
+popupHeight=535
+popupWidth=691
+
 [PlasmaViews]
 LockWidgets=false
 
@@ -17,6 +21,15 @@ panelVisibility=2
 shell=org.kde.plasma.desktop
 
 [PlasmaViews][Panel 249][Defaults]
+thickness=44
+
+[PlasmaViews][Panel 277]
+floating=1
+panelOpacity=2
+panelVisibility=2
+shell=org.kde.plasma.desktop
+
+[PlasmaViews][Panel 277][Defaults]
 thickness=44
 
 [PlasmaViews][Panel 94]
